@@ -32,7 +32,13 @@ public class FirstSteps {
 
     public int sum(int[] array) {
         int sum = 0;
+        // REVU после if, else, for ... всегда {}, даже если в них 1 оператор
+        // здесь и везде
+        // объяснение : если под условие понадобится добавить еще один оператор
+        // он окажется под if
+        // а без {} он может оказаться и не под if
         if (array.length == 0) return 0;
+        // REVU else не нужно, return в конце if
         else {
             for (int item: array)
                 sum += item;
@@ -43,6 +49,7 @@ public class FirstSteps {
     public int mul(int[] array) {
         int mul = 1;
         if (array.length == 0) return 0;
+        // REVU то же
         else {
             for (int item: array)
                 mul *= item;
@@ -52,6 +59,7 @@ public class FirstSteps {
 
     public int min(int[] array) {
         if(array.length == 0) return Integer.MAX_VALUE;
+            // REVU то же. И далее
         else {
             int min = array[0];
             for (int item: array)
@@ -74,6 +82,7 @@ public class FirstSteps {
         double sum = 0;
         if (array.length == 0) return 0;
         else {
+            // REVU вызовите sum
             for (int item: array)
                 sum += item;
             return sum / array.length;
@@ -88,6 +97,7 @@ public class FirstSteps {
 
     public void cube(int[] array) {
         for (int i = 0; i < array.length; i++)
+            // REVU умножение быстрее, *=
             array[i] = (int)Math.pow(array[i], 3);
     }
 
@@ -117,7 +127,9 @@ public class FirstSteps {
 
     public int sum(int[][] matrix) {
         int sum = 0;
+        // REVU for each
         for (int i = 0; i < matrix.length; i++) {
+            // REVU вызовите sum для линейного массива
             for (int j = 0; j < matrix[i].length; j++)
                 sum += matrix[i][j];
         }
@@ -127,6 +139,7 @@ public class FirstSteps {
     public int max(int[][] matrix) {
         if (matrix[0].length == 0) return Integer.MIN_VALUE;
         else {
+            // REVU аналогично
             int max = matrix[0][0];
             for (int i = 0; i < matrix.length; i++) {
                 for (int j = 0; j < matrix[i].length; j++)

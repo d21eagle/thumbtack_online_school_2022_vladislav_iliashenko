@@ -23,6 +23,7 @@ public class Cylinder extends Circle {
         this(new Point2D(), 1, 1);
     }
 
+    // REVU Если метод только вызывает аналогичный метод базового класса и больше ничего не делает, то его переопределять не надо. Удалите все такие методы
     public Point2D getCenter() {
         return super.getCenter();
     }

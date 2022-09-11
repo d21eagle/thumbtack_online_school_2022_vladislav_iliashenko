@@ -38,7 +38,9 @@ public class Triangle {
         this.point3 = point;
     }
 
+    // REVU сделойте private метод, вычисляющий длину стороны по 2 точкам и вызывайте его во всех 3 следующих методах
     public double getSide12() {
+        // REVU умножение быстрее
         return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2)
                 + Math.pow(point1.getY() - point2.getY(), 2));
     }

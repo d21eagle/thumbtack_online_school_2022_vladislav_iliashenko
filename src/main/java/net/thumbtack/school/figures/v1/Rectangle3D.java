@@ -35,6 +35,7 @@ public class Rectangle3D extends Rectangle {
         return height;
     }
 
+    // REVU Если метод только вызывает аналогичный метод базового класса и больше ничего не делает, то его переопределять не надо. Удалите все такие методы
     public void setTopLeft(Point2D topLeft) {
         super.setTopLeft(topLeft);
     }

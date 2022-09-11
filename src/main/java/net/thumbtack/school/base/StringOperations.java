@@ -63,7 +63,11 @@ public class StringOperations {
     }
 
     public static String getCommonPrefix(String string1, String string2) {
+        // REVU не нужен тут StringBuilder и незачем цеплять символы
+        // просто считайте их, пока ==, а потом substring
         StringBuilder stringBuilder = new StringBuilder();
+        // REVU лучше min вычислить до цикла
+        // как бы оно не стало вычисляться при каждой итерации
         for (int i = 0; i < Math.min(string1.length(), string2.length()); i++){
             if(string1.charAt(i) == string2.charAt(i))
                 stringBuilder.append(string1.charAt(i));
@@ -73,15 +77,18 @@ public class StringOperations {
     }
 
     public static String reverse(String string) {
+        // REVU у StringBuilder есть конструктор по String
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(string);
         return stringBuilder.reverse().toString();
     }
 
+    // REVU сделайте без reverse
     public static boolean isPalindrome(String string) {
         return string.equals(reverse(string));
     }
 
+    // REVU вызовите предыдущий метод
     public static boolean isPalindromeIgnoreCase(String string) {
         return string.equalsIgnoreCase(reverse(string));
     }
@@ -123,6 +130,7 @@ public class StringOperations {
     }
 
     public static String makeCsvStringFromInts(int[] array) {
+        // REVU Вызовите аналогичный метод, возвращающий StringBuilder и toString
         if (array.length == 0) return "";
         else {
             StringBuilder stringBuilder = new StringBuilder(String.valueOf(array[0]));
@@ -133,6 +141,7 @@ public class StringOperations {
     }
 
     public static String makeCsvStringFromDoubles(double[] array) {
+        // REVU Вызовите аналогичный метод, возвращающий StringBuilder и toString
         if(array.length == 0) return "";
         else {
             StringBuilder stringBuilder = new StringBuilder(String.format("%.2f", array[0]));
