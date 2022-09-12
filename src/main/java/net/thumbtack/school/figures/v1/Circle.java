@@ -56,8 +56,8 @@ public class Circle {
     }
 
     public boolean isInside(int x, int y) {
-        // REVU умножение быстрее
-        return Math.pow(center.getX() - x, 2) + Math.pow(center.getY() - y, 2) <= Math.pow(radius, 2);
+        return (center.getX() - x) * (center.getX() - x) +
+                (center.getY() - y) * (center.getY() - y) <= radius * radius;
     }
 
     public boolean isInside(Point2D point) {

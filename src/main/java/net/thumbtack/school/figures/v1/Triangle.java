@@ -38,21 +38,20 @@ public class Triangle {
         this.point3 = point;
     }
 
-    // REVU сделойте private метод, вычисляющий длину стороны по 2 точкам и вызывайте его во всех 3 следующих методах
+    private double getSideLength(Point2D point1, Point2D point2) {
+        return Math.sqrt((point1.getX() - point2.getX()) * (point1.getX() - point2.getX())
+                + (point1.getY() - point2.getY()) * (point1.getY() - point2.getY()));
+    }
     public double getSide12() {
-        // REVU умножение быстрее
-        return Math.sqrt(Math.pow(point1.getX() - point2.getX(), 2)
-                + Math.pow(point1.getY() - point2.getY(), 2));
+        return getSideLength(point1, point2);
     }
 
     public double getSide13() {
-        return Math.sqrt(Math.pow(point1.getX() - point3.getX(), 2)
-                + Math.pow(point1.getY() - point3.getY(), 2));
+        return getSideLength(point1, point3);
     }
 
     public double getSide23() {
-        return Math.sqrt(Math.pow(point2.getX() - point3.getX(), 2)
-                + Math.pow(point2.getY() - point3.getY(), 2));
+        return getSideLength(point2, point3);
     }
 
     public void moveRel(int dx, int dy) {

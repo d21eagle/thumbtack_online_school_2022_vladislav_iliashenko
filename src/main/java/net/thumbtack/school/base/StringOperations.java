@@ -4,8 +4,9 @@ public class StringOperations {
 
     public static int getSummaryLength(String[] strings) {
         int length = 0;
-        for (String str: strings)
+        for (String str: strings) {
             length += str.length();
+        }
         return length;
     }
 
@@ -63,51 +64,55 @@ public class StringOperations {
     }
 
     public static String getCommonPrefix(String string1, String string2) {
-        // REVU не нужен тут StringBuilder и незачем цеплять символы
-        // просто считайте их, пока ==, а потом substring
-        StringBuilder stringBuilder = new StringBuilder();
-        // REVU лучше min вычислить до цикла
-        // как бы оно не стало вычисляться при каждой итерации
-        for (int i = 0; i < Math.min(string1.length(), string2.length()); i++){
-            if(string1.charAt(i) == string2.charAt(i))
-                stringBuilder.append(string1.charAt(i));
+        int index = 0;
+        int min = Math.min(string1.length(), string2.length());
+        for (int i = 0; i < min; i++) {
+            if (string1.charAt(i) == string2.charAt(i)) {
+                index++;
+            }
             else break;
         }
-        return stringBuilder.toString();
+        return string1.substring(0, index);
     }
 
     public static String reverse(String string) {
-        // REVU у StringBuilder есть конструктор по String
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(string);
+        StringBuilder stringBuilder = new StringBuilder(string);
         return stringBuilder.reverse().toString();
     }
-
-    // REVU сделайте без reverse
     public static boolean isPalindrome(String string) {
-        return string.equals(reverse(string));
+        int strLength = string.length();
+        for (int i = 0; i < strLength / 2; i++) {
+            if (string.charAt(i) != string.charAt(strLength - 1 - i)) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    // REVU вызовите предыдущий метод
     public static boolean isPalindromeIgnoreCase(String string) {
-        return string.equalsIgnoreCase(reverse(string));
+        return isPalindrome(string.toLowerCase());
     }
 
     public static String getLongestPalindromeIgnoreCase(String[] strings) {
         String str = "";
         for (String item: strings) {
-            if (isPalindromeIgnoreCase(item))
-                if (str.length() < item.length()) str = item;
+            if (isPalindromeIgnoreCase(item)) {
+                if (str.length() < item.length()) {
+                    str = item;
+                }
+            }
         }
         return str;
     }
 
     public static boolean hasSameSubstring(String string1, String string2, int index, int length) {
         length += index;
-        if ((string1.length() < length) || string2.length() < length)
+        if ((string1.length() < length) || string2.length() < length) {
             return false;
-
-        else return string1.substring(index, length).equals(string2.substring(index, length));
+        }
+        else {
+            return string1.substring(index, length).equals(string2.substring(index, length));
+        }
     }
 
     public static boolean isEqualAfterReplaceCharacters(String string1, char replaceInStr1, char replaceByInStr1,
@@ -130,25 +135,11 @@ public class StringOperations {
     }
 
     public static String makeCsvStringFromInts(int[] array) {
-        // REVU Вызовите аналогичный метод, возвращающий StringBuilder и toString
-        if (array.length == 0) return "";
-        else {
-            StringBuilder stringBuilder = new StringBuilder(String.valueOf(array[0]));
-            for (int i = 1; i < array.length; i++)
-                stringBuilder.append(",").append(array[i]);
-            return stringBuilder.toString();
-        }
+        return makeCsvStringBuilderFromInts(array).toString();
     }
 
     public static String makeCsvStringFromDoubles(double[] array) {
-        // REVU Вызовите аналогичный метод, возвращающий StringBuilder и toString
-        if(array.length == 0) return "";
-        else {
-            StringBuilder stringBuilder = new StringBuilder(String.format("%.2f", array[0]));
-            for (int i = 1; i < array.length; i++)
-                stringBuilder.append(",").append(String.format("%.2f", array[i]));
-            return stringBuilder.toString();
-        }
+        return makeCsvStringBuilderFromDoubles(array).toString();
     }
 
     public static StringBuilder makeCsvStringBuilderFromInts(int[] array) {
@@ -156,8 +147,9 @@ public class StringOperations {
         if (array.length == 0) {}
         else {
             stringBuilder.append(array[0]);
-            for (int i = 1; i < array.length; i++)
+            for (int i = 1; i < array.length; i++) {
                 stringBuilder.append(",").append(array[i]);
+            }
         }
         return stringBuilder;
     }
@@ -167,8 +159,9 @@ public class StringOperations {
         if (array.length == 0) {}
         else {
             stringBuilder.append(String.format("%.2f", array[0]));
-            for (int i = 1; i < array.length; i++)
+            for (int i = 1; i < array.length; i++) {
                 stringBuilder.append(",").append(String.format("%.2f", array[i]));
+            }
         }
         return stringBuilder;
     }
@@ -176,16 +169,18 @@ public class StringOperations {
     public static StringBuilder removeCharacters(String string, int[] positions) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(string);
-        for (int i = 0; i < positions.length; i++)
+        for (int i = 0; i < positions.length; i++) {
             stringBuilder.delete(positions[i] - i, positions[i] - i + 1);
+        }
         return stringBuilder;
     }
 
     public static StringBuilder insertCharacters(String string, int[] positions, char[] characters) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(string);
-        for (int i = 0; i < characters.length; i++)
+        for (int i = 0; i < characters.length; i++) {
             stringBuilder.insert(positions[i] + i, characters[i]);
+        }
         return stringBuilder;
     }
 }

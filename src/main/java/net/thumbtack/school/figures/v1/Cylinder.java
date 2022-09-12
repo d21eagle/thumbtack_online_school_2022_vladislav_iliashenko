@@ -23,45 +23,12 @@ public class Cylinder extends Circle {
         this(new Point2D(), 1, 1);
     }
 
-    // REVU Если метод только вызывает аналогичный метод базового класса и больше ничего не делает, то его переопределять не надо. Удалите все такие методы
-    public Point2D getCenter() {
-        return super.getCenter();
-    }
-
-    public int getRadius() {
-        return super.getRadius();
-    }
-
-    public void setCenter(Point2D center) {
-        super.setCenter(center);
-    }
-
-    public void setRadius(int radius) {
-        super.setRadius(radius);
-    }
-
     public int getHeight() {
         return height;
     }
 
     public void setHeight(int height) {
         this.height = height;
-    }
-
-    public void moveRel(int dx, int dy) {
-        super.moveRel(dx, dy);
-    }
-
-    public void enlarge(int n) {
-        super.enlarge(n);
-    }
-
-    public double getArea() {
-        return super.getArea();
-    }
-
-    public double getPerimeter() {
-        return super.getPerimeter();
     }
 
     public double getVolume() {
