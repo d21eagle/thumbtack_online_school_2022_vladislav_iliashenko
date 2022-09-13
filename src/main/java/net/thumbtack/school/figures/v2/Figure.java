@@ -10,6 +10,10 @@ abstract public class Figure implements Colored {
 
     public abstract double getPerimeter();
 
+    public abstract boolean isInside(int x, int y);
+
+    public abstract boolean isInside(Point2D point);
+
     @Override
     public void setColor(int color) {
         this.color = color;
