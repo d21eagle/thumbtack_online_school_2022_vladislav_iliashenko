@@ -10,53 +10,39 @@ public class Rectangle extends Figure {
     private Point2D leftTop;
     private Point2D rightBottom;
 
-    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Rectangle(Point2D leftTop, Point2D rightBottom, Color color) throws ColorException {
         setTopLeft(leftTop);
         setBottomRight(rightBottom);
+        Color.colorEqualsNull(color);
         setColor(color);
     }
 
     public Rectangle(Point2D leftTop, Point2D rightBottom, String color) throws ColorException {
-        setTopLeft(leftTop);
-        setBottomRight(rightBottom);
-        setColor(color);
+        this(leftTop, rightBottom, Color.colorFromString(color));
     }
 
     public Rectangle(int xLeft, int yTop, int xRight, int yBottom, Color color) throws ColorException {
-        setTopLeft(new Point2D(xLeft, yTop));
-        setBottomRight(new Point2D(xRight, yBottom));
-        setColor(color);
+        this(new Point2D(xLeft, yTop), new Point2D(xRight, yBottom), color);
     }
 
     public Rectangle(int xLeft, int yTop, int xRight, int yBottom, String color) throws ColorException {
-        setTopLeft(new Point2D(xLeft, yTop));
-        setBottomRight(new Point2D(xRight, yBottom));
-        setColor(color);
+        this(new Point2D(xLeft, yTop), new Point2D(xRight, yBottom), Color.colorFromString(color));
     }
 
     public Rectangle(int length, int width, Color color) throws ColorException {
-        setTopLeft(new Point2D(0, -width));
-        setBottomRight(new Point2D(length, 0));
-        setColor(color);
+        this(new Point2D(0, -width), new Point2D(length, 0), color);
     }
 
     public Rectangle(int length, int width, String color) throws ColorException {
-        setTopLeft(new Point2D(0, -width));
-        setBottomRight(new Point2D(length, 0));
-        setColor(color);
+        this(new Point2D(0, -width), new Point2D(length, 0), Color.colorFromString(color));
     }
 
     public Rectangle(Color color) throws ColorException {
-        setTopLeft(new Point2D(0, -1));
-        setBottomRight(new Point2D(1, 0));
-        setColor(color);
+        this(new Point2D(0, -1), new Point2D(1, 0), color);
     }
 
     public Rectangle(String color) throws ColorException {
-        setTopLeft(new Point2D(0, -1));
-        setBottomRight(new Point2D(1, 0));
-        setColor(color);
+        this(new Point2D(0, -1), new Point2D(1, 0), Color.colorFromString(color));
     }
 
     public Point2D getTopLeft() {
@@ -107,11 +93,6 @@ public class Rectangle extends Figure {
     public boolean isInside(int x, int y) {
         return (x >= getTopLeft().getX()) && (x <= getBottomRight().getX()) &&
                 (y <= getBottomRight().getY()) && (y >= getTopLeft().getY());
-    }
-
-    @Override
-    public boolean isInside(Point2D point) {
-        return isInside(point.getX(), point.getY());
     }
 
     public boolean isIntersects(Rectangle rectangle) {

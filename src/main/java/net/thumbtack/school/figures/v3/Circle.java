@@ -9,17 +9,15 @@ public class Circle extends Figure {
     private Point2D center;
     private int radius;
 
-    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Circle(Point2D center, int radius, Color color) throws ColorException {
         setCenter(center);
         setRadius(radius);
+        Color.colorEqualsNull(color);
         setColor(color);
     }
 
     public Circle(Point2D center, int radius, String color) throws ColorException {
-        setCenter(center);
-        setRadius(radius);
-        setColor(color);
+        this(center, radius, Color.colorFromString(color));
     }
 
     public Circle(int xCenter, int yCenter, int radius, Color color) throws ColorException {
@@ -27,7 +25,7 @@ public class Circle extends Figure {
     }
 
     public Circle(int xCenter, int yCenter, int radius, String color) throws ColorException {
-        this(new Point2D(xCenter, yCenter), radius, color);
+        this(new Point2D(xCenter, yCenter), radius, Color.colorFromString(color));
     }
 
     public Circle(int radius, Color color) throws ColorException {
@@ -35,7 +33,7 @@ public class Circle extends Figure {
     }
 
     public Circle(int radius, String color) throws ColorException {
-        this(new Point2D(), radius, color);
+        this(new Point2D(), radius, Color.colorFromString(color));
     }
 
     public Circle(Color color) throws ColorException {
@@ -43,7 +41,7 @@ public class Circle extends Figure {
     }
 
     public Circle(String color) throws ColorException {
-        this(new Point2D(), 1, color);
+        this(new Point2D(), 1, Color.colorFromString(color));
     }
 
     public Point2D getCenter() {
@@ -85,11 +83,6 @@ public class Circle extends Figure {
     public boolean isInside(int x, int y) {
         return (center.getX() - x) * (center.getX() - x) +
                 (center.getY() - y) * (center.getY() - y) <= radius * radius;
-    }
-
-    @Override
-    public boolean isInside(Point2D point) {
-        return isInside(point.getX(), point.getY());
     }
 
     @Override

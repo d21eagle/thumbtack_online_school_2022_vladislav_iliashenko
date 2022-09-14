@@ -9,15 +9,13 @@ public class Rectangle3D extends Rectangle {
 
     private int height;
 
-    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Rectangle3D(Point2D leftTop, Point2D rightBottom, int height, Color color) throws ColorException {
         super(leftTop, rightBottom, color);
-        this.height = height;
+        setHeight(height);
     }
 
     public Rectangle3D(Point2D leftTop, Point2D rightBottom, int height, String color) throws ColorException {
-        super(leftTop, rightBottom, color);
-        this.height = height;
+        this(leftTop, rightBottom, height, Color.colorFromString(color));
     }
 
     public Rectangle3D(int xLeft, int yTop, int xRight, int yBottom, int height, Color color) throws ColorException {
@@ -25,17 +23,15 @@ public class Rectangle3D extends Rectangle {
     }
 
     public Rectangle3D(int xLeft, int yTop, int xRight, int yBottom, int height, String color) throws ColorException {
-        this(new Point2D(xLeft, yTop), new Point2D(xRight, yBottom), height, color);
+        this(new Point2D(xLeft, yTop), new Point2D(xRight, yBottom), height, Color.colorFromString(color));
     }
 
     public Rectangle3D(int length, int width, int height, Color color) throws ColorException {
-        super(length, width, color);
-        this.height = height;
+        this(new Point2D(0, -width), new Point2D(length, 0), height, color);
     }
 
     public Rectangle3D(int length, int width, int height, String color) throws ColorException {
-        super(length, width, color);
-        this.height = height;
+        this(length, width, height, Color.colorFromString(color));
     }
 
     public Rectangle3D(Color color) throws ColorException {
@@ -43,7 +39,7 @@ public class Rectangle3D extends Rectangle {
     }
 
     public Rectangle3D(String color) throws ColorException {
-        this(1, 1, 1, color);
+        this(1, 1, 1, Color.colorFromString(color));
     }
 
     public int getHeight() {

@@ -11,19 +11,16 @@ public class Triangle extends Figure {
     private Point2D point2;
     private Point2D point3;
 
-    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Triangle(Point2D point1, Point2D point2, Point2D point3, Color color) throws ColorException {
         setPoint1(point1);
         setPoint2(point2);
         setPoint3(point3);
+        Color.colorEqualsNull(color);
         setColor(color);
     }
 
     public Triangle(Point2D point1, Point2D point2, Point2D point3, String color) throws ColorException {
-        setPoint1(point1);
-        setPoint2(point2);
-        setPoint3(point3);
-        setColor(color);
+        this(point1, point2, point3, Color.colorFromString(color));
     }
 
     public Point2D getPoint1() {
@@ -94,11 +91,6 @@ public class Triangle extends Figure {
                 && (point2.getX() - x) * (point3.getY() - point2.getY()) - (point3.getX() - point2.getX()) * (point2.getY() - y) <= 0
                 && (point3.getX() - x) * (point1.getY() - point3.getY()) - (point1.getX() - point3.getX()) * (point3.getY() - y) <= 0;
 
-    }
-
-    @Override
-    public boolean isInside(Point2D point) {
-        return isInside(point.getX(), point.getY());
     }
 
     @Override

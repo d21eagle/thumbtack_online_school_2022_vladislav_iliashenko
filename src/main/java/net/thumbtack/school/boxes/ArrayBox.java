@@ -1,5 +1,4 @@
 package net.thumbtack.school.boxes;
-
 import net.thumbtack.school.figures.v3.Figure;
 
 public class ArrayBox<T extends Figure> {
@@ -28,7 +27,7 @@ public class ArrayBox<T extends Figure> {
     }
 
     // REVU после имени шаблонного класса всегда <>, а потом думайте, что в них должно быть
-    public boolean isSameSize(ArrayBox arrayBox) {
+    public <T extends Figure> boolean isSameSize(ArrayBox<T> arrayBox) {
         return content.length == arrayBox.content.length;
     }
 }

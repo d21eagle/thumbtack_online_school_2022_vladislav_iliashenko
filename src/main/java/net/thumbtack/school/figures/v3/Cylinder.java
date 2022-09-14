@@ -9,15 +9,13 @@ public class Cylinder extends Circle {
 
     private int height;
 
-    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Cylinder(Point2D center, int radius, int height, Color color) throws ColorException {
         super(center, radius, color);
         this.height = height;
     }
 
     public Cylinder(Point2D center, int radius, int height, String color) throws ColorException {
-        super(center, radius, color);
-        this.height = height;
+        this(center, radius, height, Color.colorFromString(color));
     }
 
     public Cylinder(int xCenter, int yCenter, int radius, int height, Color color) throws ColorException {
@@ -25,7 +23,7 @@ public class Cylinder extends Circle {
     }
 
     public Cylinder(int xCenter, int yCenter, int radius, int height, String color) throws ColorException {
-        this(new Point2D(xCenter, yCenter), radius, height, color);
+        this(new Point2D(xCenter, yCenter), radius, height, Color.colorFromString(color));
     }
 
     public Cylinder(int radius, int height, Color color) throws ColorException {

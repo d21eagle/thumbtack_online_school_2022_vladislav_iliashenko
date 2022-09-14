@@ -4,8 +4,6 @@ import net.thumbtack.school.colors.Colored;
 import net.thumbtack.school.colors.Color;
 import net.thumbtack.school.colors.ColorException;
 
-import static net.thumbtack.school.colors.Color.checkColor;
-
 public class Car implements Colored {
 
     private String model;
@@ -53,13 +51,12 @@ public class Car implements Colored {
 
     @Override
     public void setColor(Color color) throws ColorException {
-        checkColor(color);
+        Color.colorEqualsNull(color);
         this.color = color;
     }
 
     @Override
     public void setColor(String colorString) throws ColorException {
-        checkColor(Color.colorFromString(colorString));
         this.color = Color.colorFromString(colorString);
     }
 
