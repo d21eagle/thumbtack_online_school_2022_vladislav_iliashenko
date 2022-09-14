@@ -19,6 +19,8 @@ public enum Color {
     public static void checkColor(Color color) throws ColorException {
         if (color == null)
             throw new ColorException(ColorErrorCode.NULL_COLOR);
+        // REVU не нужно совсем. Передан Color, не null, чего еще надо, зачем его проверять ?
+        // он может быть только одной из enum констант и ничем больше
         try {
             Color.valueOf(color.toString());
         } catch (IllegalArgumentException e) {

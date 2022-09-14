@@ -9,6 +9,7 @@ public class Circle extends Figure {
     private Point2D center;
     private int radius;
 
+    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Circle(Point2D center, int radius, Color color) throws ColorException {
         setCenter(center);
         setRadius(radius);

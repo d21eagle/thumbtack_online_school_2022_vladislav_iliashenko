@@ -16,12 +16,15 @@ abstract public class Figure implements Colored, HasArea {
 
     public abstract void moveRel(int dx, int dy);
 
+    // REVU не нужно
     public abstract double getArea();
 
     public abstract double getPerimeter();
 
     public abstract boolean isInside(int x, int y);
 
+    // REVU этот метод не должен быть абстрактным. Его здесь и можно описать - раз и навсегда
+    // и удалить у всех наследников
     public abstract boolean isInside(Point2D point);
 
     @Override
@@ -32,6 +35,8 @@ abstract public class Figure implements Colored, HasArea {
 
     @Override
     public void setColor(String color) throws ColorException {
+        // REVU 2 раза вызывать Color.colorFromString незачем
+        // да и вообще checkColor тут не нужен - colorFromString не может вернуть null
         checkColor(Color.colorFromString(color));
         this.color = Color.colorFromString(color);
     }

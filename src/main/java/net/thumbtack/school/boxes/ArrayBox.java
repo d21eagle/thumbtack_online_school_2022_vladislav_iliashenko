@@ -27,6 +27,7 @@ public class ArrayBox<T extends Figure> {
         this.element[i] = element;
     }
 
+    // REVU после имени шаблонного класса всегда <>, а потом думайте, что в них должно быть
     public boolean isSameSize(ArrayBox arrayBox) {
         return content.length == arrayBox.content.length;
     }

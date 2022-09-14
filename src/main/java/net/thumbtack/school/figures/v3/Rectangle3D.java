@@ -9,6 +9,7 @@ public class Rectangle3D extends Rectangle {
 
     private int height;
 
+    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Rectangle3D(Point2D leftTop, Point2D rightBottom, int height, Color color) throws ColorException {
         super(leftTop, rightBottom, color);
         this.height = height;

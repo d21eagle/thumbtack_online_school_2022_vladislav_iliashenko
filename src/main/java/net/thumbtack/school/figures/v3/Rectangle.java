@@ -10,6 +10,7 @@ public class Rectangle extends Figure {
     private Point2D leftTop;
     private Point2D rightBottom;
 
+    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Rectangle(Point2D leftTop, Point2D rightBottom, Color color) throws ColorException {
         setTopLeft(leftTop);
         setBottomRight(rightBottom);

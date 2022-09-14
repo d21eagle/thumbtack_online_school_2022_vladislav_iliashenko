@@ -11,6 +11,7 @@ public class Triangle extends Figure {
     private Point2D point2;
     private Point2D point3;
 
+    // REVU В классе должен быть только один конструктор, явно присваивающий значения полям. Остальные должны вызывать другой конструктор
     public Triangle(Point2D point1, Point2D point2, Point2D point3, Color color) throws ColorException {
         setPoint1(point1);
         setPoint2(point2);

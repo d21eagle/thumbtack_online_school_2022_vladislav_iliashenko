@@ -34,6 +34,8 @@ public class PairBox<T extends Figure, W extends Figure> implements HasArea {
         return contentFirst.getArea() + contentSecond.getArea();
     }
 
+    // REVU после имени шаблонного класса всегда <>, а потом думайте, что в них должно быть
+    // REVU вызовите следующий метод
     public boolean isAreaEqual(PairBox pairBox) {
         return pairBox.getArea() == getArea();
     }
