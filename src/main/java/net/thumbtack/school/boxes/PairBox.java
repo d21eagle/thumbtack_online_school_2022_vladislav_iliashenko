@@ -34,11 +34,12 @@ public class PairBox<T extends Figure, W extends Figure> implements HasArea {
         return contentFirst.getArea() + contentSecond.getArea();
     }
 
-    public boolean isAreaEqual(PairBox pairBox) {
+    public boolean isAreaEqual(PairBox<? extends Figure,? extends Figure> pairBox) {
         return isAreaEqual(pairBox, this);
     }
 
-    public static boolean isAreaEqual(PairBox pairBox1, PairBox pairBox2) {
+    public static boolean isAreaEqual(PairBox<? extends Figure,? extends Figure> pairBox1,
+                                      PairBox<? extends Figure,? extends Figure> pairBox2) {
         return pairBox1.getArea() == pairBox2.getArea();
     }
 }
