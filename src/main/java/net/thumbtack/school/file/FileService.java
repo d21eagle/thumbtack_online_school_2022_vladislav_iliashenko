@@ -44,6 +44,7 @@ public class FileService {
         byte[] arrInput = new byte[array.length / 2];
         try (ByteArrayInputStream bin = new ByteArrayInputStream(byteArr)) {
             for (int i = 0, n = 0; i < array.length; i++) {
+                // REVU усложнили. Просто skip
                 if (i % 2 == 0) {
                     arrInput[n] = (byte)bin.read();
                     n++;
@@ -109,6 +110,8 @@ public class FileService {
     public static Rectangle[] readRectangleArrayFromBinaryFileReverse(File file) throws IOException, ColorException {
         Rectangle[] rect = new Rectangle[(int) (file.length() / 16)];
         try (FileInputStream fin = new FileInputStream(file);
+             // REVU не заносить надо в обратном порядке, а читать
+             // RandomAccessFile и его метод seek
              DataInputStream rectData = new DataInputStream(fin)) {
             for (int i = (int)(file.length() / 16) - 1; i >= 0; i--) {
                 rect[i] = new Rectangle(
@@ -123,6 +126,7 @@ public class FileService {
     }
 
     public static void writeRectangleToTextFileOneLine(File file, Rectangle rect) throws IOException {
+        // REVU текстовый вывод. FileWriter или OutputStreeamWriter
         try (FileOutputStream fout = new FileOutputStream(file);
              DataOutputStream rectData = new DataOutputStream(fout)) {
             rectData.writeChars(rect.getTopLeft().getX() + " "
@@ -132,6 +136,10 @@ public class FileService {
     }
 
     public static Rectangle readRectangleFromTextFileOneLine(File file) throws IOException, ColorException {
+        // REVU верно, но обычно пишут так
+        // try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))
+        // REVU и укажите кодировку UTF8, здесь и везде в текстовом вводе-выводе
+        // да, сейчас тут только числа, но кто знает, что будет потом
         try (FileInputStream fin = new FileInputStream(file);
              BufferedReader reader = new BufferedReader(new InputStreamReader(fin))) {
             String[] rectData = reader.readLine().split(" ");
@@ -145,6 +153,7 @@ public class FileService {
     }
 
     public static void writeRectangleToTextFileFourLines(File file, Rectangle rect) throws IOException {
+        // REVU текстовый вывод. FileWriter или OutputStreeamWriter
         try (FileOutputStream fin = new FileOutputStream(file);
              DataOutputStream rectData = new DataOutputStream(fin)) {
             rectData.writeChars(rect.getTopLeft().getX() + "\n");
@@ -202,10 +211,13 @@ public class FileService {
     }
 
     public static void serializeTraineeToBinaryFile(File file, Trainee trainee) throws IOException {
+        // REVU тут не запись в текстовом виде, а сераилизация
+        // ObjectOutputStream.writeObject
         writeTraineeToTextFileThreeLines(file, trainee);
     }
 
     public static Trainee deserializeTraineeFromBinaryFile(File file) throws IOException, TrainingException {
+        // ObjectInputStream.readObject
         return readTraineeFromTextFileThreeLines(file);
     }
 

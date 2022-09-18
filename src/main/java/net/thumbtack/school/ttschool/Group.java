@@ -93,6 +93,7 @@ public class Group {
             throw new TrainingException(TrainingErrorCode.TRAINEE_NOT_FOUND);
         }
 
+        // REVU а без вычисления max сможете ? В один проход
         int max = 0;
         List<Trainee> traineeList = new ArrayList<>();
 
@@ -111,6 +112,7 @@ public class Group {
     }
 
     public boolean hasDuplicates(){
+        // REVU проще. Кто у нас дубликаты не любит ?
         for (int i = 0; i < trainees.size(); i++) {
             for (int j = 0; j < trainees.size(); j++) {
                 if (trainees.get(i).equals(trainees.get(j)) && i != j) {
@@ -121,11 +123,15 @@ public class Group {
         return false;
     }
 
+    // REVU просто checkName. Тут не только на null проверка сейчас
+    // а тем более неизвестно, что будет потом, может, еще какое-то правило
+    // checkName - и все. Хотите подробости - смотрите тело метода
     public static void nullCheckerForName(String name) throws TrainingException{
         if(name == null || name.equals(""))
             throw new TrainingException(TrainingErrorCode.GROUP_WRONG_NAME);
     }
 
+    // REVU аналогичо
     public static void nullCheckerForRoom(String room) throws TrainingException{
         if(room == null || room.equals(""))
             throw new TrainingException(TrainingErrorCode.GROUP_WRONG_ROOM);

@@ -12,6 +12,10 @@ public class MatrixNonSimilarRows {
     }
 
     public Set<int[]> getNonSimilarRows() {
+        // REVU Вы делаете работу, которую за Вас мог бы сделать класс
+        // проверить, есть ли такой элемент
+        // Вместо Set<int[]> - Set<Set<Integer>>
+        // а еще лучше Map<<Set<Integer>, int[]>
         Set<int[]> matrixSet = new LinkedHashSet<>();
         for (int[] row: matrix) {
             Set<Integer> rowHashSet = arrayToHashSet(row);
