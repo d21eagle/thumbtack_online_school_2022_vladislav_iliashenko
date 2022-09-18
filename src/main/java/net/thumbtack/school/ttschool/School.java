@@ -9,7 +9,7 @@ public class School {
     private Set<Group> groups;
 
     public School(String name, int year) throws TrainingException {
-        nullCheckerForName(name);
+        checkName(name);
         this.name = name;
         this.year = year;
         this.groups = new HashSet<>();
@@ -20,7 +20,7 @@ public class School {
     }
 
     public void setName(String name) throws TrainingException {
-        nullCheckerForName(name);
+        checkName(name);
         this.name = name;
     }
 
@@ -37,7 +37,6 @@ public class School {
     }
 
     public void addGroup(Group group) throws TrainingException {
-        // REVU Линейный проход для добавления - это плохо, медленно. Подумайте, как сделать, чтобы при формировании Set использовалось только name. Подсказка - кроме HashSet, есть и другой
         for (Group group1: groups) {
             if (group.getName().equals(group1.getName())) {
                 throw new TrainingException(TrainingErrorCode.DUPLICATE_GROUP_NAME);
@@ -46,13 +45,13 @@ public class School {
         this.groups.add(group);
     }
 
-    public void removeGroup(Group group) throws TrainingException{
+    public void removeGroup(Group group) throws TrainingException {
         if (!groups.remove(group)) {
             throw new TrainingException(TrainingErrorCode.GROUP_NOT_FOUND);
         }
     }
 
-    public void removeGroup(String name) throws TrainingException{
+    public void removeGroup(String name) throws TrainingException {
         int index = 0;
         for (Group group: groups) {
             if (group.getName().equals(name)){
@@ -65,17 +64,11 @@ public class School {
         }
     }
 
-    public boolean containsGroup(Group group){
-        // REVU groups.contains()
-        for (Group group1: groups) {
-            if (group1.getName().equals(group.getName())) {
-                return true;
-            }
-        }
-        return false;
+    public boolean containsGroup(Group group) {
+        return groups.contains(group);
     }
 
-    public static void nullCheckerForName(String name) throws TrainingException{
+    public static void checkName(String name) throws TrainingException {
         if(name == null || name.equals(""))
             throw new TrainingException(TrainingErrorCode.SCHOOL_WRONG_NAME);
     }

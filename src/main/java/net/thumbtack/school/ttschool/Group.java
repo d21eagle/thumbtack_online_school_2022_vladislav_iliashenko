@@ -9,9 +9,9 @@ public class Group {
     private List<Trainee> trainees;
 
     public Group(String name, String room) throws TrainingException {
-        nullCheckerForName(name);
+        checkName(name);
         this.name = name;
-        nullCheckerForRoom(room);
+        checkRoom(room);
         this.room = room;
         this.trainees = new ArrayList<>();
     }
@@ -21,7 +21,7 @@ public class Group {
     }
 
     public void setName(String name) throws TrainingException {
-        nullCheckerForName(name);
+        checkName(name);
         this.name = name;
     }
 
@@ -30,7 +30,7 @@ public class Group {
     }
 
     public void setRoom(String room) throws TrainingException {
-        nullCheckerForRoom(room);
+        checkRoom(room);
         this.room = room;
     }
 
@@ -54,7 +54,7 @@ public class Group {
         }
     }
 
-    public Trainee getTraineeByFirstName(String firstName) throws TrainingException{
+    public Trainee getTraineeByFirstName(String firstName) throws TrainingException {
         for (Trainee trainee: trainees) {
             if (trainee.getFirstName().equals(firstName)) {
                 return trainee;
@@ -63,7 +63,7 @@ public class Group {
         throw new TrainingException(TrainingErrorCode.TRAINEE_NOT_FOUND);
     }
 
-    public Trainee getTraineeByFullName(String fullName) throws TrainingException{
+    public Trainee getTraineeByFullName(String fullName) throws TrainingException {
         for (Trainee trainee: trainees) {
             if (trainee.getFullName().equals(fullName)) {
                 return trainee;
@@ -88,51 +88,33 @@ public class Group {
         Collections.rotate(trainees, positions);
     }
 
-    public List<Trainee> getTraineesWithMaxRating() throws TrainingException{
-        if (trainees.size() == 0) {
-            throw new TrainingException(TrainingErrorCode.TRAINEE_NOT_FOUND);
-        }
-
-        // REVU а без вычисления max сможете ? В один проход
-        int max = 0;
-        List<Trainee> traineeList = new ArrayList<>();
-
-        for (Trainee trainee: trainees) {
-            if (trainee.getRating() > max) {
-                max = trainee.getRating();
-            }
-        }
-
-        for (Trainee trainee: trainees) {
-            if (max == trainee.getRating()) {
-                traineeList.add(trainee);
-            }
-        }
-        return traineeList;
-    }
-
-    public boolean hasDuplicates(){
-        // REVU проще. Кто у нас дубликаты не любит ?
-        for (int i = 0; i < trainees.size(); i++) {
-            for (int j = 0; j < trainees.size(); j++) {
-                if (trainees.get(i).equals(trainees.get(j)) && i != j) {
-                    return true;
+    public List<Trainee> getTraineesWithMaxRating() throws TrainingException {
+        List<Trainee> list = new ArrayList<>();
+        if (trainees.size() != 0) {
+            sortTraineeListByRatingDescendant();
+            for (int i = 0; i < trainees.size(); i++) {
+                if (trainees.listIterator(i).next().getRating() == trainees.listIterator(0).next().getRating()) {
+                    list.add(trainees.listIterator(i).next());
                 }
             }
+            return list;
         }
-        return false;
+        else {
+            throw new TrainingException(TrainingErrorCode.TRAINEE_NOT_FOUND);
+        }
     }
 
-    // REVU просто checkName. Тут не только на null проверка сейчас
-    // а тем более неизвестно, что будет потом, может, еще какое-то правило
-    // checkName - и все. Хотите подробости - смотрите тело метода
-    public static void nullCheckerForName(String name) throws TrainingException{
+    public boolean hasDuplicates() {
+        HashSet<Trainee> hashSet = new HashSet(trainees);
+        return hashSet.size() != trainees.size();
+    }
+
+    public static void checkName(String name) throws TrainingException {
         if(name == null || name.equals(""))
             throw new TrainingException(TrainingErrorCode.GROUP_WRONG_NAME);
     }
 
-    // REVU аналогичо
-    public static void nullCheckerForRoom(String room) throws TrainingException{
+    public static void checkRoom(String room) throws TrainingException {
         if(room == null || room.equals(""))
             throw new TrainingException(TrainingErrorCode.GROUP_WRONG_ROOM);
     }

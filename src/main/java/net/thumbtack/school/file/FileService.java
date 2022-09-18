@@ -35,24 +35,18 @@ public class FileService {
     }
 
     public static byte[] writeAndReadByteArrayUsingByteStream(byte[] array) throws IOException {
-        byte[] byteArr;
-        try (ByteArrayOutputStream bout = new ByteArrayOutputStream()) {
-            bout.writeBytes(array);
-            byteArr = bout.toByteArray();
-        }
-
-        byte[] arrInput = new byte[array.length / 2];
-        try (ByteArrayInputStream bin = new ByteArrayInputStream(byteArr)) {
-            for (int i = 0, n = 0; i < array.length; i++) {
-                // REVU усложнили. Просто skip
-                if (i % 2 == 0) {
-                    arrInput[n] = (byte)bin.read();
-                    n++;
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            byteArrayOutputStream.write(array);
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
+                int size = bais.available();
+                byte[] evenIndexes = new byte[size % 2 + size / 2];
+                for (int i = 0; i < evenIndexes.length; i++) {
+                    evenIndexes[i] = (byte) bais.read();
+                    bais.skip(1);
                 }
-                else bin.read();
+                return evenIndexes;
             }
         }
-        return arrInput;
     }
 
     public static void writeByteArrayToBinaryFileBuffered(String fileName, byte[] array) throws IOException {
@@ -108,58 +102,47 @@ public class FileService {
     }
 
     public static Rectangle[] readRectangleArrayFromBinaryFileReverse(File file) throws IOException, ColorException {
-        Rectangle[] rect = new Rectangle[(int) (file.length() / 16)];
-        try (FileInputStream fin = new FileInputStream(file);
-             // REVU не заносить надо в обратном порядке, а читать
-             // RandomAccessFile и его метод seek
-             DataInputStream rectData = new DataInputStream(fin)) {
-            for (int i = (int)(file.length() / 16) - 1; i >= 0; i--) {
-                rect[i] = new Rectangle(
-                        rectData.readInt(),
-                        rectData.readInt(),
-                        rectData.readInt(),
-                        rectData.readInt(),
-                        Color.RED);
+        Rectangle[] rects = new Rectangle[(int) (file.length() / 16)];
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            for (int i = 0; i < rects.length; i++) {
+                raf.seek((rects.length - 1 - i) * 16L);
+                rects[i] = new Rectangle(raf.readInt(), raf.readInt(), raf.readInt(), raf.readInt(), Color.RED);
             }
         }
-        return rect;
+        return rects;
     }
 
     public static void writeRectangleToTextFileOneLine(File file, Rectangle rect) throws IOException {
-        // REVU текстовый вывод. FileWriter или OutputStreeamWriter
-        try (FileOutputStream fout = new FileOutputStream(file);
-             DataOutputStream rectData = new DataOutputStream(fout)) {
-            rectData.writeChars(rect.getTopLeft().getX() + " "
-                    + rect.getTopLeft().getY() + " " + rect.getBottomRight().getX() + " "
-                    + rect.getBottomRight().getY());
+        try (PrintWriter printWriter = new PrintWriter(file, StandardCharsets.UTF_8))
+        {
+            printWriter.format("%d %d %d %d",
+                    rect.getTopLeft().getX(),
+                    rect.getTopLeft().getY(),
+                    rect.getBottomRight().getX(),
+                    rect.getBottomRight().getY());
         }
     }
 
     public static Rectangle readRectangleFromTextFileOneLine(File file) throws IOException, ColorException {
-        // REVU верно, но обычно пишут так
-        // try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)))
-        // REVU и укажите кодировку UTF8, здесь и везде в текстовом вводе-выводе
-        // да, сейчас тут только числа, но кто знает, что будет потом
-        try (FileInputStream fin = new FileInputStream(file);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(fin))) {
-            String[] rectData = reader.readLine().split(" ");
+        try (BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            String[] rectData = bufferedReader.readLine().split(" ");
             return new Rectangle(
-                    Integer.parseInt(rectData[0].replaceAll("\\W", "")),
-                    Integer.parseInt(rectData[1].replaceAll("\\W", "")),
-                    Integer.parseInt(rectData[2].replaceAll("\\W", "")),
-                    Integer.parseInt(rectData[3].replaceAll("\\W", "")),
+                    Integer.parseInt(rectData[0]),
+                    Integer.parseInt(rectData[1]),
+                    Integer.parseInt(rectData[2]),
+                    Integer.parseInt(rectData[3]),
                     Color.RED);
         }
     }
 
     public static void writeRectangleToTextFileFourLines(File file, Rectangle rect) throws IOException {
-        // REVU текстовый вывод. FileWriter или OutputStreeamWriter
-        try (FileOutputStream fin = new FileOutputStream(file);
-             DataOutputStream rectData = new DataOutputStream(fin)) {
-            rectData.writeChars(rect.getTopLeft().getX() + "\n");
-            rectData.writeChars(rect.getTopLeft().getY() + "\n");
-            rectData.writeChars(rect.getBottomRight().getX() + "\n");
-            rectData.writeChars(String.valueOf(rect.getBottomRight().getY()));
+        try (PrintWriter printWriter = new PrintWriter(file)) {
+            printWriter.format("%d\n %d\n %d\n %d",
+                    rect.getTopLeft().getX(),
+                    rect.getTopLeft().getY(),
+                    rect.getBottomRight().getX(),
+                    rect.getBottomRight().getY());
         }
     }
 
@@ -213,13 +196,20 @@ public class FileService {
     public static void serializeTraineeToBinaryFile(File file, Trainee trainee) throws IOException {
         // REVU тут не запись в текстовом виде, а сераилизация
         // ObjectOutputStream.writeObject
-        writeTraineeToTextFileThreeLines(file, trainee);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+            oos.writeObject(trainee);
+        }
     }
 
-    public static Trainee deserializeTraineeFromBinaryFile(File file) throws IOException, TrainingException {
+    public static Trainee deserializeTraineeFromBinaryFile(File file) throws IOException, ClassNotFoundException {
         // ObjectInputStream.readObject
-        return readTraineeFromTextFileThreeLines(file);
+        Trainee trainee;
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file))) {
+            trainee = (Trainee) objectInputStream.readObject();
+        }
+        return trainee;
     }
+
 
     public static String serializeTraineeToJsonString(Trainee trainee) {
         return new Gson().toJson(trainee);

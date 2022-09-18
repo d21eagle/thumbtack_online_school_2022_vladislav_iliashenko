@@ -16,17 +16,18 @@ public class MatrixNonSimilarRows {
         // проверить, есть ли такой элемент
         // Вместо Set<int[]> - Set<Set<Integer>>
         // а еще лучше Map<<Set<Integer>, int[]>
-        Set<int[]> matrixSet = new LinkedHashSet<>();
-        for (int[] row: matrix) {
-            Set<Integer> rowHashSet = arrayToHashSet(row);
-            if (matrixSet.stream().noneMatch(s -> (arrayToHashSet(s).equals(rowHashSet)))) {
-                matrixSet.add(row);
+        Map<Set<Integer>, int[]> setMap = new HashMap<>();
+
+        for (int[] array: matrix) {
+            Set<Integer> integers = new HashSet<>();
+            for (int element: array) {
+                integers.add(element);
             }
+            setMap.putIfAbsent(integers, array);
         }
-        return matrixSet;
+
+        return new HashSet<>(setMap.values());
     }
 
-    public Set<Integer> arrayToHashSet(int[] row) {
-        return Arrays.stream(row).boxed().collect(Collectors.toSet());
-    }
+
 }
