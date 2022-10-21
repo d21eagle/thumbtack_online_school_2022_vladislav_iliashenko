@@ -1,8 +1,6 @@
-package net.thumbtack.school.hiring.model;
+package net.thumbtack.school.hiring.dto.request;
 
-import java.util.Objects;
-
-public class User {
+public class RegisterUserDtoRequest {
 
     private String email;
     private String login;
@@ -11,7 +9,7 @@ public class User {
     private String middleName;
     private String firstName;
 
-    public User(String email,
+    public RegisterUserDtoRequest(String email,
                 String lastname,
                 String firstName,
                 String middleName,
