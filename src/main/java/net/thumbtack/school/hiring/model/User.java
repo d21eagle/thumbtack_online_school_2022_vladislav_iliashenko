@@ -2,6 +2,9 @@ package net.thumbtack.school.hiring.model;
 
 import java.util.Objects;
 
+// REVU equals, hashCode
+// без них с HashSet Вас ждут неприятные сюрпризы
+// здесь и в других классах
 public class User {
 
     private String email;

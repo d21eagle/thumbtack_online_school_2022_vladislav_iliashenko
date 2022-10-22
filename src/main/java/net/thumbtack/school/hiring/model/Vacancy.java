@@ -5,6 +5,8 @@ public class Vacancy {
 
     private String post;
     private int salary;
+    // REVU верно.
+    // а у Employee должен быть List<Skill> (или Set)
     private List<EmployeeRequirement> requirementsList;
 
     public Vacancy(String post, int salary, List<EmployeeRequirement> requirementsList) {
