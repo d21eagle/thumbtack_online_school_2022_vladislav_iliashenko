@@ -1,4 +1,5 @@
 package net.thumbtack.school.hiring.dto.request;
+import java.util.Objects;
 
 public class RegisterUserDtoRequest {
 
@@ -69,5 +70,18 @@ public class RegisterUserDtoRequest {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RegisterUserDtoRequest that = (RegisterUserDtoRequest) o;
+        return Objects.equals(email, that.email) && Objects.equals(login, that.login) && Objects.equals(password, that.password) && Objects.equals(lastName, that.lastName) && Objects.equals(middleName, that.middleName) && Objects.equals(firstName, that.firstName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, login, password, lastName, middleName, firstName);
     }
 }

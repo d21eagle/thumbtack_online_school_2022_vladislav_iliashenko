@@ -1,10 +1,6 @@
 package net.thumbtack.school.hiring.model;
-
 import java.util.Objects;
 
-// REVU equals, hashCode
-// без них с HashSet Вас ждут неприятные сюрпризы
-// здесь и в других классах
 public class User {
 
     private String email;
@@ -74,5 +70,18 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(email, user.email) && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(lastName, user.lastName) && Objects.equals(middleName, user.middleName) && Objects.equals(firstName, user.firstName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, login, password, lastName, middleName, firstName);
     }
 }
