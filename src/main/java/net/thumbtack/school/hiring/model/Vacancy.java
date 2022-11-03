@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Vacancy {
 
+    // REVU post - это почта, а здесь скорее position
     private String post;
     private int salary;
 

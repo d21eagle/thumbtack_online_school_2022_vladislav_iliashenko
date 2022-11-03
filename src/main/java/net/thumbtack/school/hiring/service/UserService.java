@@ -3,6 +3,8 @@ import com.google.gson.Gson;
 
 import java.util.Objects;
 
+// REVU никакой это не сервис и вообще непонятно что
+// не нужен. С json работают в обычных сервисах
 public class UserService {
 
     private String stringJson;
