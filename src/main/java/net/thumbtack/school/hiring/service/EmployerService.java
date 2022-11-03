@@ -7,14 +7,5 @@ import net.thumbtack.school.hiring.model.Employer;
 import net.thumbtack.school.hiring.model.User;
 import java.util.UUID;
 
-public class EmployerService extends UserService {
-
-    public EmployerService(String stringJson) {
-        super(stringJson);
-    }
-
-    private ServerResponse validate() {
-        RegisterEmployerDtoRequest registerEmployerDtoRequest = new Gson().fromJson(getStringJson(), RegisterEmployerDtoRequest.class);
-        return new ServerResponse(200, "");
-    }
+public class EmployerService {
 }

@@ -1,17 +1,15 @@
 package net.thumbtack.school.hiring.exception;
 
-// REVU хватит и одного исключения на все про все
-// ServerException
-public class ValidateException extends Exception {
+public class ServerException extends Exception {
 
-    private ValidateErrorCode errorCode;
+    private ServerErrorCode errorCode;
 
-    public ValidateException(ValidateErrorCode errorCode) {
+    public ServerException(ServerErrorCode errorCode) {
         super(errorCode.getErrorString());
         this.errorCode = errorCode;
     }
 
-    public ValidateErrorCode getErrorCode() {
+    public ServerErrorCode getErrorCode() {
         return errorCode;
     }
 }

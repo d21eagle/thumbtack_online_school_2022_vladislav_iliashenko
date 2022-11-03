@@ -1,7 +1,13 @@
 package net.thumbtack.school.hiring.model;
 
-import java.util.Objects;
+import lombok.*;
 
+import java.util.Objects;
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Employer extends User {
 
     private String companyName;
@@ -18,35 +24,5 @@ public class Employer extends User {
         super(email, lastname, firstName, middleName, login, password);
         setCompanyName(companyName);
         setCompanyAddress(companyAddress);
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public void setCompanyAddress(String companyAddress) {
-        this.companyAddress = companyAddress;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public String getCompanyAddress() {
-        return companyAddress;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Employer employer = (Employer) o;
-        return Objects.equals(companyName, employer.companyName) && Objects.equals(companyAddress, employer.companyAddress);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), companyName, companyAddress);
     }
 }
