@@ -22,9 +22,13 @@ public class EmployeeService {
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
 
+    // REVU private
+    // и в конец класса все private методы
     public static <T> T getClassFromJson(String requestJsonString, Class<T> tempClass) throws ServerException {
         try {
             if (Strings.isNullOrEmpty(requestJsonString)) {
+                // REVU нет, выбрасывайте сразу ServerException
+                // Не Ваше дело выбрасывать JsonSyntaxException, его должен выбрасывать только Gson
                 throw new JsonSyntaxException("");
             }
             return GSON.fromJson(requestJsonString, tempClass);

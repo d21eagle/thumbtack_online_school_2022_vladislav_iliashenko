@@ -1,3 +1,4 @@
+// REVU вынесите в отдельный пакет. Это не сервис
 package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.model.Employee;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
