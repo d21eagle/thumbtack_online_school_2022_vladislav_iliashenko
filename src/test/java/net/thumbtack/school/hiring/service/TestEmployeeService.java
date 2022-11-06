@@ -1,17 +1,19 @@
 package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
-import net.thumbtack.school.hiring.dto.response.EmptyResponse;
-import net.thumbtack.school.hiring.dto.response.ErrorResponse;
-import net.thumbtack.school.hiring.exception.*;
+import net.thumbtack.school.hiring.server.Server;
 import net.thumbtack.school.hiring.server.ServerResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class TestEmployeeService {
 
+    @BeforeEach
     @Test
     public void TestRegisterEmployee_Success() {
+        Server server = new Server();
         final int SUCCESS_CODE = 200;
         final Gson GSON = new Gson();
 
@@ -24,29 +26,17 @@ public class TestEmployeeService {
                 "754376579"
         );
 
-        // REVU нет, не имеете тут права доступа к сервису. Только к серверу. Его метод и вызывайте
-        EmployeeService employeeService = new EmployeeService();
-        ServerResponse actualResponse = employeeService.registerEmployee(GSON.toJson(requestJson));
-        // REVU не надо создавать EmptyResponse и проверять
-        // достаточно проверить код в ServerResponse
-        // Если он 200 - ввызов метода был успешен
-        EmptyResponse emptyResponse = new EmptyResponse();
-        ServerResponse expectedResponse = new ServerResponse(SUCCESS_CODE, GSON.toJson(emptyResponse));
-        assertTrue(expectedResponse.equals(actualResponse));
+        ServerResponse actualResponse = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse.getResponseCode(), SUCCESS_CODE);
     }
 
+    @BeforeEach
     @Test
     public void TestRegisterEmployee_Failed() {
+        Server server = new Server();
         final int ERROR_CODE = 400;
         final Gson GSON = new Gson();
-        // REVU у Вас тут нет права доступа к внутренностям сервера
-        // а именно
-        // к сервисам
-        // к модели
-        // к исключениям
-        // к БД
-        // да и не нужно это
-        ServerException e = new ServerException(ServerErrorCode.SHORT_PASSWORD);
+        JsonObject error = new JsonObject();
 
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
                 "ivan.ivanov@mail.ru",
@@ -57,18 +47,9 @@ public class TestEmployeeService {
                 "75437"
         );
 
-        EmployeeService employeeService = new EmployeeService();
-        // REVU нет, не имеете тут права доступа к сервису. Только к серверу. Его метод и вызывайте
-        ServerResponse actualResponse = employeeService.registerEmployee(GSON.toJson(requestJson));
-        // REVU а тут надо проверить код из actualResponse, он должен быть 400
-        // а потом получить ErrorResponse из  actualResponse.data и проверить текст
-        // а кстати, почему этот тест должен упасть ?
-        // потому что уже такое было ?
-        // тесты независимы, порядок их запуска неопределен
-        // и после (или перед) запуском теста надо чистить БД
-        // @BeforeEach или @AfterEach
-        ErrorResponse errorResponse = new ErrorResponse(e);
-        ServerResponse expectedResponse = new ServerResponse(ERROR_CODE, GSON.toJson(errorResponse));
-        assertTrue(expectedResponse.equals(actualResponse));
+        ServerResponse actualResponse = server.registerEmployee(GSON.toJson(requestJson));
+        error.addProperty("errorResp", "Пароль слишком короткий!");
+        assertEquals(actualResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse.getResponseData(), error.toString());
     }
 }

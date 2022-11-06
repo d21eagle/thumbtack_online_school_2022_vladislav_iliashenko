@@ -1,4 +1,5 @@
 package net.thumbtack.school.hiring.server;
+import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.service.EmployeeService;
 import net.thumbtack.school.hiring.service.EmployerService;
 import net.thumbtack.school.hiring.server.ServerResponse;
@@ -6,10 +7,13 @@ import net.thumbtack.school.hiring.exception.ServerException;
 
 public class Server {
 
-    private EmployeeService employeeService = new EmployeeService();
-    private EmployerService employerService = new EmployerService();
+    private final EmployeeService employeeService = new EmployeeService();
+    private final EmployerService employerService = new EmployerService();
 
-    public ServerResponse registerEmployee (String requestJson) throws ServerException {
+    public ServerResponse registerEmployee (String requestJson) throws JsonSyntaxException {
         return employeeService.registerEmployee(requestJson);
+    }
+    public ServerResponse registerEmployer (String requestJson) throws JsonSyntaxException {
+        return employerService.registerEmployee(requestJson);
     }
 }

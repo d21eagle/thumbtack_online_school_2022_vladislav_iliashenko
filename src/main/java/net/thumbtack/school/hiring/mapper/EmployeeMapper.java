@@ -1,10 +1,8 @@
-// REVU вынесите в отдельный пакет. Это не сервис
-package net.thumbtack.school.hiring.service;
+package net.thumbtack.school.hiring.mapper;
 import net.thumbtack.school.hiring.model.Employee;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper

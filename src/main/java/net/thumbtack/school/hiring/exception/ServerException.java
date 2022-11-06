@@ -5,8 +5,10 @@ public class ServerException extends Exception {
     private ServerErrorCode errorCode;
 
     public ServerException(ServerErrorCode errorCode) {
-        // REVU лишнее. И так все есть
-        super(errorCode.getErrorString());
+        setErrorCode(errorCode);
+    }
+
+    public void setErrorCode(ServerErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 

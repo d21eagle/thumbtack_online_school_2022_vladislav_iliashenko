@@ -9,6 +9,8 @@ public enum ServerErrorCode {
     EMPTY_PASSWORD("Пустой пароль!"),
     SHORT_LOGIN("Логин слишком короткий!"),
     SHORT_PASSWORD("Пароль слишком короткий!"),
+    EMPTY_COMPANY_NAME("Пустое название компании!"),
+    EMPTY_COMPANY_ADDRESS("Пустой адрес компании!"),
     WRONG_JSON("JSON is wrong");
 
     private String errorString;

@@ -2,16 +2,13 @@ package net.thumbtack.school.hiring.service;
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
+import net.thumbtack.school.hiring.mapper.EmployeeMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 
-import java.util.Map;
-import java.util.UUID;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.dao.*;
-import org.mapstruct.Mapper;
 
 
 public class EmployeeService {
@@ -21,22 +18,6 @@ public class EmployeeService {
     private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
-
-    // REVU private
-    // и в конец класса все private методы
-    public static <T> T getClassFromJson(String requestJsonString, Class<T> tempClass) throws ServerException {
-        try {
-            if (Strings.isNullOrEmpty(requestJsonString)) {
-                // REVU нет, выбрасывайте сразу ServerException
-                // Не Ваше дело выбрасывать JsonSyntaxException, его должен выбрасывать только Gson
-                throw new JsonSyntaxException("");
-            }
-            return GSON.fromJson(requestJsonString, tempClass);
-        }
-        catch (JsonSyntaxException ex) {
-            throw new ServerException(ServerErrorCode.WRONG_JSON);
-        }
-    }
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
@@ -66,5 +47,12 @@ public class EmployeeService {
             throw new ServerException(ServerErrorCode.SHORT_LOGIN);
         if (request.getPassword().length() < MIN_PASSWORD)
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
+    }
+
+    private static <T> T getClassFromJson(String requestJsonString, Class<T> tempClass) throws ServerException {
+        if (Strings.isNullOrEmpty(requestJsonString)) {
+            throw new ServerException(ServerErrorCode.WRONG_JSON);
+        }
+        return GSON.fromJson(requestJsonString, tempClass);
     }
 }
