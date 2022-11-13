@@ -19,6 +19,9 @@ public class Database {
         }
     }
 
+    // REVU посмотрите, как правильно оформить синглетон
+    // https://habr.com/ru/post/129494/
+    // 1 Synchronized Accessor
     public static Database getDatabase() {
         return database;
     }
@@ -27,6 +30,7 @@ public class Database {
         return users.get(login);
     }
 
+    // REVU имя метода не соответствует тому, что он делает
     public UUID getTokenByUser(String login) {
         User user = getUserByLogin(login);
         return tokens.getKey(user);

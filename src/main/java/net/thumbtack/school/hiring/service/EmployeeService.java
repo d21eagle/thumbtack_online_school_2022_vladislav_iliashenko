@@ -18,6 +18,7 @@ public class EmployeeService {
     private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
+    // REVU не нужно static. Кто его знает, вдруг понадобится еще один экземпляр EmployeeDao
     private static final EmployeeDao employeeDao = new EmployeeDaoImpl();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
@@ -50,6 +51,9 @@ public class EmployeeService {
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
     }
 
+    // REVU этот метод у Вас в 2 классах
+    // либо вынести его в ServerUtils и там static
+    // либо сделать все сервисы наследниками от ServiceBase и его туда как protected
     private static <T> T getClassFromJson(String requestJsonString, Class<T> tempClass) throws ServerException {
         if (Strings.isNullOrEmpty(requestJsonString)) {
             throw new ServerException(ServerErrorCode.WRONG_JSON);
