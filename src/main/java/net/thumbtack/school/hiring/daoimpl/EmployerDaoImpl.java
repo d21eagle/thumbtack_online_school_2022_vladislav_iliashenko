@@ -8,6 +8,6 @@ public class EmployerDaoImpl implements EmployerDao {
 
     @Override
     public void insert(Employer employer) throws ServerException {
-        Database.getDatabase().insert(employer);
+        Database.getInstance().insert(employer);
     }
 }

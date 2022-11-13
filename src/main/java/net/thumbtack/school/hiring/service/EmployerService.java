@@ -10,20 +10,19 @@ import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
+import net.thumbtack.school.hiring.server.ServerUtils;
 
 public class EmployerService {
-
     private static final Gson GSON = new Gson();
     private static final int SUCCESS_CODE = 200;
     private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
-    // REVU не нужно static. Кто его знает, вдруг понадобится еще один экземпляр EmployeeDao
-    private static final EmployerDao employerDao = new EmployerDaoImpl();
+    private final EmployerDao employerDao = new EmployerDaoImpl();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
-            RegisterEmployerDtoRequest registerDtoRequest = getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
+            RegisterEmployerDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employer employer = EmployerMapper.INSTANCE.employerToEmployerDto(registerDtoRequest);
             employerDao.insert(employer);
@@ -54,10 +53,5 @@ public class EmployerService {
         if (request.getPassword().length() < MIN_PASSWORD)
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
     }
-    private static <T> T getClassFromJson(String requestJsonString, Class<T> tempClass) throws ServerException {
-        if (Strings.isNullOrEmpty(requestJsonString)) {
-            throw new ServerException(ServerErrorCode.WRONG_JSON);
-        }
-        return GSON.fromJson(requestJsonString, tempClass);
-    }
+
 }

@@ -10,6 +10,7 @@ import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
+import net.thumbtack.school.hiring.server.ServerUtils;
 
 public class EmployeeService {
 
@@ -18,12 +19,11 @@ public class EmployeeService {
     private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
-    // REVU не нужно static. Кто его знает, вдруг понадобится еще один экземпляр EmployeeDao
-    private static final EmployeeDao employeeDao = new EmployeeDaoImpl();
+    private final EmployeeDao employeeDao = new EmployeeDaoImpl();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
-            RegisterEmployeeDtoRequest registerDtoRequest = getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
+            RegisterEmployeeDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
             employeeDao.insert(employee);
@@ -49,15 +49,5 @@ public class EmployeeService {
             throw new ServerException(ServerErrorCode.SHORT_LOGIN);
         if (request.getPassword().length() < MIN_PASSWORD)
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
-    }
-
-    // REVU этот метод у Вас в 2 классах
-    // либо вынести его в ServerUtils и там static
-    // либо сделать все сервисы наследниками от ServiceBase и его туда как protected
-    private static <T> T getClassFromJson(String requestJsonString, Class<T> tempClass) throws ServerException {
-        if (Strings.isNullOrEmpty(requestJsonString)) {
-            throw new ServerException(ServerErrorCode.WRONG_JSON);
-        }
-        return GSON.fromJson(requestJsonString, tempClass);
     }
 }

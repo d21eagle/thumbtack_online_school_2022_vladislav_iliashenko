@@ -8,8 +8,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 public class Database {
-
-    private static final Database database = new Database();
+    private static Database instance;
     private final Map<String, User> users = new HashMap<>();
     private final BidiMap<UUID, User> tokens = new DualHashBidiMap<>();
 
@@ -19,19 +18,18 @@ public class Database {
         }
     }
 
-    // REVU посмотрите, как правильно оформить синглетон
-    // https://habr.com/ru/post/129494/
-    // 1 Synchronized Accessor
-    public static Database getDatabase() {
-        return database;
+    public static synchronized Database getInstance() {
+        if (instance == null) {
+            instance = new Database();
+        }
+        return instance;
     }
 
     public User getUserByLogin(String login) {
         return users.get(login);
     }
 
-    // REVU имя метода не соответствует тому, что он делает
-    public UUID getTokenByUser(String login) {
+    public UUID getToken(String login) {
         User user = getUserByLogin(login);
         return tokens.getKey(user);
     }
