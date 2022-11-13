@@ -3,7 +3,11 @@ import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.exception.*;
 import net.thumbtack.school.hiring.database.Database;
-import java.util.UUID;
 
-public class EmployeeDaoImpl {
+public class EmployeeDaoImpl implements EmployeeDao {
+
+    @Override
+    public void insert(Employee employee) throws ServerException {
+        Database.getDatabase().insert(employee);
+    }
 }

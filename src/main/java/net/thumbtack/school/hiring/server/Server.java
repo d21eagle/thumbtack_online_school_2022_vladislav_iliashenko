@@ -2,8 +2,6 @@ package net.thumbtack.school.hiring.server;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.service.EmployeeService;
 import net.thumbtack.school.hiring.service.EmployerService;
-import net.thumbtack.school.hiring.server.ServerResponse;
-import net.thumbtack.school.hiring.exception.ServerException;
 
 public class Server {
 

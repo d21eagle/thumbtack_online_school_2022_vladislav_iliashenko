@@ -11,7 +11,8 @@ public enum ServerErrorCode {
     SHORT_PASSWORD("Пароль слишком короткий!"),
     EMPTY_COMPANY_NAME("Пустое название компании!"),
     EMPTY_COMPANY_ADDRESS("Пустой адрес компании!"),
-    WRONG_JSON("JSON is wrong");
+    WRONG_JSON("JSON is wrong"),
+    EXIST_LOGIN("Этот логин уже существует!");
 
     private String errorString;
 

@@ -10,7 +10,6 @@ import com.google.gson.JsonObject;
 
 public class TestEmployeeService {
 
-    @BeforeEach
     @Test
     public void TestRegisterEmployee_Success() {
         Server server = new Server();
@@ -30,7 +29,6 @@ public class TestEmployeeService {
         assertEquals(actualResponse.getResponseCode(), SUCCESS_CODE);
     }
 
-    @BeforeEach
     @Test
     public void TestRegisterEmployee_Failed() {
         Server server = new Server();

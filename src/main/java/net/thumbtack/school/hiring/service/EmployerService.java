@@ -1,12 +1,13 @@
 package net.thumbtack.school.hiring.service;
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
+import net.thumbtack.school.hiring.dao.EmployerDao;
+import net.thumbtack.school.hiring.daoimpl.EmployerDaoImpl;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployerDtoRequest;
 import net.thumbtack.school.hiring.mapper.EmployerMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
-
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
 
@@ -17,13 +18,14 @@ public class EmployerService {
     private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
+    private static final EmployerDao employerDao = new EmployerDaoImpl();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployerDtoRequest registerDtoRequest = getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employer employer = EmployerMapper.INSTANCE.employerToEmployerDto(registerDtoRequest);
-            //insert employer to database
+            employerDao.insert(employer);
             EmptyResponse emptyResponse = new EmptyResponse();
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(emptyResponse));
         } catch (ServerException e) {

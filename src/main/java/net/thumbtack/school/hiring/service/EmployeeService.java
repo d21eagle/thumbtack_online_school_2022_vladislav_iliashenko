@@ -1,15 +1,15 @@
 package net.thumbtack.school.hiring.service;
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
+import net.thumbtack.school.hiring.daoimpl.EmployeeDaoImpl;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
 import net.thumbtack.school.hiring.mapper.EmployeeMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
-
+import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
-
 
 public class EmployeeService {
 
@@ -18,13 +18,14 @@ public class EmployeeService {
     private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
+    private static final EmployeeDao employeeDao = new EmployeeDaoImpl();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployeeDtoRequest registerDtoRequest = getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
-            //insert employee to database
+            employeeDao.insert(employee);
             EmptyResponse emptyResponse = new EmptyResponse();
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(emptyResponse));
         } catch (ServerException e) {
