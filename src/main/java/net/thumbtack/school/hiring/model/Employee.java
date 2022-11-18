@@ -7,6 +7,7 @@ import java.util.Objects;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
+@NoArgsConstructor
 public class Employee extends User {
 
     private List<Skill> skills;

@@ -4,14 +4,8 @@ import lombok.*;
 @EqualsAndHashCode
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class RegisterEmployeeDtoRequest {
-
-    private String email;
-    private String lastName;
-    private String middleName;
-    private String firstName;
+public class LoginEmployeeDtoRequest {
     private String login;
     private String password;
 }

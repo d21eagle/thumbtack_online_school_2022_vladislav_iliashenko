@@ -2,7 +2,7 @@ package net.thumbtack.school.hiring.service;
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
 import net.thumbtack.school.hiring.daoimpl.EmployeeDaoImpl;
-import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
+import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.mapper.EmployeeMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
@@ -11,6 +11,8 @@ import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.server.ServerUtils;
+import net.thumbtack.school.hiring.database.Database;
+import java.util.*;
 
 public class EmployeeService {
 
@@ -34,6 +36,7 @@ public class EmployeeService {
             return new ServerResponse(ERROR_CODE, GSON.toJson(errorResponse));
         }
     }
+
     private void validateRequest(RegisterEmployeeDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getLastName()))
             throw new ServerException(ServerErrorCode.EMPTY_LAST_NAME);
@@ -49,5 +52,49 @@ public class EmployeeService {
             throw new ServerException(ServerErrorCode.SHORT_LOGIN);
         if (request.getPassword().length() < MIN_PASSWORD)
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
+    }
+
+    public ServerResponse loginEmployee(String requestJson) throws ServerException {
+        try {
+            LoginEmployeeDtoRequest loginEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LoginEmployeeDtoRequest.class);
+            validateRequest(loginEmployeeDtoRequest);
+            User user = employeeDao.getUserByLogin(loginEmployeeDtoRequest.getLogin());
+            if (user == null || !user.getPassword().equals(loginEmployeeDtoRequest.getPassword())) {
+                throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
+            }
+            UUID uuid = employeeDao.loginUser(user);
+            LoginEmployeeDtoResponse loginUserDtoResponse = new LoginEmployeeDtoResponse(uuid);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(loginUserDtoResponse));
+        } catch (ServerException e) {
+            ErrorResponse errorDtoResponse = new ErrorResponse(e);
+            return new ServerResponse(ERROR_CODE, GSON.toJson(errorDtoResponse));
+        }
+    }
+
+    private void validateRequest(LoginEmployeeDtoRequest request) throws ServerException {
+        if (Strings.isNullOrEmpty(request.getLogin()))
+            throw new ServerException(ServerErrorCode.EMPTY_LOGIN);
+        if (Strings.isNullOrEmpty(request.getPassword()))
+            throw new ServerException(ServerErrorCode.EMPTY_PASSWORD);
+    }
+
+    public ServerResponse logoutEmployee(String requestJson) throws ServerException {
+        try {
+            LogoutEmployeeDtoRequest logoutEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LogoutEmployeeDtoRequest.class);
+            employeeDao.logoutUser(logoutEmployeeDtoRequest);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+        }
+        catch (ServerException e) {
+            ErrorResponse errorDtoResponse = new ErrorResponse(e);
+            return new ServerResponse(ERROR_CODE, GSON.toJson(errorDtoResponse));
+        }
+    }
+
+    public UUID getToken(String login) {
+        return Database.getInstance().getToken(login);
+    }
+
+    public Employee getEmployeeByToken(UUID token) {
+       return (Employee) Database.getTokens().get(token);
     }
 }
