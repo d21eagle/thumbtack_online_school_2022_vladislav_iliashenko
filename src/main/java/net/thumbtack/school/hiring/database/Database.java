@@ -12,6 +12,7 @@ public class Database {
     private final Map<String, User> users = new HashMap<>();
     private static final BidiMap<UUID, User> tokens = new DualHashBidiMap<>();
 
+    // REVU уберите. Показывать все токены миру незачем
     public static BidiMap<UUID, User> getTokens() {
         return tokens;
     }
@@ -22,6 +23,7 @@ public class Database {
         }
     }
 
+    // REVU это в самом начале, а потом методы. Это псевдоконструктор
     public static synchronized Database getInstance() {
         if (instance == null) {
             instance = new Database();
@@ -29,10 +31,14 @@ public class Database {
         return instance;
     }
 
+    // REVU верно, но проверьте, если проверка на несуществующий логин. Тест!
     public User getUserByLogin(String login) {
         return users.get(login);
     }
 
+    // REVU едва ли нужен. Зачем по логину токен получать ?
+    // логин - только для операции "Логин"
+    // а там токен возвращается
     public UUID getToken(String login) {
         User user = getUserByLogin(login);
         return tokens.getKey(user);
@@ -48,6 +54,8 @@ public class Database {
         return token;
     }
 
+    // REVU то же самое
+    // а поэтому хватит и одного и назвать его loginUser
     public UUID loginEmployer(User user) throws ServerException {
         UUID uuid = tokens.getKey(user);
         if (uuid != null) {
@@ -58,6 +66,7 @@ public class Database {
         return token;
     }
 
+    // REVU аналогично
     public void logoutEmployee(UUID token) throws ServerException {
         if (tokens.remove(token) == null) {
             throw new ServerException(ServerErrorCode.SESSION_NOT_FOUND);

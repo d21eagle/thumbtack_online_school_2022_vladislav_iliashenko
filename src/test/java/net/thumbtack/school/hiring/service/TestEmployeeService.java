@@ -2,6 +2,10 @@ package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.exception.ServerErrorCode;
+// REVU тест это клиент
+// клиент не имеет доступа к внутренностям сервера
+// поэтому он не может видеть модель, DAO, сервисы и исключения
+// только json/DTO, Server и ServerResponse
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.Employee;
 import net.thumbtack.school.hiring.server.Server;

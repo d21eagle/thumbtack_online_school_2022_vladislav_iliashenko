@@ -14,6 +14,7 @@ public enum ServerErrorCode {
     EMPTY_COMPANY_ADDRESS("Пустой адрес компании!"),
     WRONG_JSON("JSON is wrong"),
     SESSION_NOT_FOUND("Сессия не найдена!"),
+    // REVU LOGIN_EXISTS или LOGIN_ALREADY_USED
     EXIST_LOGIN("Этот логин уже существует!");
 
     private String errorString;

@@ -2,6 +2,8 @@ package net.thumbtack.school.hiring.model;
 import lombok.*;
 
 import java.util.Objects;
+// REVU а можно @Data
+// https://projectlombok.org/features/Data
 @EqualsAndHashCode
 @Getter
 @Setter

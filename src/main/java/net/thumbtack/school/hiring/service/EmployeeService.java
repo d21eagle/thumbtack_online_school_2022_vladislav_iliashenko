@@ -29,14 +29,21 @@ public class EmployeeService {
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
             employeeDao.insert(employee);
+            // REVU переменная emptyResponse не нужна
             EmptyResponse emptyResponse = new EmptyResponse();
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(emptyResponse));
         } catch (ServerException e) {
             ErrorResponse errorResponse = new ErrorResponse(e);
+            // REVU а если так
+            //return new ServerResponse(e);
+            // и пусть конструктор разбирается
+            // а тут все будет понятно : сделай мне респонс по исключению
             return new ServerResponse(ERROR_CODE, GSON.toJson(errorResponse));
         }
     }
 
+    // REVU private методы в конец класса
+    // читающего в первую очередь интересует, что класс делает, а не детали
     private void validateRequest(RegisterEmployeeDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getLastName()))
             throw new ServerException(ServerErrorCode.EMPTY_LAST_NAME);
@@ -91,10 +98,18 @@ public class EmployeeService {
     }
 
     public UUID getToken(String login) {
+        // REVU сервис не может обращаться к БД
         return Database.getInstance().getToken(login);
     }
 
     public Employee getEmployeeByToken(UUID token) {
+        // REVU сервис не может обращаться к БД
+        // это надо через DAO делать
+        // и не надо брать все токены, а надо у БД попросить User по этому токен
+        // и почему Вы уверены, что этот токен есть ?
+        // а если есть - что он принадлежит Employee, а не Employer ?
+        // все это проверить надо. Здесь или в БД
+        // что-то не так - throw... INVALID_TOKEN, INVALID_USERTYPE
        return (Employee) Database.getTokens().get(token);
     }
 }
