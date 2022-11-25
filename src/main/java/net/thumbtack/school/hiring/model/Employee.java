@@ -4,9 +4,7 @@ import lombok.*;
 import java.util.*;
 import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class Employee extends User {
 

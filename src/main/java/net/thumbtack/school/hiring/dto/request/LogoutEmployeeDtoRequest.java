@@ -3,7 +3,7 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Getter
+@Data
 @AllArgsConstructor
 public class LogoutEmployeeDtoRequest {
     private UUID token;

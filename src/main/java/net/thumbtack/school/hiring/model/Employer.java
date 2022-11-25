@@ -2,10 +2,7 @@ package net.thumbtack.school.hiring.model;
 
 import lombok.*;
 
-import java.util.Objects;
-@EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employer extends User {

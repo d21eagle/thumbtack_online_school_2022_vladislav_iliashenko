@@ -1,10 +1,7 @@
 package net.thumbtack.school.hiring.server;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.database.Database;
-import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.service.EmployeeService;
 import net.thumbtack.school.hiring.service.EmployerService;
-import net.thumbtack.school.hiring.model.*;
 import java.util.UUID;
 
 public class Server {
@@ -19,19 +16,31 @@ public class Server {
         return employerService.registerEmployee(requestJson);
     }
 
-    public ServerResponse loginEmployee(String requestJson) throws ServerException {
+    public ServerResponse loginEmployee(String requestJson) {
         return employeeService.loginEmployee(requestJson);
     }
 
-    public ServerResponse logoutEmployee(String requestJson) throws ServerException {
+    public ServerResponse loginEmployer(String requestJson) {
+        return employerService.loginEmployer(requestJson);
+    }
+
+    public ServerResponse logoutEmployee(String requestJson) {
         return employeeService.logoutEmployee(requestJson);
     }
 
-    public UUID getToken(String login) {
-        return employeeService.getToken(login);
+    public ServerResponse logoutEmployer(String requestJson) {
+        return employerService.logoutEmployer(requestJson);
     }
 
-    public Employee getEmployeeByToken(UUID token) {
+    public ServerResponse getEmployeeByToken(UUID token) {
         return employeeService.getEmployeeByToken(token);
+    }
+
+    public ServerResponse getEmployerByToken(UUID token) {
+        return employerService.getEmployerByToken(token);
+    }
+
+    public void clear() {
+        employeeService.clear();
     }
 }

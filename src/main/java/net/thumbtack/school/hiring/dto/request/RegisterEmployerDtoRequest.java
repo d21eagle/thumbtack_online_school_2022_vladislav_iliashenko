@@ -1,9 +1,7 @@
 package net.thumbtack.school.hiring.dto.request;
 import lombok.*;
 
-@EqualsAndHashCode
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterEmployerDtoRequest {

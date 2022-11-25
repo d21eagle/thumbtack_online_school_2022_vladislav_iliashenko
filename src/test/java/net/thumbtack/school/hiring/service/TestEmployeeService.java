@@ -1,21 +1,14 @@
 package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
-import net.thumbtack.school.hiring.exception.ServerErrorCode;
-// REVU тест это клиент
-// клиент не имеет доступа к внутренностям сервера
-// поэтому он не может видеть модель, DAO, сервисы и исключения
-// только json/DTO, Server и ServerResponse
-import net.thumbtack.school.hiring.exception.ServerException;
-import net.thumbtack.school.hiring.model.Employee;
 import net.thumbtack.school.hiring.server.Server;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import com.google.gson.Gson;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.UUID;
+import com.google.gson.Gson;
 
 public class TestEmployeeService {
     Server server = new Server();
@@ -23,17 +16,18 @@ public class TestEmployeeService {
     final int SUCCESS_CODE = 200;
     final int ERROR_CODE = 400;
 
-    // REVU перед каждым (или после каждого) теста надо чистить БД
-    // @BeforeEach
-    // и в нем server.clear();
-    // а server.clear, как обычно, вызывает сервис и т.д до Database, а в ней метод clear чистит все коллекции
+    @BeforeEach
+    public void clearDataBase() {
+        server.clear();
+    }
+
     @Test
-    public void testLoginEmployeeSuccess() throws ServerException {
+    public void testRegisterAndLoginEmployee() {
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
                 "ivan.ivanov@mail.ru",
                 "Иванов",
-                "Иван",
                 "Иванович",
+                "Иван",
                 "rocket_ivan",
                 "754376579"
         );
@@ -45,30 +39,46 @@ public class TestEmployeeService {
                 "rocket_ivan",
                 "754376579"
         );
-        server.loginEmployee(GSON.toJson(loginJson));
-        UUID token = server.getToken("rocket_ivan");
-        Employee employee = server.getEmployeeByToken(token);
 
-        assertEquals(requestJson.getFirstName(), employee.getFirstName());
-        assertEquals(requestJson.getLastName(), employee.getLastName());
-        assertEquals(requestJson.getLogin(), employee.getLogin());
-        assertEquals(requestJson.getPassword(), employee.getPassword());
+        ServerResponse tokenJson = server.loginEmployee(GSON.toJson(loginJson));
+        LoginEmployeeDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginEmployeeDtoResponse.class);
+
+        ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
+        GetEmployeeByTokenDtoResponse getEmployeeResponse = GSON.fromJson(getEmployeeByTokenJson.getResponseData(), GetEmployeeByTokenDtoResponse.class);
+
+        assertEquals(requestJson.getEmail(), getEmployeeResponse.getEmployee().getEmail());
+        assertEquals(requestJson.getLastName(), getEmployeeResponse.getEmployee().getLastName());
+        assertEquals(requestJson.getMiddleName(), getEmployeeResponse.getEmployee().getMiddleName());
+        assertEquals(requestJson.getFirstName(), getEmployeeResponse.getEmployee().getFirstName());
+        assertEquals(requestJson.getLogin(), getEmployeeResponse.getEmployee().getLogin());
+        assertEquals(requestJson.getPassword(), getEmployeeResponse.getEmployee().getPassword());
     }
 
     @Test
-    public void testRegisterEmployeeFailed() {
+    public void testLogoutEmployee() {
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
-                "ivan.ivanov@mail.ru",
-                "Иванов",
-                "Иван",
-                "Иванович",
-                "rocket_ivan",
-                "75437"
+                "petr.petrov@mail.ru",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "petr_one",
+                "982360301"
         );
+        ServerResponse actualResponse1 = server.registerEmployee(GSON.toJson(requestJson));
 
-        ServerResponse actualResponse = server.registerEmployee(GSON.toJson(requestJson));
-        assertEquals(
-                actualResponse.getResponseData(),
-                GSON.toJson(new ErrorResponse(new ServerException(ServerErrorCode.SHORT_PASSWORD))));
+        LoginEmployeeDtoRequest loginJson = new LoginEmployeeDtoRequest(
+                "petr_one",
+                "982360301"
+        );
+        ServerResponse tokenJson = server.loginEmployee(GSON.toJson(loginJson));
+        LoginEmployeeDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginEmployeeDtoResponse.class);
+
+        LogoutEmployeeDtoRequest logoutJson = new LogoutEmployeeDtoRequest(loginEmployeeDtoResponse.getToken());
+        ServerResponse logoutResponse = server.logoutEmployee(GSON.toJson(logoutJson));
+
+        assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
+
+        ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
+        assertEquals(getEmployeeByTokenJson.getResponseCode(), ERROR_CODE);
     }
 }

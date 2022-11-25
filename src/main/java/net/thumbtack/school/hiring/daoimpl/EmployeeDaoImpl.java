@@ -14,17 +14,27 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public UUID loginUser(User request) throws ServerException {
-        return Database.getInstance().loginEmployee(request);
+    public UUID loginUser(User request) {
+        return Database.getInstance().loginUser(request);
     }
 
     @Override
     public void logoutUser(LogoutEmployeeDtoRequest dtoRequest) throws ServerException {
-        Database.getInstance().logoutEmployee(dtoRequest.getToken());
+        Database.getInstance().logoutUser(dtoRequest.getToken());
     }
 
     @Override
     public User getUserByLogin(String login) throws ServerException {
         return Database.getInstance().getUserByLogin(login);
+    }
+
+    @Override
+    public User getUserByToken(UUID token) throws ServerException {
+        return Database.getInstance().getUserByToken(token);
+    }
+
+    @Override
+    public void clear() {
+        Database.getInstance().clear();
     }
 }

@@ -1,5 +1,7 @@
 package net.thumbtack.school.hiring.server;
 
+import net.thumbtack.school.hiring.exception.ServerException;
+
 import java.util.Objects;
 
 public class ServerResponse {
@@ -10,6 +12,11 @@ public class ServerResponse {
     public ServerResponse(int responseCode, String responseData) {
         setResponseCode(responseCode);
         setResponseData(responseData);
+    }
+
+    public ServerResponse(ServerException exception) {
+        setResponseCode(400);
+        setResponseData(exception.getErrorCode().getErrorString());
     }
 
     public void setResponseCode(int responseCode) {

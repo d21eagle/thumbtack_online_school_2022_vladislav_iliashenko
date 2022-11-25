@@ -1,21 +1,21 @@
 package net.thumbtack.school.hiring.exception;
 
 public enum ServerErrorCode {
-
-    EMPTY_FIRST_NAME("Пустое имя!"),
-    EMPTY_MIDDLE_NAME("Пустое отчество!"),
-    EMPTY_LAST_NAME("Пустая фамилия!"),
-    EMPTY_LOGIN("Пустой логин!"),
-    EMPTY_PASSWORD("Пустой пароль!"),
-    WRONG_LOGIN_OR_PASSWORD("Неправильный логин или пароль!"),
-    SHORT_LOGIN("Логин слишком короткий!"),
-    SHORT_PASSWORD("Пароль слишком короткий!"),
-    EMPTY_COMPANY_NAME("Пустое название компании!"),
-    EMPTY_COMPANY_ADDRESS("Пустой адрес компании!"),
+    EMPTY_FIRST_NAME("Empty first name!"),
+    EMPTY_MIDDLE_NAME("Empty middle name!"),
+    EMPTY_LAST_NAME("Empty last name!"),
+    EMPTY_LOGIN("Empty login!"),
+    EMPTY_PASSWORD("Empty password!"),
+    WRONG_LOGIN_OR_PASSWORD("Wrong login or password!"),
+    SHORT_LOGIN("Short login!"),
+    SHORT_PASSWORD("Short password!"),
+    EMPTY_COMPANY_NAME("Empty company name!"),
+    EMPTY_COMPANY_ADDRESS("Empty company address!"),
     WRONG_JSON("JSON is wrong"),
-    SESSION_NOT_FOUND("Сессия не найдена!"),
-    // REVU LOGIN_EXISTS или LOGIN_ALREADY_USED
-    EXIST_LOGIN("Этот логин уже существует!");
+    SESSION_NOT_FOUND("Session not found!"),
+    LOGIN_ALREADY_USED("Login already exist!"),
+    INVALID_TOKEN("Token is wrong!"),
+    INVALID_USERTYPE("Usertype is wrong!");
 
     private String errorString;
 

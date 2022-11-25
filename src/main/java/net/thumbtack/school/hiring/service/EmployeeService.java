@@ -11,14 +11,12 @@ import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.server.ServerUtils;
-import net.thumbtack.school.hiring.database.Database;
 import java.util.*;
 
 public class EmployeeService {
 
     private static final Gson GSON = new Gson();
     private static final int SUCCESS_CODE = 200;
-    private static final int ERROR_CODE = 400;
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
     private final EmployeeDao employeeDao = new EmployeeDaoImpl();
@@ -29,21 +27,55 @@ public class EmployeeService {
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
             employeeDao.insert(employee);
-            // REVU переменная emptyResponse не нужна
-            EmptyResponse emptyResponse = new EmptyResponse();
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(emptyResponse));
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(""));
         } catch (ServerException e) {
-            ErrorResponse errorResponse = new ErrorResponse(e);
-            // REVU а если так
-            //return new ServerResponse(e);
-            // и пусть конструктор разбирается
-            // а тут все будет понятно : сделай мне респонс по исключению
-            return new ServerResponse(ERROR_CODE, GSON.toJson(errorResponse));
+            return new ServerResponse(e);
         }
     }
 
-    // REVU private методы в конец класса
-    // читающего в первую очередь интересует, что класс делает, а не детали
+    public ServerResponse loginEmployee(String requestJson) {
+        try {
+            LoginEmployeeDtoRequest loginEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LoginEmployeeDtoRequest.class);
+            validateRequest(loginEmployeeDtoRequest);
+            User user = employeeDao.getUserByLogin(loginEmployeeDtoRequest.getLogin());
+            if (user == null || !user.getPassword().equals(loginEmployeeDtoRequest.getPassword())) {
+                throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
+            }
+            UUID uuid = employeeDao.loginUser(user);
+            LoginEmployeeDtoResponse loginUserDtoResponse = new LoginEmployeeDtoResponse(uuid);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(loginUserDtoResponse));
+        } catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+
+    public ServerResponse logoutEmployee(String requestJson) {
+        try {
+            LogoutEmployeeDtoRequest logoutEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LogoutEmployeeDtoRequest.class);
+            employeeDao.logoutUser(logoutEmployeeDtoRequest);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+        }
+        catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+
+    public ServerResponse getEmployeeByToken(UUID token) {
+        try {
+            User user = employeeDao.getUserByToken(token);
+            if (!(user instanceof Employee)) {
+                throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+            }
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
+                    new GetEmployeeByTokenDtoResponse((Employee) user)));
+        } catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+    public void clear() {
+        employeeDao.clear();
+    }
+
     private void validateRequest(RegisterEmployeeDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getLastName()))
             throw new ServerException(ServerErrorCode.EMPTY_LAST_NAME);
@@ -61,55 +93,10 @@ public class EmployeeService {
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
     }
 
-    public ServerResponse loginEmployee(String requestJson) throws ServerException {
-        try {
-            LoginEmployeeDtoRequest loginEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LoginEmployeeDtoRequest.class);
-            validateRequest(loginEmployeeDtoRequest);
-            User user = employeeDao.getUserByLogin(loginEmployeeDtoRequest.getLogin());
-            if (user == null || !user.getPassword().equals(loginEmployeeDtoRequest.getPassword())) {
-                throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
-            }
-            UUID uuid = employeeDao.loginUser(user);
-            LoginEmployeeDtoResponse loginUserDtoResponse = new LoginEmployeeDtoResponse(uuid);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(loginUserDtoResponse));
-        } catch (ServerException e) {
-            ErrorResponse errorDtoResponse = new ErrorResponse(e);
-            return new ServerResponse(ERROR_CODE, GSON.toJson(errorDtoResponse));
-        }
-    }
-
     private void validateRequest(LoginEmployeeDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getLogin()))
             throw new ServerException(ServerErrorCode.EMPTY_LOGIN);
         if (Strings.isNullOrEmpty(request.getPassword()))
             throw new ServerException(ServerErrorCode.EMPTY_PASSWORD);
-    }
-
-    public ServerResponse logoutEmployee(String requestJson) throws ServerException {
-        try {
-            LogoutEmployeeDtoRequest logoutEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LogoutEmployeeDtoRequest.class);
-            employeeDao.logoutUser(logoutEmployeeDtoRequest);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
-        }
-        catch (ServerException e) {
-            ErrorResponse errorDtoResponse = new ErrorResponse(e);
-            return new ServerResponse(ERROR_CODE, GSON.toJson(errorDtoResponse));
-        }
-    }
-
-    public UUID getToken(String login) {
-        // REVU сервис не может обращаться к БД
-        return Database.getInstance().getToken(login);
-    }
-
-    public Employee getEmployeeByToken(UUID token) {
-        // REVU сервис не может обращаться к БД
-        // это надо через DAO делать
-        // и не надо брать все токены, а надо у БД попросить User по этому токен
-        // и почему Вы уверены, что этот токен есть ?
-        // а если есть - что он принадлежит Employee, а не Employer ?
-        // все это проверить надо. Здесь или в БД
-        // что-то не так - throw... INVALID_TOKEN, INVALID_USERTYPE
-       return (Employee) Database.getTokens().get(token);
     }
 }

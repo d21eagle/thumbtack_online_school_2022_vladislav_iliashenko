@@ -2,9 +2,7 @@ package net.thumbtack.school.hiring.model;
 
 import lombok.*;
 
-@EqualsAndHashCode
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Skill {

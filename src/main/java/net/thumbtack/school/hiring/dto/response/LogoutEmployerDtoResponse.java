@@ -2,8 +2,7 @@ package net.thumbtack.school.hiring.dto.response;
 import lombok.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogoutEmployerDtoResponse {

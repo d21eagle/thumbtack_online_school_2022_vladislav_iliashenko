@@ -11,4 +11,6 @@ public interface EmployeeDao {
     UUID loginUser (User user) throws ServerException;
     void logoutUser (LogoutEmployeeDtoRequest logoutEmployeeDtoRequest) throws ServerException;
     User getUserByLogin(String login) throws ServerException;
+    User getUserByToken(UUID token) throws ServerException;
+    void clear();
 }
