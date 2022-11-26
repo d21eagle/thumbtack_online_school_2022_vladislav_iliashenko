@@ -27,6 +27,7 @@ public class EmployeeService {
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
             employeeDao.insert(employee);
+            // REVU new EmptyResponse, и его toJson
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(""));
         } catch (ServerException e) {
             return new ServerResponse(e);
@@ -52,6 +53,7 @@ public class EmployeeService {
     public ServerResponse logoutEmployee(String requestJson) {
         try {
             LogoutEmployeeDtoRequest logoutEmployeeDtoRequest = ServerUtils.getClassFromJson(requestJson, LogoutEmployeeDtoRequest.class);
+            // REVU валидация ?
             employeeDao.logoutUser(logoutEmployeeDtoRequest);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         }

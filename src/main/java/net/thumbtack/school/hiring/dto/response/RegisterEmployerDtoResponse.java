@@ -8,5 +8,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RegisterEmployerDtoResponse {
 
+    // REVU никакого токена тут не нужно, да и сам класс не нужен
     private UUID token;
 }

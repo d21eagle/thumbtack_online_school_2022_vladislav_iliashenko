@@ -6,5 +6,7 @@ import net.thumbtack.school.hiring.server.ServerResponse;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogoutEmployerDtoResponse {
+    // REVU почему внутри ServerResponse ? Наоборот же, response в виде json вкладывается в ServerResponse
+    // а тут просто пустой класс
     private ServerResponse response;
 }

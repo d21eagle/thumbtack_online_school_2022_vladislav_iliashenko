@@ -9,12 +9,14 @@ public class ServerResponse {
     private int responseCode;
     private String responseData;
 
+    // REVU можно так, а можно lombok
     public ServerResponse(int responseCode, String responseData) {
         setResponseCode(responseCode);
         setResponseData(responseData);
     }
 
     public ServerResponse(ServerException exception) {
+        // REVU сделайте static final поле
         setResponseCode(400);
         setResponseData(exception.getErrorCode().getErrorString());
     }

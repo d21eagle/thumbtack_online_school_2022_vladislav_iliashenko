@@ -6,5 +6,7 @@ import net.thumbtack.school.hiring.model.Employee;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetEmployeeByTokenDtoResponse {
+    // REVU нет, нелья в response помещать класс модели
+    // придется переписать поля, а для заполнения - lombok
     private Employee employee;
 }

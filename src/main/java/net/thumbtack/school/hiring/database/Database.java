@@ -9,6 +9,7 @@ import com.google.common.base.Strings;
 public class Database {
     private static Database instance;
     private final Map<String, User> users = new HashMap<>();
+    // REVU нет, не надо static . А вдруг еще один экземпляр БД появится ?
     private static final BidiMap<UUID, User> tokens = new DualHashBidiMap<>();
 
     public static synchronized Database getInstance() {
@@ -25,12 +26,14 @@ public class Database {
     }
 
     public User getUserByLogin(String login) throws ServerException {
+        // REVU не нужно. В сервисе есть валидация логина в DTO, сюда пустой не дойдет
         if (Strings.isNullOrEmpty(login))
             throw new ServerException(ServerErrorCode.EMPTY_LOGIN);
         return users.get(login);
     }
 
     public User getUserByToken(UUID token) throws ServerException {
+        // REVU и тут не надо. Сервис должен валидировать токен в DTO request
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
