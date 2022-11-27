@@ -6,8 +6,6 @@ import net.thumbtack.school.hiring.server.ServerResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.google.gson.Gson;
 
 public class TestEmployeeService {
@@ -35,23 +33,23 @@ public class TestEmployeeService {
         ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
         assertEquals(actualResponse0.getResponseCode(), SUCCESS_CODE);
 
-        LoginEmployeeDtoRequest loginJson = new LoginEmployeeDtoRequest(
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "rocket_ivan",
                 "754376579"
         );
 
-        ServerResponse tokenJson = server.loginEmployee(GSON.toJson(loginJson));
-        LoginEmployeeDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginEmployeeDtoResponse.class);
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
         ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
         GetEmployeeByTokenDtoResponse getEmployeeResponse = GSON.fromJson(getEmployeeByTokenJson.getResponseData(), GetEmployeeByTokenDtoResponse.class);
 
-        assertEquals(requestJson.getEmail(), getEmployeeResponse.getEmployee().getEmail());
-        assertEquals(requestJson.getLastName(), getEmployeeResponse.getEmployee().getLastName());
-        assertEquals(requestJson.getMiddleName(), getEmployeeResponse.getEmployee().getMiddleName());
-        assertEquals(requestJson.getFirstName(), getEmployeeResponse.getEmployee().getFirstName());
-        assertEquals(requestJson.getLogin(), getEmployeeResponse.getEmployee().getLogin());
-        assertEquals(requestJson.getPassword(), getEmployeeResponse.getEmployee().getPassword());
+        assertEquals(requestJson.getEmail(), getEmployeeResponse.getEmail());
+        assertEquals(requestJson.getLastName(), getEmployeeResponse.getLastName());
+        assertEquals(requestJson.getMiddleName(), getEmployeeResponse.getMiddleName());
+        assertEquals(requestJson.getFirstName(), getEmployeeResponse.getFirstName());
+        assertEquals(requestJson.getLogin(), getEmployeeResponse.getLogin());
+        assertEquals(requestJson.getPassword(), getEmployeeResponse.getPassword());
     }
 
     @Test
@@ -66,15 +64,15 @@ public class TestEmployeeService {
         );
         ServerResponse actualResponse1 = server.registerEmployee(GSON.toJson(requestJson));
 
-        LoginEmployeeDtoRequest loginJson = new LoginEmployeeDtoRequest(
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "petr_one",
                 "982360301"
         );
-        ServerResponse tokenJson = server.loginEmployee(GSON.toJson(loginJson));
-        LoginEmployeeDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginEmployeeDtoResponse.class);
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        LogoutEmployeeDtoRequest logoutJson = new LogoutEmployeeDtoRequest(loginEmployeeDtoResponse.getToken());
-        ServerResponse logoutResponse = server.logoutEmployee(GSON.toJson(logoutJson));
+        LogoutUserDtoRequest logoutJson = new LogoutUserDtoRequest(loginEmployeeDtoResponse.getToken());
+        ServerResponse logoutResponse = server.logoutUser(GSON.toJson(logoutJson));
 
         assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
 

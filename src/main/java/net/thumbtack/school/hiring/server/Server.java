@@ -2,12 +2,15 @@ package net.thumbtack.school.hiring.server;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.service.EmployeeService;
 import net.thumbtack.school.hiring.service.EmployerService;
+import net.thumbtack.school.hiring.service.UserService;
+
 import java.util.UUID;
 
 public class Server {
 
     private final EmployeeService employeeService = new EmployeeService();
     private final EmployerService employerService = new EmployerService();
+    private final UserService userService = new UserService();
 
     public ServerResponse registerEmployee (String requestJson) throws JsonSyntaxException {
         return employeeService.registerEmployee(requestJson);
@@ -16,20 +19,12 @@ public class Server {
         return employerService.registerEmployee(requestJson);
     }
 
-    public ServerResponse loginEmployee(String requestJson) {
-        return employeeService.loginEmployee(requestJson);
+    public ServerResponse loginUser(String requestJson) {
+        return userService.loginUser(requestJson);
     }
 
-    public ServerResponse loginEmployer(String requestJson) {
-        return employerService.loginEmployer(requestJson);
-    }
-
-    public ServerResponse logoutEmployee(String requestJson) {
-        return employeeService.logoutEmployee(requestJson);
-    }
-
-    public ServerResponse logoutEmployer(String requestJson) {
-        return employerService.logoutEmployer(requestJson);
+    public ServerResponse logoutUser(String requestJson) {
+        return userService.logoutUser(requestJson);
     }
 
     public ServerResponse getEmployeeByToken(UUID token) {
@@ -41,6 +36,6 @@ public class Server {
     }
 
     public void clear() {
-        employeeService.clear();
+        userService.clear();
     }
 }
