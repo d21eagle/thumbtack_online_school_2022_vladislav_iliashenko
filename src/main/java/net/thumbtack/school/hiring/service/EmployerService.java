@@ -16,8 +16,8 @@ import java.util.*;
 public class EmployerService extends UserService {
     private static final Gson GSON = new Gson();
     private static final int SUCCESS_CODE = 200;
-    private static final int MIN_LOGIN = 8;
-    private static final int MIN_PASSWORD = 8;
+    private static final int MIN_LOGIN_LENGTH = 8;
+    private static final int MIN_PASSWORD_LENGTH = 8;
     private final EmployerDao employerDao = new EmployerDaoImpl();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
@@ -39,16 +39,7 @@ public class EmployerService extends UserService {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
             }
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    new GetEmployerByTokenDtoResponse(
-                            user.getEmail(),
-                            user.getLogin(),
-                            user.getPassword(),
-                            user.getLastName(),
-                            user.getMiddleName(),
-                            user.getFirstName(),
-                            ((Employer) user).getCompanyName(),
-                            ((Employer) user).getCompanyAddress()
-                    )));
+                    EmployerMapper.INSTANCE.getEmployerByToken((Employer) user)));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
@@ -69,9 +60,9 @@ public class EmployerService extends UserService {
             throw new ServerException(ServerErrorCode.EMPTY_LOGIN);
         if (Strings.isNullOrEmpty(request.getPassword()))
             throw new ServerException(ServerErrorCode.EMPTY_PASSWORD);
-        if (request.getLogin().length() < MIN_LOGIN)
+        if (request.getLogin().length() < MIN_LOGIN_LENGTH)
             throw new ServerException(ServerErrorCode.SHORT_LOGIN);
-        if (request.getPassword().length() < MIN_PASSWORD)
+        if (request.getPassword().length() < MIN_PASSWORD_LENGTH)
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
     }
 }

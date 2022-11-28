@@ -1,9 +1,6 @@
 package net.thumbtack.school.hiring.server;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.service.EmployeeService;
-import net.thumbtack.school.hiring.service.EmployerService;
-import net.thumbtack.school.hiring.service.UserService;
-
+import net.thumbtack.school.hiring.service.*;
 import java.util.UUID;
 
 public class Server {
@@ -11,6 +8,7 @@ public class Server {
     private final EmployeeService employeeService = new EmployeeService();
     private final EmployerService employerService = new EmployerService();
     private final UserService userService = new UserService();
+    private final DebugService debugService = new DebugService();
 
     public ServerResponse registerEmployee (String requestJson) throws JsonSyntaxException {
         return employeeService.registerEmployee(requestJson);
@@ -36,8 +34,6 @@ public class Server {
     }
 
     public void clear() {
-        // REVU лучше debugService.clear();
-        // этот код надо потом в production отключить, это дыра в безопасности
-        userService.clear();
+        debugService.clear();
     }
 }

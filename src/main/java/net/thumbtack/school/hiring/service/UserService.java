@@ -44,10 +44,6 @@ public class UserService {
         }
     }
 
-    public void clear() {
-        userDao.clear();
-    }
-
     private void validateRequest(LoginUserDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getLogin()))
             throw new ServerException(ServerErrorCode.EMPTY_LOGIN);

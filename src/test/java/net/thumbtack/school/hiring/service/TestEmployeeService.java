@@ -1,26 +1,15 @@
 package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
-import net.thumbtack.school.hiring.server.Server;
 import net.thumbtack.school.hiring.server.ServerResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.Gson;
 
-public class TestEmployeeService {
-    Server server = new Server();
+public class TestEmployeeService extends TestBase {
     final Gson GSON = new Gson();
     final int SUCCESS_CODE = 200;
     final int ERROR_CODE = 400;
-
-    // REVU это у Вас в каждом классе тестов будет
-    // можно сделать class TestBase и туда его
-    // а все тесты сделать наследниками TestBase
-    @BeforeEach
-    public void clearDataBase() {
-        server.clear();
-    }
 
     @Test
     public void testRegisterAndLoginEmployee() {
@@ -52,7 +41,6 @@ public class TestEmployeeService {
         assertEquals(requestJson.getMiddleName(), getEmployeeResponse.getMiddleName());
         assertEquals(requestJson.getFirstName(), getEmployeeResponse.getFirstName());
         assertEquals(requestJson.getLogin(), getEmployeeResponse.getLogin());
-        assertEquals(requestJson.getPassword(), getEmployeeResponse.getPassword());
     }
 
     @Test

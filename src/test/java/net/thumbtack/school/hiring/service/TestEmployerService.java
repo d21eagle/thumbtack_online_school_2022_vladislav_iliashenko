@@ -1,23 +1,15 @@
 package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
-import net.thumbtack.school.hiring.server.Server;
 import net.thumbtack.school.hiring.server.ServerResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.Gson;
 
-public class TestEmployerService {
-    Server server = new Server();
+public class TestEmployerService extends TestBase {
     final Gson GSON = new Gson();
     final int SUCCESS_CODE = 200;
     final int ERROR_CODE = 400;
-
-    @BeforeEach
-    public void clearDataBase() {
-        server.clear();
-    }
 
     @Test
     public void testRegisterAndLoginEmployer() {
@@ -51,7 +43,6 @@ public class TestEmployerService {
         assertEquals(requestJson.getMiddleName(), getEmployerResponse.getMiddleName());
         assertEquals(requestJson.getFirstName(), getEmployerResponse.getFirstName());
         assertEquals(requestJson.getLogin(), getEmployerResponse.getLogin());
-        assertEquals(requestJson.getPassword(), getEmployerResponse.getPassword());
     }
 
     @Test
