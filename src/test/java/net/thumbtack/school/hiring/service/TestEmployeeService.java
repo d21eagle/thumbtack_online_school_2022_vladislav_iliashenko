@@ -14,6 +14,9 @@ public class TestEmployeeService {
     final int SUCCESS_CODE = 200;
     final int ERROR_CODE = 400;
 
+    // REVU это у Вас в каждом классе тестов будет
+    // можно сделать class TestBase и туда его
+    // а все тесты сделать наследниками TestBase
     @BeforeEach
     public void clearDataBase() {
         server.clear();

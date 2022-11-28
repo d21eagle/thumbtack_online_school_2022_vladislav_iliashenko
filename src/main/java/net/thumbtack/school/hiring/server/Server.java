@@ -36,6 +36,8 @@ public class Server {
     }
 
     public void clear() {
+        // REVU лучше debugService.clear();
+        // этот код надо потом в production отключить, это дыра в безопасности
         userService.clear();
     }
 }

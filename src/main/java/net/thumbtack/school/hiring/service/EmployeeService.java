@@ -16,6 +16,7 @@ import java.util.*;
 public class EmployeeService extends UserService {
     private static final Gson GSON = new Gson();
     private static final int SUCCESS_CODE = 200;
+    // REVU MIN_LOGIN_LENGTH
     private static final int MIN_LOGIN = 8;
     private static final int MIN_PASSWORD = 8;
     private final EmployeeDao employeeDao = new EmployeeDaoImpl();
@@ -39,6 +40,7 @@ public class EmployeeService extends UserService {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
             }
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
+                    // REVU может, lombok ?
                     new GetEmployeeByTokenDtoResponse(
                             user.getEmail(),
                             user.getLogin(),

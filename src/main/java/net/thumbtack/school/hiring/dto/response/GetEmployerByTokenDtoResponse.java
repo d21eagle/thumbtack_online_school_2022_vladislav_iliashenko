@@ -5,6 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetEmployerByTokenDtoResponse {
+    // REVU см. REVU в GetEmployeeByTokenDtoResponse
     private String email;
     private String login;
     private String password;
