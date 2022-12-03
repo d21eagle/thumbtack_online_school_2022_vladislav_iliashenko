@@ -1,8 +1,10 @@
 package net.thumbtack.school.hiring.mapper;
+import net.thumbtack.school.hiring.dto.request.SkillDtoRequest;
 import net.thumbtack.school.hiring.dto.response.GetEmployeeByTokenDtoResponse;
 import net.thumbtack.school.hiring.model.Employee;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployeeDtoRequest;
 
+import net.thumbtack.school.hiring.model.Skill;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -11,5 +13,6 @@ public interface EmployeeMapper {
 
     EmployeeMapper INSTANCE = Mappers.getMapper( EmployeeMapper.class );
     Employee employeeToEmployeeDto(RegisterEmployeeDtoRequest employee);
+    Skill skillToSkillDto(SkillDtoRequest skill);
     GetEmployeeByTokenDtoResponse getEmployeeByToken(Employee employee);
 }

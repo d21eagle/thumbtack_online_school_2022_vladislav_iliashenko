@@ -9,6 +9,7 @@ public class Database {
     private static Database instance;
     private final Map<String, User> users = new HashMap<>();
     private final BidiMap<UUID, User> tokens = new DualHashBidiMap<>();
+    private final List<Skill> skills = new ArrayList<>();
 
     public static synchronized Database getInstance() {
         if (instance == null) {
@@ -21,6 +22,28 @@ public class Database {
         if (users.putIfAbsent(user.getLogin(), user) != null) {
             throw new ServerException(ServerErrorCode.LOGIN_ALREADY_USED);
         }
+    }
+
+    public void addSkill(UUID token, Skill skill) throws ServerException {
+        User user = getUserByToken(token);
+        if (!(user instanceof Employee)) {
+            throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+        }
+        if (((Employee) user).getSkills() == null || ((Employee) user).getSkills().isEmpty()) {
+            ((Employee) user).setSkills(skills);
+        }
+        skills.add(skill);
+    }
+
+    public void deleteSkill(UUID token, Skill skill) throws ServerException {
+        User user = getUserByToken(token);
+        if (!(user instanceof Employee)) {
+            throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+        }
+        if (((Employee) user).getSkills() == null || ((Employee) user).getSkills().isEmpty()) {
+            throw new ServerException(ServerErrorCode.EMPTY_SKILLS);
+        }
+        skills.remove(skill);
     }
 
     public User getUserByLogin(String login) {

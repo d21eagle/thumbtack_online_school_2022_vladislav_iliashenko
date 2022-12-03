@@ -1,5 +1,6 @@
 package net.thumbtack.school.hiring.server;
 import com.google.gson.JsonSyntaxException;
+import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.service.*;
 import java.util.UUID;
 
@@ -23,6 +24,14 @@ public class Server {
 
     public ServerResponse logoutUser(String requestJson) {
         return userService.logoutUser(requestJson);
+    }
+
+    public ServerResponse addEmployeeSkill(UUID token, String requestJson) {
+        return employeeService.addSkill(token, requestJson);
+    }
+
+    public ServerResponse deleteEmployeeSkill(UUID token, String requestJson) {
+        return employeeService.deleteSkill(token, requestJson);
     }
 
     public ServerResponse getEmployeeByToken(UUID token) {

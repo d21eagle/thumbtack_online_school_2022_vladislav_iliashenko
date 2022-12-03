@@ -15,7 +15,10 @@ public enum ServerErrorCode {
     SESSION_NOT_FOUND("Session not found!"),
     LOGIN_ALREADY_USED("Login already exist!"),
     INVALID_TOKEN("Token is wrong!"),
-    INVALID_USERTYPE("Usertype is wrong!");
+    INVALID_USERTYPE("Usertype is wrong!"),
+    EMPTY_SKILL_NAME("Empty skill name!"),
+    EMPTY_PROF_LEVEL("Empty prof level!"),
+    EMPTY_SKILLS("Empty skills!");
 
     private String errorString;
 

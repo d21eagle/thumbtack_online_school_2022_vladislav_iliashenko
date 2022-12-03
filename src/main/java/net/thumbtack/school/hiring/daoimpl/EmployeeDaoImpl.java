@@ -12,6 +12,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public void addSkill(UUID token, Skill skill) throws ServerException {
+        Database.getInstance().addSkill(token, skill);
+    }
+
+    @Override
+    public void deleteSkill(UUID token, Skill skill) throws ServerException {
+        Database.getInstance().deleteSkill(token, skill);
+    }
+
+    @Override
     public User getUserByToken(UUID token) {
         return Database.getInstance().getUserByToken(token);
     }

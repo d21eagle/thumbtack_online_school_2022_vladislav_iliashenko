@@ -70,4 +70,45 @@ public class TestEmployeeService extends TestBase {
         ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
         assertEquals(getEmployeeByTokenJson.getResponseCode(), ERROR_CODE);
     }
+
+    @Test
+    public void testAddAndDeleteEmployeeSkill() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "rocket_ivan",
+                "754376579"
+        );
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+
+        SkillDtoRequest skillJson = new SkillDtoRequest(
+                "Язык Java",
+                5
+        );
+        ServerResponse skillResponse0 = server.addEmployeeSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(skillJson));
+        assertEquals(skillResponse0.getResponseCode(), SUCCESS_CODE);
+
+        ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
+        GetEmployeeByTokenDtoResponse getEmployeeResponse = GSON.fromJson(getEmployeeByTokenJson.getResponseData(), GetEmployeeByTokenDtoResponse.class);
+
+        assertEquals(skillJson.getSkillName(), getEmployeeResponse.getSkills().get(0).getSkillName());
+        assertEquals(skillJson.getProfLevel(), getEmployeeResponse.getSkills().get(0).getProfLevel());
+
+        ServerResponse skillResponse1 = server.deleteEmployeeSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(skillJson));
+        assertEquals(skillResponse1.getResponseCode(), SUCCESS_CODE);
+
+        ServerResponse getEmployeeByTokenJson1 = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
+        GetEmployeeByTokenDtoResponse getEmployeeResponse1 = GSON.fromJson(getEmployeeByTokenJson1.getResponseData(), GetEmployeeByTokenDtoResponse.class);
+        assertTrue(getEmployeeResponse1.getSkills().isEmpty());
+    }
 }
