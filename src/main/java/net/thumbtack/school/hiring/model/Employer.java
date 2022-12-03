@@ -1,6 +1,6 @@
 package net.thumbtack.school.hiring.model;
-
 import lombok.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -9,7 +9,7 @@ public class Employer extends User {
 
     private String companyName;
     private String companyAddress;
-    // REVU все хорошо, но не добавить ли List/Set<Vacancy> ?
+    private List<Vacancy> vacancies;
 
     public Employer(String companyName,
                     String companyAddress,
@@ -18,9 +18,11 @@ public class Employer extends User {
                     String firstName,
                     String middleName,
                     String login,
-                    String password) {
+                    String password,
+                    List<Vacancy> vacancies) {
         super(email, lastname, firstName, middleName, login, password);
         setCompanyName(companyName);
         setCompanyAddress(companyAddress);
+        setVacancies(vacancies);
     }
 }

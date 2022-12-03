@@ -4,14 +4,8 @@ import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import com.google.gson.Gson;
 
 public class TestEmployerService extends TestBase {
-    // REVU см. REVU в TestEmployeeService
-    final Gson GSON = new Gson();
-    final int SUCCESS_CODE = 200;
-    final int ERROR_CODE = 400;
-
     @Test
     public void testRegisterAndLoginEmployer() {
         RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(

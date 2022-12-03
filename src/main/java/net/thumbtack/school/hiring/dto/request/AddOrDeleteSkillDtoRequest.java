@@ -4,7 +4,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SkillDtoRequest {
+public class AddOrDeleteSkillDtoRequest {
     private String skillName;
     private int profLevel;
 }

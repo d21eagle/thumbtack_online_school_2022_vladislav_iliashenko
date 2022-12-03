@@ -20,7 +20,6 @@ public class EmployeeService extends UserService {
     private static final int MIN_PASSWORD_LENGTH = 8;
     private final EmployeeDao employeeDao = new EmployeeDaoImpl();
 
-
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployeeDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
@@ -35,10 +34,14 @@ public class EmployeeService extends UserService {
 
     public ServerResponse addSkill(UUID token, String requestJson) {
         try {
-            SkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, SkillDtoRequest.class);
+            AddOrDeleteSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddOrDeleteSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
             Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
-            employeeDao.addSkill(token, skill);
+            User user = employeeDao.getUserByToken(token);
+            if (!(user instanceof Employee)) {
+                throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+            }
+            employeeDao.addSkill((Employee) user, skill);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
@@ -47,10 +50,14 @@ public class EmployeeService extends UserService {
 
     public ServerResponse deleteSkill(UUID token, String requestJson) {
         try {
-            SkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, SkillDtoRequest.class);
+            AddOrDeleteSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddOrDeleteSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
             Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
-            employeeDao.deleteSkill(token, skill);
+            User user = employeeDao.getUserByToken(token);
+            if (!(user instanceof Employee)) {
+                throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+            }
+            employeeDao.deleteSkill((Employee) user, skill);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
@@ -87,8 +94,10 @@ public class EmployeeService extends UserService {
             throw new ServerException(ServerErrorCode.SHORT_PASSWORD);
     }
 
-    private void validateRequest(SkillDtoRequest request) throws ServerException {
+    private void validateRequest(AddOrDeleteSkillDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getSkillName()))
             throw new ServerException(ServerErrorCode.EMPTY_SKILL_NAME);
+        if (request.getProfLevel() <= 0)
+            throw new ServerException(ServerErrorCode.INVALID_PROF_LEVEL);
     }
 }

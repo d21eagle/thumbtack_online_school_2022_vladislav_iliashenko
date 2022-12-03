@@ -12,13 +12,13 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public void addSkill(UUID token, Skill skill) throws ServerException {
-        Database.getInstance().addSkill(token, skill);
+    public void addSkill(Employee employee, Skill skill) {
+        Database.getInstance().addSkill(employee, skill);
     }
 
     @Override
-    public void deleteSkill(UUID token, Skill skill) throws ServerException {
-        Database.getInstance().deleteSkill(token, skill);
+    public void deleteSkill(Employee employee, Skill skill) throws ServerException {
+        Database.getInstance().deleteSkill(employee, skill);
     }
 
     @Override

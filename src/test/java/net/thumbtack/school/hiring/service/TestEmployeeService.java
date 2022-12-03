@@ -4,15 +4,8 @@ import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import com.google.gson.Gson;
 
 public class TestEmployeeService extends TestBase {
-    // REVU private static все
-    // и не отправить ли их в TestBase (тогда protected)
-    final Gson GSON = new Gson();
-    final int SUCCESS_CODE = 200;
-    final int ERROR_CODE = 400;
-
     @Test
     public void testRegisterAndLoginEmployee() {
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
@@ -93,7 +86,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        SkillDtoRequest skillJson = new SkillDtoRequest(
+        AddOrDeleteSkillDtoRequest skillJson = new AddOrDeleteSkillDtoRequest(
                 "Язык Java",
                 5
         );

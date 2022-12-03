@@ -8,7 +8,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Employee extends User {
 
-    private List<Skill> skills;
+    private List<Skill> skills = new ArrayList<>();
 
     public Employee(String email, String lastname, String firstName, String middleName, String login, String password, List<Skill> skills) {
         super(email, lastname, firstName, middleName, login, password);
