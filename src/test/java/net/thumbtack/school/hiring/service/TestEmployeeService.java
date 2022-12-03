@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.Gson;
 
 public class TestEmployeeService extends TestBase {
+    // REVU private static все
+    // и не отправить ли их в TestBase (тогда protected)
     final Gson GSON = new Gson();
     final int SUCCESS_CODE = 200;
     final int ERROR_CODE = 400;

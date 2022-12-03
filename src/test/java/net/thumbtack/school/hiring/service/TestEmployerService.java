@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.Gson;
 
 public class TestEmployerService extends TestBase {
+    // REVU см. REVU в TestEmployeeService
     final Gson GSON = new Gson();
     final int SUCCESS_CODE = 200;
     final int ERROR_CODE = 400;

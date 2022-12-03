@@ -10,4 +10,6 @@ public class Vacancy {
     private String position;
     private int salary;
     private List<EmployeeRequirement> requirementsList;
+    // REVU а чья вакансия ? Непонятно
+    // можно добавить Employer employer
 }

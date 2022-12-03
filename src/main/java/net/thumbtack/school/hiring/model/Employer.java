@@ -9,6 +9,7 @@ public class Employer extends User {
 
     private String companyName;
     private String companyAddress;
+    // REVU все хорошо, но не добавить ли List/Set<Vacancy> ?
 
     public Employer(String companyName,
                     String companyAddress,
