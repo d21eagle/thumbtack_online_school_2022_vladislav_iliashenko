@@ -20,6 +20,10 @@ public class EmployeeService extends UserService {
     private static final int MIN_PASSWORD_LENGTH = 8;
     private final EmployeeDao employeeDao = new EmployeeDaoImpl();
 
+    // REVU упорядочите
+    // сначала действия с Employee (регистрация, получение по токену и id и т.д.
+    // потом скиллы и т.д.
+    // машине это все равно, а читать человеку легче
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployeeDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
@@ -37,17 +41,30 @@ public class EmployeeService extends UserService {
             AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
             Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
+            // REVU следующие 4 строки понадобятся во всех методах, где передается токен
+            // сделайте тут
+            // private Employee getEmployeeByToken
+            // он должен либо вернуть Employee, либо выбросить исключение
+            // и используйте его везде
+            // Employer - аналогично
             User user = employeeDao.getUserByToken(token);
+            // проверка на null
             if (!(user instanceof Employee)) {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
             }
             employeeDao.addSkill((Employee) user, skill);
+            // REVU а вот тут в ответе я бы вернул id, назначенный этому скиллу
+            // тогда в deleteSkill будет достаточно этот id передать
+            // и внутри его getSkillById
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
+    // REVU скорее всего не нужен
+    // есть же deleteSkillById
+    // да и странно как-то - deleteSkill использует AddSkillDtoRequest
     public ServerResponse deleteSkill(UUID token, String requestJson) {
         try {
             AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
@@ -77,6 +94,8 @@ public class EmployeeService extends UserService {
 
     public ServerResponse getEmployeeByToken(UUID token) {
         try {
+            // REVU а если нет такого токена в БД ?
+            // проверка на null
             User user = employeeDao.getUserByToken(token);
             if (!(user instanceof Employee)) {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
@@ -90,6 +109,7 @@ public class EmployeeService extends UserService {
 
     public ServerResponse getEmployeeById(int id) {
         try {
+            // REVU аналогично
             User user = employeeDao.getUserById(id);
             if (!(user instanceof Employee)) {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
@@ -102,6 +122,8 @@ public class EmployeeService extends UserService {
     }
 
     public ServerResponse getSkillById(int id) {
+        // REVU а если нет такого id ?
+        // тоже проверка на null
         Skill skill = employeeDao.getSkillById(id);
         return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                 EmployeeMapper.INSTANCE.getSkill(skill)));

@@ -35,6 +35,8 @@ public class EmployerService extends UserService {
 
     public ServerResponse getEmployerByToken(UUID token) {
         try {
+            // REVU а если нет такого токена в БД ?
+            // проверка на null
             User user = employerDao.getUserByToken(token);
             if (!(user instanceof Employer)) {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
@@ -48,6 +50,8 @@ public class EmployerService extends UserService {
 
     public ServerResponse getEmployerById(int id) {
         try {
+            // REVU а если нет такого id в БД ?
+            // проверка на null
             User user = employerDao.getUserById(id);
             if (!(user instanceof Employer)) {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
@@ -60,12 +64,16 @@ public class EmployerService extends UserService {
     }
 
     public ServerResponse getEmployeeRequirementById(int id) {
+        // REVU а если нет такого id в БД ?
+        // проверка на null
         EmployeeRequirement employeeRequirement = employerDao.getRequirementById(id);
         return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                 EmployerMapper.INSTANCE.getEmployeeRequirement(employeeRequirement)));
     }
 
     public ServerResponse getVacancyById(int id) {
+        // REVU а если нет такого id в БД ?
+        // проверка на null
         Vacancy vacancy = employerDao.getVacancyById(id);
         return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                 EmployerMapper.INSTANCE.getVacancy(vacancy)));

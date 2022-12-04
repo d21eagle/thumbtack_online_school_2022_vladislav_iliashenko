@@ -30,6 +30,8 @@ public class Server {
         return employeeService.addSkill(token, requestJson);
     }
 
+    // REVU похоже, не нужен, не используется
+    // да и действительно, есть же deleteEmployeeSkillById, чего еще надо ?
     public ServerResponse deleteEmployeeSkill(UUID token, String requestJson) {
         return employeeService.deleteSkill(token, requestJson);
     }

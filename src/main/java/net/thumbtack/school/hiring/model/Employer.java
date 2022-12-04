@@ -11,6 +11,8 @@ public class Employer extends User {
     private String companyAddress;
     private List<Vacancy> vacancies;
 
+    // REVU похоже, не нужен, не используется
+    // проверьте
     public Employer(int id,
                     String companyName,
                     String companyAddress,

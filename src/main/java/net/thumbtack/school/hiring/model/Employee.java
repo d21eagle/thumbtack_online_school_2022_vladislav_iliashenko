@@ -9,6 +9,8 @@ public class Employee extends User {
 
     private List<Skill> skills = new ArrayList<>();
 
+    // REVU похоже, не нужен, не используется
+    // проверьте
     public Employee(int id,
                     String email,
                     String lastname,

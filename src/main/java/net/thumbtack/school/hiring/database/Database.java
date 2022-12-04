@@ -26,6 +26,7 @@ public class Database {
         if (users.putIfAbsent(user.getLogin(), user) != null) {
             throw new ServerException(ServerErrorCode.LOGIN_ALREADY_USED);
         }
+        // REVU зачем 2 раза ++ ?
         user.setId(nextUserId++);
         userMap.put(nextUserId++, user);
     }
@@ -47,30 +48,37 @@ public class Database {
     }
 
     public void addSkill(Employee employee, Skill skill) {
+        // REVU а эту строчку можно было в сервисе выполнить. Это не работа БД, а изменение класса модели
         employee.getSkills().add(skill);
+        // REVU зачем 2 раза ++ ?
         skill.setId(nextUserId++);
         skillMap.put(nextUserId++ ,skill);
     }
 
     public void deleteSkill(Employee employee, Skill skill) throws ServerException {
+        // REVU isEmpty не нужна, remove сама скажет
         if (employee.getSkills().isEmpty()) {
             throw new ServerException(ServerErrorCode.EMPTY_SKILLS);
         }
         employee.getSkills().remove(skill);
     }
 
+    // REVU а если нет такого id ?
     public void deleteSkillById(int id) {
         skillMap.remove(id);
     }
 
+    // REVU а если нет такого логина ?
     public User getUserByLogin(String login) {
         return users.get(login);
     }
 
+    // REVU а если нет такого токена ?
     public User getUserByToken(UUID token) {
         return tokens.get(token);
     }
 
+    // REVU и далее
     public User getUserById(int id) {
         return userMap.get(id);
     }
