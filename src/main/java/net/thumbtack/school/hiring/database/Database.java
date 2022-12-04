@@ -90,5 +90,9 @@ public class Database {
     public void clear() {
         users.clear();
         tokens.clear();
+        userMap.clear();
+        skillMap.clear();
+        requirementMap.clear();
+        vacancyMap.clear();
     }
 }
