@@ -22,7 +22,22 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public void deleteSkillById(int id) {
+        Database.getInstance().deleteSkillById(id);
+    }
+
+    @Override
     public User getUserByToken(UUID token) {
         return Database.getInstance().getUserByToken(token);
+    }
+
+    @Override
+    public User getUserById(int id) {
+        return Database.getInstance().getUserById(id);
+    }
+
+    @Override
+    public Skill getSkillById(int id) {
+        return Database.getInstance().getSkillById(id);
     }
 }

@@ -1,13 +1,10 @@
-package net.thumbtack.school.hiring.model;
-
+package net.thumbtack.school.hiring.dto.response;
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class EmployeeRequirement {
-    private int id;
+public class EmployeeRequirementInnerDtoResponse {
     private String requirementName;
     private int profLevel;
     private boolean isNecessary;

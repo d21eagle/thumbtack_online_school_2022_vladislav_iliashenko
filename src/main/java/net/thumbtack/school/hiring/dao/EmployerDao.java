@@ -6,4 +6,7 @@ import java.util.UUID;
 public interface EmployerDao {
     void insert(Employer employer) throws ServerException;
     User getUserByToken(UUID token) throws ServerException;
+    User getUserById(int id);
+    EmployeeRequirement getRequirementById(int id);
+    Vacancy getVacancyById(int id);
 }

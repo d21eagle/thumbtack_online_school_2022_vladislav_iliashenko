@@ -5,6 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SkillInnerDtoResponse {
+    private int id;
     private String skillName;
     private int profLevel;
 }

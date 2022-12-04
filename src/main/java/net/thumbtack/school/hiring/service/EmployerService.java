@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import net.thumbtack.school.hiring.dao.EmployerDao;
 import net.thumbtack.school.hiring.daoimpl.EmployerDaoImpl;
 import net.thumbtack.school.hiring.dto.request.*;
+import net.thumbtack.school.hiring.mapper.EmployeeMapper;
 import net.thumbtack.school.hiring.mapper.EmployerMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
@@ -39,10 +40,35 @@ public class EmployerService extends UserService {
                 throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
             }
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getEmployerByToken((Employer) user)));
+                    EmployerMapper.INSTANCE.getEmployer((Employer) user)));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
+    }
+
+    public ServerResponse getEmployerById(int id) {
+        try {
+            User user = employerDao.getUserById(id);
+            if (!(user instanceof Employer)) {
+                throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+            }
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
+                    EmployerMapper.INSTANCE.getEmployer((Employer) user)));
+        } catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+
+    public ServerResponse getEmployeeRequirementById(int id) {
+        EmployeeRequirement employeeRequirement = employerDao.getRequirementById(id);
+        return new ServerResponse(SUCCESS_CODE, GSON.toJson(
+                EmployerMapper.INSTANCE.getEmployeeRequirement(employeeRequirement)));
+    }
+
+    public ServerResponse getVacancyById(int id) {
+        Vacancy vacancy = employerDao.getVacancyById(id);
+        return new ServerResponse(SUCCESS_CODE, GSON.toJson(
+                EmployerMapper.INSTANCE.getVacancy(vacancy)));
     }
 
     private void validateRequest(RegisterEmployerDtoRequest request) throws ServerException {

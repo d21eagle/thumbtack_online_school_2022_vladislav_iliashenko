@@ -5,7 +5,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetEmployeeByTokenDtoResponse {
+public class GetEmployeeDtoResponse {
     private String email;
     private String login;
     private String lastName;

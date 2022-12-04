@@ -1,17 +1,23 @@
 package net.thumbtack.school.hiring.model;
 import lombok.*;
-
 import java.util.*;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Employee extends User {
 
     private List<Skill> skills = new ArrayList<>();
 
-    public Employee(String email, String lastname, String firstName, String middleName, String login, String password, List<Skill> skills) {
-        super(email, lastname, firstName, middleName, login, password);
+    public Employee(int id,
+                    String email,
+                    String lastname,
+                    String firstName,
+                    String middleName,
+                    String login,
+                    String password,
+                    List<Skill> skills) {
+        super(id, email, lastname, firstName, middleName, login, password);
         setSkills(skills);
     }
 }

@@ -9,6 +9,11 @@ public class Database {
     private static Database instance;
     private final Map<String, User> users = new HashMap<>();
     private final BidiMap<UUID, User> tokens = new DualHashBidiMap<>();
+    private final Map<Integer, User> userMap = new HashMap<>();
+    private final Map<Integer, Skill> skillMap = new HashMap<>();
+    private final Map<Integer, EmployeeRequirement> requirementMap = new HashMap<>();
+    private final Map<Integer, Vacancy> vacancyMap = new HashMap<>();
+    private int nextUserId = 1;
 
     public static synchronized Database getInstance() {
         if (instance == null) {
@@ -21,6 +26,8 @@ public class Database {
         if (users.putIfAbsent(user.getLogin(), user) != null) {
             throw new ServerException(ServerErrorCode.LOGIN_ALREADY_USED);
         }
+        user.setId(nextUserId++);
+        userMap.put(nextUserId++, user);
     }
 
     public UUID loginUser(User user) {
@@ -41,6 +48,8 @@ public class Database {
 
     public void addSkill(Employee employee, Skill skill) {
         employee.getSkills().add(skill);
+        skill.setId(nextUserId++);
+        skillMap.put(nextUserId++ ,skill);
     }
 
     public void deleteSkill(Employee employee, Skill skill) throws ServerException {
@@ -50,12 +59,32 @@ public class Database {
         employee.getSkills().remove(skill);
     }
 
+    public void deleteSkillById(int id) {
+        skillMap.remove(id);
+    }
+
     public User getUserByLogin(String login) {
         return users.get(login);
     }
 
     public User getUserByToken(UUID token) {
         return tokens.get(token);
+    }
+
+    public User getUserById(int id) {
+        return userMap.get(id);
+    }
+
+    public Skill getSkillById(int id) {
+        return skillMap.get(id);
+    }
+
+    public EmployeeRequirement getRequirementById(int id) {
+        return requirementMap.get(id);
+    }
+
+    public Vacancy getVacancyById(int id) {
+        return vacancyMap.get(id);
     }
 
     public void clear() {

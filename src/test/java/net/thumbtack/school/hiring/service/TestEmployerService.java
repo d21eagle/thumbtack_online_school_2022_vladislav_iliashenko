@@ -31,7 +31,7 @@ public class TestEmployerService extends TestBase {
         LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
         ServerResponse getEmployerJson = server.getEmployerByToken(loginEmployerDtoResponse.getToken());
-        GetEmployerByTokenDtoResponse getEmployerResponse = GSON.fromJson(getEmployerJson.getResponseData(), GetEmployerByTokenDtoResponse.class);
+        GetEmployerDtoResponse getEmployerResponse = GSON.fromJson(getEmployerJson.getResponseData(), GetEmployerDtoResponse.class);
 
         assertEquals(requestJson.getEmail(), getEmployerResponse.getEmail());
         assertEquals(requestJson.getLastName(), getEmployerResponse.getLastName());

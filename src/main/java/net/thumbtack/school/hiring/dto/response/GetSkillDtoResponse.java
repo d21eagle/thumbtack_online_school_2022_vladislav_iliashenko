@@ -1,12 +1,10 @@
-package net.thumbtack.school.hiring.model;
-
+package net.thumbtack.school.hiring.dto.response;
 import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Skill {
-    private int id;
+public class GetSkillDtoResponse {
     private String skillName;
     private int profLevel;
 }

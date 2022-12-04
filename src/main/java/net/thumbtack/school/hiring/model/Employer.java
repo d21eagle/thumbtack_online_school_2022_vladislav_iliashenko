@@ -11,7 +11,8 @@ public class Employer extends User {
     private String companyAddress;
     private List<Vacancy> vacancies;
 
-    public Employer(String companyName,
+    public Employer(int id,
+                    String companyName,
                     String companyAddress,
                     String email,
                     String lastname,
@@ -20,7 +21,7 @@ public class Employer extends User {
                     String login,
                     String password,
                     List<Vacancy> vacancies) {
-        super(email, lastname, firstName, middleName, login, password);
+        super(id, email, lastname, firstName, middleName, login, password);
         setCompanyName(companyName);
         setCompanyAddress(companyAddress);
         setVacancies(vacancies);

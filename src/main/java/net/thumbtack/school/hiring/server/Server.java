@@ -34,12 +34,36 @@ public class Server {
         return employeeService.deleteSkill(token, requestJson);
     }
 
+    public ServerResponse deleteEmployeeSkillById(String requestJson) {
+        return employeeService.deleteSkillById(requestJson);
+    }
+
     public ServerResponse getEmployeeByToken(UUID token) {
         return employeeService.getEmployeeByToken(token);
     }
 
     public ServerResponse getEmployerByToken(UUID token) {
         return employerService.getEmployerByToken(token);
+    }
+
+    public ServerResponse getEmployeeById(int id) {
+        return employeeService.getEmployeeById(id);
+    }
+
+    public ServerResponse getEmployerById(int id) {
+        return employerService.getEmployerById(id);
+    }
+
+    public ServerResponse getSkillById(int id) {
+        return employeeService.getSkillById(id);
+    }
+
+    public ServerResponse getEmployeeRequirementById(int id) {
+        return employerService.getEmployeeRequirementById(id);
+    }
+
+    public ServerResponse getVacancyById(int id) {
+        return employerService.getVacancyById(id);
     }
 
     public void clear() {

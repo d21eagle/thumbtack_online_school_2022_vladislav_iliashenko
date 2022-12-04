@@ -6,7 +6,7 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Vacancy {
-
+    private int id;
     private Employer employer;
     private String position;
     private int salary;

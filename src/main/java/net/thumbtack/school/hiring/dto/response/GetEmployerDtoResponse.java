@@ -4,7 +4,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetEmployerByTokenDtoResponse {
+public class GetEmployerDtoResponse {
     private String email;
     private String login;
     private String lastName;
