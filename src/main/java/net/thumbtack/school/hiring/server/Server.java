@@ -29,8 +29,8 @@ public class Server {
         return employeeService.addSkill(token, requestJson);
     }
 
-    public ServerResponse deleteSkillById(String requestJson) {
-        return employeeService.deleteSkillById(requestJson);
+    public ServerResponse deleteSkill(String requestJson) {
+        return employeeService.deleteSkill(requestJson);
     }
 
     public ServerResponse addVacancy(UUID token, String requestJson) {
@@ -41,40 +41,32 @@ public class Server {
         return employerService.addEmployeeRequirement(requestJson);
     }
 
-    public ServerResponse deleteVacancyById(String requestJson) {
-        return employerService.deleteVacancyById(requestJson);
+    public ServerResponse deleteVacancy(String requestJson) {
+        return employerService.deleteVacancy(requestJson);
     }
 
     public ServerResponse deleteEmployeeRequirementById(String requestJson) {
-        return employerService.deleteEmployeeRequirementById(requestJson);
+        return employerService.deleteEmployeeRequirement(requestJson);
     }
 
-    public ServerResponse getEmployeeByToken(UUID token) {
-        return employeeService.getEmployeeByToken(token);
+    public ServerResponse getCurrentEmployee(UUID token) {
+        return employeeService.getCurrentEmployee(token);
     }
 
-    public ServerResponse getEmployerByToken(UUID token) {
-        return employerService.getEmployerByToken(token);
+    public ServerResponse getCurrentEmployer(UUID token) {
+        return employerService.getCurrentEmployer(token);
     }
 
-    public ServerResponse getEmployeeById(int id) {
-        return employeeService.getEmployeeById(id);
+    public ServerResponse getCurrentSkill(int id) {
+        return employeeService.getCurrentSkill(id);
     }
 
-    public ServerResponse getEmployerById(int id) {
-        return employerService.getEmployerById(id);
+    public ServerResponse getCurrentEmployeeRequirement(int id) {
+        return employerService.getCurrentEmployeeRequirement(id);
     }
 
-    public ServerResponse getSkillById(int id) {
-        return employeeService.getSkillById(id);
-    }
-
-    public ServerResponse getEmployeeRequirementById(int id) {
-        return employerService.getEmployeeRequirementById(id);
-    }
-
-    public ServerResponse getVacancyById(int id) {
-        return employerService.getVacancyById(id);
+    public ServerResponse getCurrentVacancy(int id) {
+        return employerService.getCurrentVacancy(id);
     }
 
     public void clear() {

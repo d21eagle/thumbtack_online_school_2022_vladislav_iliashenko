@@ -31,11 +31,11 @@ public class EmployerDaoImpl implements EmployerDao {
         return Database.getInstance().addEmployeeRequirement(requirement);
     }
     @Override
-    public void deleteVacancyById(int id) {
+    public void deleteVacancy(int id) {
         Database.getInstance().deleteVacancyById(id);
     }
     @Override
-    public void deleteEmployeeRequirementById(int id) {
+    public void deleteEmployeeRequirement(int id) {
         Database.getInstance().deleteEmployeeRequirementById(id);
     }
 

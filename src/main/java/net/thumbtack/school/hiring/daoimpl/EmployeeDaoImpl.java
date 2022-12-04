@@ -17,7 +17,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public void deleteSkillById(int id) {
+    public void deleteSkill(int id) {
         Database.getInstance().deleteSkillById(id);
     }
 

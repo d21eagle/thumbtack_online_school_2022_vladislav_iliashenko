@@ -9,8 +9,8 @@ public interface EmployerDao {
     User getUserById(int id);
     int addVacancy(Vacancy vacancy);
     int addEmployeeRequirement(EmployeeRequirement requirement);
-    void deleteVacancyById(int id);
-    void deleteEmployeeRequirementById(int id);
+    void deleteVacancy(int id);
+    void deleteEmployeeRequirement(int id);
     EmployeeRequirement getRequirementById(int id);
     Vacancy getVacancyById(int id);
 }

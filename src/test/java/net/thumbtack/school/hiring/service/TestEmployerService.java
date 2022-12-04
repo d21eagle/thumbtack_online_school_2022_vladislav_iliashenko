@@ -31,7 +31,7 @@ public class TestEmployerService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        ServerResponse getEmployerJson = server.getEmployerByToken(loginEmployerDtoResponse.getToken());
+        ServerResponse getEmployerJson = server.getCurrentEmployer(loginEmployerDtoResponse.getToken());
         GetEmployerDtoResponse getEmployerResponse = GSON.fromJson(getEmployerJson.getResponseData(), GetEmployerDtoResponse.class);
 
         assertEquals(requestJson.getEmail(), getEmployerResponse.getEmail());
@@ -67,7 +67,7 @@ public class TestEmployerService extends TestBase {
 
         assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
 
-        ServerResponse getEmployerByTokenJson = server.getEmployeeByToken(loginEmployerDtoResponse.getToken());
+        ServerResponse getEmployerByTokenJson = server.getCurrentEmployee(loginEmployerDtoResponse.getToken());
         assertEquals(getEmployerByTokenJson.getResponseCode(), ERROR_CODE);
     }
 
@@ -95,8 +95,6 @@ public class TestEmployerService extends TestBase {
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
         GetEmployerDtoResponse employerResponse = GSON.fromJson(tokenJson.getResponseData(), GetEmployerDtoResponse.class);
 
-        EmployeeRequirementInnerDtoRequest requirementRequest = new EmployeeRequirementInnerDtoRequest();
-
         // запрос на добавление вакансии
         AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
                 EmployerMapper.INSTANCE.getEmployer(employerResponse),
@@ -112,7 +110,7 @@ public class TestEmployerService extends TestBase {
         AddVacancyDtoResponse addVacancyResponse = GSON.fromJson(idJson.getResponseData(), AddVacancyDtoResponse.class);
 
         // получение вакансии по id
-        ServerResponse getVacancyByIdJson = server.getVacancyById(addVacancyResponse.getId());
+        ServerResponse getVacancyByIdJson = server.getCurrentVacancy(addVacancyResponse.getId());
         GetVacancyDtoResponse getVacancyDtoResponse = GSON.fromJson(getVacancyByIdJson.getResponseData(), GetVacancyDtoResponse.class);
 
         assertEquals(addVacancyJson.getEmployer(), getVacancyDtoResponse.getEmployer());
@@ -136,7 +134,7 @@ public class TestEmployerService extends TestBase {
                 idJson1.getResponseData(), AddEmployeeRequirementDtoResponse.class);
 
         // получение требования по id
-        ServerResponse getRequirementByIdJson = server.getEmployeeRequirementById(addEmployeeRequirementDtoResponse.getId());
+        ServerResponse getRequirementByIdJson = server.getCurrentEmployeeRequirement(addEmployeeRequirementDtoResponse.getId());
         GetEmployeeRequirementDtoResponse getRequirementDtoResponse = GSON.fromJson(
                 getRequirementByIdJson.getResponseData(), GetEmployeeRequirementDtoResponse.class);
 
@@ -153,7 +151,7 @@ public class TestEmployerService extends TestBase {
         ServerResponse deleteRequirementResponse = server.deleteEmployeeRequirementById(GSON.toJson(deleteRequirementJson));
         assertEquals(deleteRequirementResponse.getResponseCode(), SUCCESS_CODE);
 
-        ServerResponse getEmployeeRequirementByIdJson = server.getEmployeeRequirementById(addEmployeeRequirementDtoResponse.getId());
+        ServerResponse getEmployeeRequirementByIdJson = server.getCurrentEmployeeRequirement(addEmployeeRequirementDtoResponse.getId());
         assertEquals(getEmployeeRequirementByIdJson.getResponseCode(), ERROR_CODE);
 
         // запрос на удаление вакансии
@@ -162,10 +160,10 @@ public class TestEmployerService extends TestBase {
         );
 
         // удаление вакансии по id
-        ServerResponse deleteVacancyResponse = server.deleteVacancyById(GSON.toJson(deleteVacancyJson));
+        ServerResponse deleteVacancyResponse = server.deleteVacancy(GSON.toJson(deleteVacancyJson));
         assertEquals(deleteVacancyResponse.getResponseCode(), SUCCESS_CODE);
 
-        ServerResponse getVacancyByIdJson1 = server.getVacancyById(addVacancyResponse.getId());
+        ServerResponse getVacancyByIdJson1 = server.getCurrentVacancy(addVacancyResponse.getId());
         assertEquals(getVacancyByIdJson1.getResponseCode(), ERROR_CODE);
     }
 }

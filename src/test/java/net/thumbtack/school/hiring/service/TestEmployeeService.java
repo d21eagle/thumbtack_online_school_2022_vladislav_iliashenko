@@ -28,7 +28,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
+        ServerResponse getEmployeeByTokenJson = server.getCurrentEmployee(loginEmployeeDtoResponse.getToken());
         GetEmployeeDtoResponse getEmployeeResponse = GSON.fromJson(getEmployeeByTokenJson.getResponseData(), GetEmployeeDtoResponse.class);
 
         assertEquals(requestJson.getEmail(), getEmployeeResponse.getEmail());
@@ -62,7 +62,7 @@ public class TestEmployeeService extends TestBase {
 
         assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
 
-        ServerResponse getEmployeeByTokenJson = server.getEmployeeByToken(loginEmployeeDtoResponse.getToken());
+        ServerResponse getEmployeeByTokenJson = server.getCurrentEmployee(loginEmployeeDtoResponse.getToken());
         assertEquals(getEmployeeByTokenJson.getResponseCode(), ERROR_CODE);
     }
 
@@ -98,7 +98,7 @@ public class TestEmployeeService extends TestBase {
         AddSkillDtoResponse addSkillResponse = GSON.fromJson(idJson.getResponseData(), AddSkillDtoResponse.class);
 
         // получение скилла по id
-        ServerResponse getSkillByIdJson = server.getSkillById(addSkillResponse.getId());
+        ServerResponse getSkillByIdJson = server.getCurrentSkill(addSkillResponse.getId());
         GetSkillDtoResponse getSkillDtoResponse = GSON.fromJson(getSkillByIdJson.getResponseData(), GetSkillDtoResponse.class);
 
         assertEquals(addSkillJson.getSkillName(), getSkillDtoResponse.getSkillName());
@@ -109,10 +109,10 @@ public class TestEmployeeService extends TestBase {
         );
 
         // удаление скилла по id
-        ServerResponse deleteSkillResponse = server.deleteSkillById(GSON.toJson(deleteSkillJson));
+        ServerResponse deleteSkillResponse = server.deleteSkill(GSON.toJson(deleteSkillJson));
         assertEquals(deleteSkillResponse.getResponseCode(), SUCCESS_CODE);
 
-        ServerResponse getSkillByIdJson1 = server.getSkillById(addSkillResponse.getId());
+        ServerResponse getSkillByIdJson1 = server.getCurrentSkill(addSkillResponse.getId());
         assertEquals(getSkillByIdJson1.getResponseCode(), ERROR_CODE);
     }
 }

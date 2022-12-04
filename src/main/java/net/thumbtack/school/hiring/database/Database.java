@@ -26,8 +26,9 @@ public class Database {
         if (users.putIfAbsent(user.getLogin(), user) != null) {
             throw new ServerException(ServerErrorCode.LOGIN_ALREADY_USED);
         }
-        user.setId(nextUserId++);
+        user.setId(nextUserId);
         userMap.put(nextUserId, user);
+        nextUserId++;
     }
 
     public UUID loginUser(User user) {
@@ -59,21 +60,21 @@ public class Database {
     }
 
     public int addSkill(Skill skill) {
-        skill.setId(nextUserId++);
+        skill.setId(nextUserId);
         skillMap.put(nextUserId, skill);
-        return nextUserId;
+        return nextUserId++;
     }
 
     public int addVacancy(Vacancy vacancy) {
-        vacancy.setId(nextUserId++);
+        vacancy.setId(nextUserId);
         vacancyMap.put(nextUserId, vacancy);
-        return nextUserId;
+        return nextUserId++;
     }
 
     public int addEmployeeRequirement(EmployeeRequirement requirement) {
-        requirement.setId(nextUserId++);
+        requirement.setId(nextUserId);
         requirementMap.put(nextUserId, requirement);
-        return nextUserId;
+        return nextUserId++;
     }
 
     public void deleteSkillById(int id) {

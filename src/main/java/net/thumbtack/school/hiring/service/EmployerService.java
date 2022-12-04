@@ -32,33 +32,11 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse getEmployerByToken(UUID token) {
+    public ServerResponse getCurrentEmployer(UUID token) {
         try {
-            User user = employerDao.getUserByToken(token);
-            if (user == null) {
-                throw new ServerException(ServerErrorCode.INVALID_TOKEN);
-            }
-            if (!(user instanceof Employer)) {
-                throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
-            }
+            Employer employer = getEmployerByToken(token);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getEmployerDto((Employer) user)));
-        } catch (ServerException e) {
-            return new ServerResponse(e);
-        }
-    }
-
-    public ServerResponse getEmployerById(int id) {
-        try {
-            User user = employerDao.getUserById(id);
-            if (user == null) {
-                throw new ServerException(ServerErrorCode.INVALID_ID);
-            }
-            if (!(user instanceof Employer)) {
-                throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
-            }
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getEmployerDto((Employer) user)));
+                    EmployerMapper.INSTANCE.getEmployerDto(employer)));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
@@ -70,10 +48,9 @@ public class EmployerService extends UserService {
             validateRequest(vacancyDtoRequest);
             Vacancy vacancy = EmployerMapper.INSTANCE.vacancyToVacancyDto(vacancyDtoRequest);
 
-            ServerResponse employerResponse = getEmployerByToken(token);
-            GetEmployerDtoResponse employer = GSON.fromJson(employerResponse.getResponseData(), GetEmployerDtoResponse.class);
+            Employer employer = getEmployerByToken(token);
+            employer.getVacancies().add(vacancy);
 
-            EmployerMapper.INSTANCE.getEmployer(employer).getVacancies().add(vacancy);
             int id = employerDao.addVacancy(vacancy);
             AddVacancyDtoResponse addVacancyDtoResponse = new AddVacancyDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addVacancyDtoResponse));
@@ -88,9 +65,9 @@ public class EmployerService extends UserService {
             validateRequest(requirementDtoRequest);
             EmployeeRequirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
 
-            ServerResponse getVacancyByIdJson = getVacancyById(requirementDtoRequest.getId());
-            GetVacancyDtoResponse vacancyDtoResponse = GSON.fromJson(getVacancyByIdJson.getResponseData(), GetVacancyDtoResponse.class);
-            EmployerMapper.INSTANCE.getVacancy(vacancyDtoResponse).getRequirementsList().add(requirement);
+            Vacancy vacancy = getVacancyById(requirementDtoRequest.getId());
+            vacancy.getRequirementsList().add(requirement);
+
             int id = employerDao.addEmployeeRequirement(requirement);
             AddEmployeeRequirementDtoResponse addEmployeeRequirementDtoResponse = new AddEmployeeRequirementDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addEmployeeRequirementDtoResponse));
@@ -99,34 +76,31 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse deleteVacancyById(String requestJson) {
+    public ServerResponse deleteVacancy(String requestJson) {
         try {
             DeleteVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteVacancyDtoRequest.class);
             int id = vacancyDtoRequest.getId();
-            employerDao.deleteVacancyById(id);
+            employerDao.deleteVacancy(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
-    public ServerResponse deleteEmployeeRequirementById(String requestJson) {
+    public ServerResponse deleteEmployeeRequirement(String requestJson) {
         try {
             DeleteEmployeeRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteEmployeeRequirementDtoRequest.class);
             int id = requirementDtoRequest.getId();
-            employerDao.deleteEmployeeRequirementById(id);
+            employerDao.deleteEmployeeRequirement(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
-    public ServerResponse getEmployeeRequirementById(int id) {
+    public ServerResponse getCurrentEmployeeRequirement(int id) {
         try {
-            EmployeeRequirement employeeRequirement = employerDao.getRequirementById(id);
-            if (employeeRequirement == null) {
-                throw new ServerException(ServerErrorCode.INVALID_ID);
-            }
+            EmployeeRequirement employeeRequirement = getEmployeeRequirementById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployerMapper.INSTANCE.getEmployeeRequirement(employeeRequirement)));
         } catch (ServerException e) {
@@ -134,17 +108,52 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse getVacancyById(int id) {
+    public ServerResponse getCurrentVacancy(int id) {
         try {
-            Vacancy vacancy = employerDao.getVacancyById(id);
-            if (vacancy == null) {
-                throw new ServerException(ServerErrorCode.INVALID_ID);
-            }
+            Vacancy vacancy = getVacancyById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployerMapper.INSTANCE.getVacancy(vacancy)));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
+    }
+
+    private Employer getEmployerByToken(UUID token) throws ServerException {
+        User user = employerDao.getUserByToken(token);
+        if (user == null) {
+            throw new ServerException(ServerErrorCode.INVALID_TOKEN);
+        }
+        if (!(user instanceof Employer)) {
+            throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+        }
+        return (Employer) user;
+    }
+
+    private Employer getEmployerById(int id) throws ServerException {
+        User user = employerDao.getUserById(id);
+        if (user == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ID);
+        }
+        if (!(user instanceof Employer)) {
+            throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
+        }
+        return (Employer) user;
+    }
+
+    private Vacancy getVacancyById(int id) throws ServerException {
+        Vacancy vacancy = employerDao.getVacancyById(id);
+        if (vacancy == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ID);
+        }
+        return vacancy;
+    }
+
+    private EmployeeRequirement getEmployeeRequirementById(int id) throws ServerException {
+        EmployeeRequirement employeeRequirement = employerDao.getRequirementById(id);
+        if (employeeRequirement == null) {
+            throw new ServerException(ServerErrorCode.INVALID_ID);
+        }
+        return employeeRequirement;
     }
 
     private void validateRequest(RegisterEmployerDtoRequest request) throws ServerException {
