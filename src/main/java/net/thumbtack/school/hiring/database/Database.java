@@ -26,9 +26,8 @@ public class Database {
         if (users.putIfAbsent(user.getLogin(), user) != null) {
             throw new ServerException(ServerErrorCode.LOGIN_ALREADY_USED);
         }
-        // REVU зачем 2 раза ++ ?
         user.setId(nextUserId++);
-        userMap.put(nextUserId++, user);
+        userMap.put(nextUserId, user);
     }
 
     public UUID loginUser(User user) {
@@ -47,40 +46,46 @@ public class Database {
         }
     }
 
-    public void addSkill(Employee employee, Skill skill) {
-        // REVU а эту строчку можно было в сервисе выполнить. Это не работа БД, а изменение класса модели
-        employee.getSkills().add(skill);
-        // REVU зачем 2 раза ++ ?
-        skill.setId(nextUserId++);
-        skillMap.put(nextUserId++ ,skill);
-    }
-
-    public void deleteSkill(Employee employee, Skill skill) throws ServerException {
-        // REVU isEmpty не нужна, remove сама скажет
-        if (employee.getSkills().isEmpty()) {
-            throw new ServerException(ServerErrorCode.EMPTY_SKILLS);
-        }
-        employee.getSkills().remove(skill);
-    }
-
-    // REVU а если нет такого id ?
-    public void deleteSkillById(int id) {
-        skillMap.remove(id);
-    }
-
-    // REVU а если нет такого логина ?
     public User getUserByLogin(String login) {
         return users.get(login);
     }
 
-    // REVU а если нет такого токена ?
     public User getUserByToken(UUID token) {
         return tokens.get(token);
     }
 
-    // REVU и далее
     public User getUserById(int id) {
         return userMap.get(id);
+    }
+
+    public int addSkill(Skill skill) {
+        skill.setId(nextUserId++);
+        skillMap.put(nextUserId, skill);
+        return nextUserId;
+    }
+
+    public int addVacancy(Vacancy vacancy) {
+        vacancy.setId(nextUserId++);
+        vacancyMap.put(nextUserId, vacancy);
+        return nextUserId;
+    }
+
+    public int addEmployeeRequirement(EmployeeRequirement requirement) {
+        requirement.setId(nextUserId++);
+        requirementMap.put(nextUserId, requirement);
+        return nextUserId;
+    }
+
+    public void deleteSkillById(int id) {
+        skillMap.remove(id);
+    }
+
+    public void deleteVacancyById(int id) {
+        vacancyMap.remove(id);
+    }
+
+    public void deleteEmployeeRequirementById(int id) {
+        requirementMap.remove(id);
     }
 
     public Skill getSkillById(int id) {

@@ -1,6 +1,5 @@
 package net.thumbtack.school.hiring.server;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.service.*;
 import java.util.UUID;
 
@@ -26,18 +25,28 @@ public class Server {
         return userService.logoutUser(requestJson);
     }
 
-    public ServerResponse addEmployeeSkill(UUID token, String requestJson) {
+    public ServerResponse addSkill(UUID token, String requestJson) {
         return employeeService.addSkill(token, requestJson);
     }
 
-    // REVU похоже, не нужен, не используется
-    // да и действительно, есть же deleteEmployeeSkillById, чего еще надо ?
-    public ServerResponse deleteEmployeeSkill(UUID token, String requestJson) {
-        return employeeService.deleteSkill(token, requestJson);
+    public ServerResponse deleteSkillById(String requestJson) {
+        return employeeService.deleteSkillById(requestJson);
     }
 
-    public ServerResponse deleteEmployeeSkillById(String requestJson) {
-        return employeeService.deleteSkillById(requestJson);
+    public ServerResponse addVacancy(UUID token, String requestJson) {
+        return employerService.addVacancy(token, requestJson);
+    }
+
+    public ServerResponse addEmployeeRequirement(String requestJson) {
+        return employerService.addEmployeeRequirement(requestJson);
+    }
+
+    public ServerResponse deleteVacancyById(String requestJson) {
+        return employerService.deleteVacancyById(requestJson);
+    }
+
+    public ServerResponse deleteEmployeeRequirementById(String requestJson) {
+        return employerService.deleteEmployeeRequirementById(requestJson);
     }
 
     public ServerResponse getEmployeeByToken(UUID token) {

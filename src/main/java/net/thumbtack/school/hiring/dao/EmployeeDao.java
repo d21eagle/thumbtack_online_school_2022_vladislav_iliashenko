@@ -5,10 +5,9 @@ import java.util.*;
 
 public interface EmployeeDao {
     void insert(Employee employee) throws ServerException;
-    void addSkill(Employee employee, Skill skill);
-    void deleteSkill(Employee employee, Skill skill) throws ServerException;
+    int addSkill(Skill skill);
     void deleteSkillById(int id);
-    User getUserByToken(UUID token) throws ServerException;
+    User getUserByToken(UUID token);
     User getUserById(int id);
     Skill getSkillById(int id);
 }

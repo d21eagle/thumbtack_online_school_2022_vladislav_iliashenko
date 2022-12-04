@@ -12,13 +12,31 @@ public class EmployerDaoImpl implements EmployerDao {
     }
 
     @Override
-    public User getUserByToken(UUID token) {
+    public User getUserByToken(UUID token) throws ServerException {
         return Database.getInstance().getUserByToken(token);
     }
 
     @Override
     public User getUserById(int id) {
         return Database.getInstance().getUserById(id);
+    }
+
+    @Override
+    public int addVacancy(Vacancy vacancy) {
+        return Database.getInstance().addVacancy(vacancy);
+    }
+
+    @Override
+    public int addEmployeeRequirement(EmployeeRequirement requirement) {
+        return Database.getInstance().addEmployeeRequirement(requirement);
+    }
+    @Override
+    public void deleteVacancyById(int id) {
+        Database.getInstance().deleteVacancyById(id);
+    }
+    @Override
+    public void deleteEmployeeRequirementById(int id) {
+        Database.getInstance().deleteEmployeeRequirementById(id);
     }
 
     @Override

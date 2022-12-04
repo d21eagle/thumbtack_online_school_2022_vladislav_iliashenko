@@ -18,7 +18,13 @@ public enum ServerErrorCode {
     INVALID_USERTYPE("Usertype is wrong!"),
     EMPTY_SKILL_NAME("Empty skill name!"),
     EMPTY_SKILLS("Empty skills!"),
-    INVALID_PROF_LEVEL("Invalid prof level!");
+    INVALID_PROF_LEVEL("Invalid prof level!"),
+    INVALID_ID("Id is invalid!"),
+    EMPTY_POSITION("Position is empty!"),
+    INVALID_SALARY("Invalid salary!"),
+    INVALID_EMPLOYER("Invalid employer"),
+    EMPTY_REQUIREMENT("Empty requirement!"),
+    EMPTY_REQUIREMENT_NAME("Empty requirement name!");
 
     private String errorString;
 

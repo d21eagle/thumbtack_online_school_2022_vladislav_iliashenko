@@ -18,7 +18,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUserByLogin(String login) {
+    public User getUserByLogin(String login) throws ServerException {
         return Database.getInstance().getUserByLogin(login);
     }
 

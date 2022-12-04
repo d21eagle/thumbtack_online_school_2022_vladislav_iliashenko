@@ -1,5 +1,7 @@
 package net.thumbtack.school.hiring.model;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -9,23 +11,5 @@ public class Employer extends User {
 
     private String companyName;
     private String companyAddress;
-    private List<Vacancy> vacancies;
-
-    // REVU похоже, не нужен, не используется
-    // проверьте
-    public Employer(int id,
-                    String companyName,
-                    String companyAddress,
-                    String email,
-                    String lastname,
-                    String firstName,
-                    String middleName,
-                    String login,
-                    String password,
-                    List<Vacancy> vacancies) {
-        super(id, email, lastname, firstName, middleName, login, password);
-        setCompanyName(companyName);
-        setCompanyAddress(companyAddress);
-        setVacancies(vacancies);
-    }
+    private List<Vacancy> vacancies = new ArrayList<>();
 }

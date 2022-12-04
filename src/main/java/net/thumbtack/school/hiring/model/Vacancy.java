@@ -10,5 +10,5 @@ public class Vacancy {
     private Employer employer;
     private String position;
     private int salary;
-    private List<EmployeeRequirement> requirementsList;
+    private List<EmployeeRequirement> requirementsList = new ArrayList<>();
 }
