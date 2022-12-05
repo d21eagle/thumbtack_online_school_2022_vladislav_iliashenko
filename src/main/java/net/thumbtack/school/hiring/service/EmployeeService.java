@@ -91,6 +91,9 @@ public class EmployeeService extends UserService {
         return (Employee) user;
     }
 
+    // REVU не используется. Возможно, не ошибка, так как потом понадобится, но все же проверьте
+    // IDEA их подсвечивает серым
+    // а еще можно правой кнопкой - Find Usages
     private Employee getEmployeeById(int id) throws ServerException {
         User user = employeeDao.getUserById(id);
         if (user == null) {

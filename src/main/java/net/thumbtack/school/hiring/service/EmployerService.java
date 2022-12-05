@@ -59,6 +59,13 @@ public class EmployerService extends UserService {
         }
     }
 
+    // REVU может, addEmployerRequirement ?
+    // а скорее всего addEmployeeVacancyRequirement
+    // кстати, я бы переименовал EmployeeRequirement
+    // это же требование к вакансии от Employer
+    // почему тогда EmployeeRequirement ?
+    // VacancyRequirement или даже просто Requirement
+    // и метод назвать addVacancyRequirement
     public ServerResponse addEmployeeRequirement(String requestJson) {
         try {
             AddEmployeeRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddEmployeeRequirementDtoRequest.class);
@@ -66,6 +73,11 @@ public class EmployerService extends UserService {
             EmployeeRequirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
 
             Vacancy vacancy = getVacancyById(requirementDtoRequest.getId());
+            // REVU а так можно ?
+            // vacancy.add(requirement);
+            // и пусть метод add в Vacancy все и делает
+            // аналогично delete
+            // скрывайте детали
             vacancy.getRequirementsList().add(requirement);
 
             int id = employerDao.addEmployeeRequirement(requirement);
@@ -87,17 +99,34 @@ public class EmployerService extends UserService {
         }
     }
 
+    // REVU deleteRequirement
     public ServerResponse deleteEmployeeRequirement(String requestJson) {
         try {
+            // REVU и тут Employee ни к чему в имени
+            // и далее тоже
             DeleteEmployeeRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteEmployeeRequirementDtoRequest.class);
             int id = requirementDtoRequest.getId();
             employerDao.deleteEmployeeRequirement(id);
+            // REVU хм. Из Map в БД Вы его удалили
+            // но оно осталось в своей вакансии
+            // было же  vacancy.getRequirementsList().add(requirement);
+            // этот метод посложнее
+            // у Вас Requirement жестко привязан к Vacancy
+            // в общем, это верное решение, хотя возможны и другие
+            // но если так, то при удалении требования надо передавать id вакансии и id требования
+            // а в методе deleteVacancy удалять не только вакансию, но и все ее требования
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
+    // REVU что за Current ?
+    // есть текущий юзер. Это тот, чей токен передан в метод
+    // но нет никакого текущего требования
+    // getRequirementById
+    // REVU кстати, ниже здесь есть getEmployeeRequirementById
+    // это не одно и то же ?
     public ServerResponse getCurrentEmployeeRequirement(int id) {
         try {
             EmployeeRequirement employeeRequirement = getEmployeeRequirementById(id);
@@ -108,6 +137,8 @@ public class EmployerService extends UserService {
         }
     }
 
+    // REVU аналогично
+    // и тоже есть getVacancyById
     public ServerResponse getCurrentVacancy(int id) {
         try {
             Vacancy vacancy = getVacancyById(id);

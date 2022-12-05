@@ -9,6 +9,11 @@ public class Database {
     private static Database instance;
     private final Map<String, User> users = new HashMap<>();
     private final BidiMap<UUID, User> tokens = new DualHashBidiMap<>();
+    // REVU все верно, но имя не совсем удачное. Мне приходится догадываться, что тут такое Integer
+    // можно userById или idToUser
+    // аналогично дальше
+    // кстати, и выше тоже
+    // userByLogin, userByToken
     private final Map<Integer, User> userMap = new HashMap<>();
     private final Map<Integer, Skill> skillMap = new HashMap<>();
     private final Map<Integer, EmployeeRequirement> requirementMap = new HashMap<>();
@@ -60,6 +65,10 @@ public class Database {
     }
 
     public int addSkill(Skill skill) {
+        // REVU зачем Вы скиллу поставили юзеровский ID ?
+        // у каждого типа из модели свои id
+        // private int nextSkillId = 1
+        // аналогично vacancy и requuirement
         skill.setId(nextUserId);
         skillMap.put(nextUserId, skill);
         return nextUserId++;
