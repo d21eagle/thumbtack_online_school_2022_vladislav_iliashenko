@@ -5,7 +5,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterEmployeeDtoRequest {
-    //private int id;
     private String email;
     private String lastName;
     private String middleName;

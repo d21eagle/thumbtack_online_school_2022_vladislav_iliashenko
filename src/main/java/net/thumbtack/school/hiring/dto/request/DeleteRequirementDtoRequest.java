@@ -4,6 +4,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteEmployeeRequirementDtoRequest {
-    private int id;
+public class DeleteRequirementDtoRequest {
+    private int vacancyId;
+    private int requirementId;
 }

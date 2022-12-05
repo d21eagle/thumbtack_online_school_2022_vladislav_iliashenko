@@ -37,16 +37,16 @@ public class Server {
         return employerService.addVacancy(token, requestJson);
     }
 
-    public ServerResponse addEmployeeRequirement(String requestJson) {
-        return employerService.addEmployeeRequirement(requestJson);
+    public ServerResponse addVacancyRequirement(String requestJson) {
+        return employerService.addVacancyRequirement(requestJson);
     }
 
     public ServerResponse deleteVacancy(String requestJson) {
         return employerService.deleteVacancy(requestJson);
     }
 
-    public ServerResponse deleteEmployeeRequirementById(String requestJson) {
-        return employerService.deleteEmployeeRequirement(requestJson);
+    public ServerResponse deleteVacancyRequirement(String requestJson) {
+        return employerService.deleteVacancyRequirement(requestJson);
     }
 
     public ServerResponse getCurrentEmployee(UUID token) {
@@ -58,15 +58,15 @@ public class Server {
     }
 
     public ServerResponse getCurrentSkill(int id) {
-        return employeeService.getCurrentSkill(id);
+        return employeeService.getSkillByIdExternal(id);
     }
 
     public ServerResponse getCurrentEmployeeRequirement(int id) {
-        return employerService.getCurrentEmployeeRequirement(id);
+        return employerService.getRequirementByIdExternal(id);
     }
 
     public ServerResponse getCurrentVacancy(int id) {
-        return employerService.getCurrentVacancy(id);
+        return employerService.getVacancyByIdExternal(id);
     }
 
     public void clear() {

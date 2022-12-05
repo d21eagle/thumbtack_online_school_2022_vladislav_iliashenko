@@ -4,7 +4,7 @@ import net.thumbtack.school.hiring.model.*;
 import java.util.*;
 
 public interface EmployeeDao {
-    void insert(Employee employee) throws ServerException;
+    int insert(Employee employee) throws ServerException;
     int addSkill(Skill skill);
     void deleteSkill(int id);
     User getUserByToken(UUID token);

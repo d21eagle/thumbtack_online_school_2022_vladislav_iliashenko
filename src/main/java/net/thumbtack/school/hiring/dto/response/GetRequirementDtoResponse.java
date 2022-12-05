@@ -4,7 +4,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetEmployeeRequirementDtoResponse {
+public class GetRequirementDtoResponse {
     private String requirementName;
     private int profLevel;
     private boolean isNecessary;

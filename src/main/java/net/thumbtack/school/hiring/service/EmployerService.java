@@ -25,8 +25,9 @@ public class EmployerService extends UserService {
             RegisterEmployerDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employer employer = EmployerMapper.INSTANCE.employerToEmployerDto(registerDtoRequest);
-            employerDao.insert(employer);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+            int userId = employerDao.insert(employer);
+            RegisterEmployerDtoResponse registerEmployerDtoResponse = new RegisterEmployerDtoResponse(userId);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(registerEmployerDtoResponse));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
@@ -49,7 +50,7 @@ public class EmployerService extends UserService {
             Vacancy vacancy = EmployerMapper.INSTANCE.vacancyToVacancyDto(vacancyDtoRequest);
 
             Employer employer = getEmployerByToken(token);
-            employer.getVacancies().add(vacancy);
+            employer.add(vacancy);
 
             int id = employerDao.addVacancy(vacancy);
             AddVacancyDtoResponse addVacancyDtoResponse = new AddVacancyDtoResponse(id);
@@ -59,30 +60,18 @@ public class EmployerService extends UserService {
         }
     }
 
-    // REVU может, addEmployerRequirement ?
-    // а скорее всего addEmployeeVacancyRequirement
-    // кстати, я бы переименовал EmployeeRequirement
-    // это же требование к вакансии от Employer
-    // почему тогда EmployeeRequirement ?
-    // VacancyRequirement или даже просто Requirement
-    // и метод назвать addVacancyRequirement
-    public ServerResponse addEmployeeRequirement(String requestJson) {
+    public ServerResponse addVacancyRequirement(String requestJson) {
         try {
-            AddEmployeeRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddEmployeeRequirementDtoRequest.class);
+            AddRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddRequirementDtoRequest.class);
             validateRequest(requirementDtoRequest);
-            EmployeeRequirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
+            Requirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
 
-            Vacancy vacancy = getVacancyById(requirementDtoRequest.getId());
-            // REVU а так можно ?
-            // vacancy.add(requirement);
-            // и пусть метод add в Vacancy все и делает
-            // аналогично delete
-            // скрывайте детали
-            vacancy.getRequirementsList().add(requirement);
+            Vacancy vacancy = getVacancyById(requirementDtoRequest.getVacancyId());
+            vacancy.add(requirement);
 
-            int id = employerDao.addEmployeeRequirement(requirement);
-            AddEmployeeRequirementDtoResponse addEmployeeRequirementDtoResponse = new AddEmployeeRequirementDtoResponse(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(addEmployeeRequirementDtoResponse));
+            int id = employerDao.addVacancyRequirement(requirement);
+            AddRequirementDtoResponse addRequirementDtoResponse = new AddRequirementDtoResponse(id);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(addRequirementDtoResponse));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
@@ -91,45 +80,41 @@ public class EmployerService extends UserService {
     public ServerResponse deleteVacancy(String requestJson) {
         try {
             DeleteVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteVacancyDtoRequest.class);
-            int id = vacancyDtoRequest.getId();
-            employerDao.deleteVacancy(id);
+            int vacancyId = vacancyDtoRequest.getVacancyId();
+            int userId = vacancyDtoRequest.getUserId();
+
+            Employer employer = getEmployerById(userId);
+            Vacancy vacancy = getVacancyById(vacancyId);
+            vacancy.deleteAll();
+            employer.delete(vacancy);
+
+            employerDao.deleteVacancy(vacancyId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
-    // REVU deleteRequirement
-    public ServerResponse deleteEmployeeRequirement(String requestJson) {
+    public ServerResponse deleteVacancyRequirement(String requestJson) {
         try {
-            // REVU и тут Employee ни к чему в имени
-            // и далее тоже
-            DeleteEmployeeRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteEmployeeRequirementDtoRequest.class);
-            int id = requirementDtoRequest.getId();
-            employerDao.deleteEmployeeRequirement(id);
-            // REVU хм. Из Map в БД Вы его удалили
-            // но оно осталось в своей вакансии
-            // было же  vacancy.getRequirementsList().add(requirement);
-            // этот метод посложнее
-            // у Вас Requirement жестко привязан к Vacancy
-            // в общем, это верное решение, хотя возможны и другие
-            // но если так, то при удалении требования надо передавать id вакансии и id требования
-            // а в методе deleteVacancy удалять не только вакансию, но и все ее требования
+            DeleteRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteRequirementDtoRequest.class);
+            int vacancyId = requirementDtoRequest.getVacancyId();
+            int requirementId = requirementDtoRequest.getRequirementId();
+
+            Vacancy vacancy = getVacancyById(vacancyId);
+            Requirement requirement = getRequirementById(requirementId);
+            vacancy.delete(requirement);
+
+            employerDao.deleteVacancyRequirement(requirementId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
-    // REVU что за Current ?
-    // есть текущий юзер. Это тот, чей токен передан в метод
-    // но нет никакого текущего требования
-    // getRequirementById
-    // REVU кстати, ниже здесь есть getEmployeeRequirementById
-    // это не одно и то же ?
-    public ServerResponse getCurrentEmployeeRequirement(int id) {
+    public ServerResponse getRequirementByIdExternal(int id) {
         try {
-            EmployeeRequirement employeeRequirement = getEmployeeRequirementById(id);
+            Requirement employeeRequirement = getRequirementById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployerMapper.INSTANCE.getEmployeeRequirement(employeeRequirement)));
         } catch (ServerException e) {
@@ -137,9 +122,7 @@ public class EmployerService extends UserService {
         }
     }
 
-    // REVU аналогично
-    // и тоже есть getVacancyById
-    public ServerResponse getCurrentVacancy(int id) {
+    public ServerResponse getVacancyByIdExternal(int id) {
         try {
             Vacancy vacancy = getVacancyById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
@@ -179,12 +162,12 @@ public class EmployerService extends UserService {
         return vacancy;
     }
 
-    private EmployeeRequirement getEmployeeRequirementById(int id) throws ServerException {
-        EmployeeRequirement employeeRequirement = employerDao.getRequirementById(id);
-        if (employeeRequirement == null) {
+    private Requirement getRequirementById(int id) throws ServerException {
+        Requirement requirement = employerDao.getRequirementById(id);
+        if (requirement == null) {
             throw new ServerException(ServerErrorCode.INVALID_ID);
         }
-        return employeeRequirement;
+        return requirement;
     }
 
     private void validateRequest(RegisterEmployerDtoRequest request) throws ServerException {
@@ -217,7 +200,7 @@ public class EmployerService extends UserService {
             throw new ServerException(ServerErrorCode.INVALID_EMPLOYER);
     }
 
-    private void validateRequest(AddEmployeeRequirementDtoRequest request) throws ServerException {
+    private void validateRequest(AddRequirementDtoRequest request) throws ServerException {
         if (Strings.isNullOrEmpty(request.getRequirementName()))
             throw new ServerException(ServerErrorCode.EMPTY_REQUIREMENT_NAME);
         if (request.getProfLevel() <= 0)

@@ -4,6 +4,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddEmployeeRequirementDtoResponse {
-    private int id;
+public class AddRequirementDtoResponse {
+    private int requirementId;
 }

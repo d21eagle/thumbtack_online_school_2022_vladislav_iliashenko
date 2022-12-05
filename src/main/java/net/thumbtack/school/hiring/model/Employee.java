@@ -8,4 +8,12 @@ import java.util.*;
 public class Employee extends User {
 
     private List<Skill> skills = new ArrayList<>();
+
+    public void add(Skill skill) {
+        getSkills().add(skill);
+    }
+
+    public void delete(Skill skill) {
+        getSkills().remove(skill);
+    }
 }

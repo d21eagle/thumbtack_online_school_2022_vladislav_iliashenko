@@ -7,8 +7,8 @@ import java.util.*;
 
 public class EmployeeDaoImpl implements EmployeeDao {
     @Override
-    public void insert(Employee employee) throws ServerException {
-        Database.getInstance().insert(employee);
+    public int insert(Employee employee) throws ServerException {
+        return Database.getInstance().insert(employee);
     }
 
     @Override
@@ -18,7 +18,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public void deleteSkill(int id) {
-        Database.getInstance().deleteSkillById(id);
+        Database.getInstance().deleteSkill(id);
     }
 
     @Override

@@ -10,5 +10,5 @@ public class GetVacancyDtoResponse {
     private Employer employer;
     private String position;
     private int salary;
-    private List<EmployeeRequirementInnerDtoResponse> requirementsList;
+    private List<RequirementInnerDtoResponse> requirementsList;
 }

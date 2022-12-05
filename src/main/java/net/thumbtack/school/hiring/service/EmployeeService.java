@@ -25,8 +25,9 @@ public class EmployeeService extends UserService {
             RegisterEmployeeDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
-            employeeDao.insert(employee);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+            int userId = employeeDao.insert(employee);
+            RegisterEmployeeDtoResponse registerEmployeeDtoResponse = new RegisterEmployeeDtoResponse(userId);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(registerEmployeeDtoResponse));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
@@ -49,7 +50,7 @@ public class EmployeeService extends UserService {
             Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
 
             Employee employee = getEmployeeByToken(token);
-            employee.getSkills().add(skill);
+            employee.add(skill);
 
             int id = employeeDao.addSkill(skill);
             AddSkillDtoResponse addSkillDtoResponse = new AddSkillDtoResponse(id);
@@ -62,15 +63,21 @@ public class EmployeeService extends UserService {
     public ServerResponse deleteSkill(String requestJson) {
         try {
             DeleteSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteSkillDtoRequest.class);
-            int id = skillDtoRequest.getId();
-            employeeDao.deleteSkill(id);
+            int skillId = skillDtoRequest.getSkillId();
+            int userId = skillDtoRequest.getUserId();
+
+            Employee employee = getEmployeeById(userId);
+            Skill skill = getSkillById(skillId);
+            employee.delete(skill);
+
+            employeeDao.deleteSkill(skillId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
-    public ServerResponse getCurrentSkill(int id) {
+    public ServerResponse getSkillByIdExternal(int id) {
         try {
             Skill skill = getSkillById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
@@ -91,9 +98,6 @@ public class EmployeeService extends UserService {
         return (Employee) user;
     }
 
-    // REVU не используется. Возможно, не ошибка, так как потом понадобится, но все же проверьте
-    // IDEA их подсвечивает серым
-    // а еще можно правой кнопкой - Find Usages
     private Employee getEmployeeById(int id) throws ServerException {
         User user = employeeDao.getUserById(id);
         if (user == null) {

@@ -6,8 +6,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class EmployeeRequirement {
-    private int id;
+public class Requirement {
+    private int requirementId;
     private String requirementName;
     private int profLevel;
     private boolean isNecessary;

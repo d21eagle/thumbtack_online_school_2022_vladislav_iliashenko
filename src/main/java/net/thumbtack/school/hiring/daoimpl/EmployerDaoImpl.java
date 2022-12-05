@@ -7,8 +7,8 @@ import java.util.UUID;
 
 public class EmployerDaoImpl implements EmployerDao {
     @Override
-    public void insert(Employer employer) throws ServerException {
-        Database.getInstance().insert(employer);
+    public int insert(Employer employer) throws ServerException {
+        return Database.getInstance().insert(employer);
     }
 
     @Override
@@ -27,20 +27,20 @@ public class EmployerDaoImpl implements EmployerDao {
     }
 
     @Override
-    public int addEmployeeRequirement(EmployeeRequirement requirement) {
-        return Database.getInstance().addEmployeeRequirement(requirement);
+    public int addVacancyRequirement(Requirement requirement) {
+        return Database.getInstance().addVacancyRequirement(requirement);
     }
     @Override
     public void deleteVacancy(int id) {
-        Database.getInstance().deleteVacancyById(id);
+        Database.getInstance().deleteVacancy(id);
     }
     @Override
-    public void deleteEmployeeRequirement(int id) {
-        Database.getInstance().deleteEmployeeRequirementById(id);
+    public void deleteVacancyRequirement(int id) {
+        Database.getInstance().deleteVacancyRequirement(id);
     }
 
     @Override
-    public EmployeeRequirement getRequirementById(int id) {
+    public Requirement getRequirementById(int id) {
         return Database.getInstance().getRequirementById(id);
     }
 

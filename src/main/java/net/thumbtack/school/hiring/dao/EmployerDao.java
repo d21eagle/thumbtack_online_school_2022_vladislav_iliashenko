@@ -4,13 +4,13 @@ import net.thumbtack.school.hiring.model.*;
 import java.util.UUID;
 
 public interface EmployerDao {
-    void insert(Employer employer) throws ServerException;
+    int insert(Employer employer) throws ServerException;
     User getUserByToken(UUID token) throws ServerException;
     User getUserById(int id);
     int addVacancy(Vacancy vacancy);
-    int addEmployeeRequirement(EmployeeRequirement requirement);
+    int addVacancyRequirement(Requirement requirement);
     void deleteVacancy(int id);
-    void deleteEmployeeRequirement(int id);
-    EmployeeRequirement getRequirementById(int id);
+    void deleteVacancyRequirement(int id);
+    Requirement getRequirementById(int id);
     Vacancy getVacancyById(int id);
 }

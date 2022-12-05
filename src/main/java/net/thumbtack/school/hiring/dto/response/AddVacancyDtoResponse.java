@@ -5,5 +5,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddVacancyDtoResponse {
-    private int id;
+    private int vacancyId;
 }

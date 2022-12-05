@@ -4,6 +4,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddSkillDtoResponse {
-    private int skillId;
+public class RegisterEmployeeDtoResponse {
+    private int userId;
 }

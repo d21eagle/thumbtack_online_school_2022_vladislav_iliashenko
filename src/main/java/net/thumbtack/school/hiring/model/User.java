@@ -5,7 +5,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private int id;
+    private int userId;
     private String email;
     private String login;
     private String password;
