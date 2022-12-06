@@ -45,11 +45,11 @@ public class EmployerService extends UserService {
 
     public ServerResponse addVacancy(UUID token, String requestJson) {
         try {
+            Employer employer = getEmployerByToken(token);
             AddVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, AddVacancyDtoRequest.class);
             validateRequest(vacancyDtoRequest);
             Vacancy vacancy = EmployerMapper.INSTANCE.vacancyToVacancyDto(vacancyDtoRequest);
 
-            Employer employer = getEmployerByToken(token);
             employer.add(vacancy);
 
             int id = employerDao.addVacancy(vacancy);
@@ -60,8 +60,9 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse addVacancyRequirement(String requestJson) {
+    public ServerResponse addVacancyRequirement(UUID token, String requestJson) {
         try {
+            Employer employer = getEmployerByToken(token);
             AddRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddRequirementDtoRequest.class);
             validateRequest(requirementDtoRequest);
             Requirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
@@ -77,13 +78,12 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse deleteVacancy(String requestJson) {
+    public ServerResponse deleteVacancy(UUID token, String requestJson) {
         try {
+            Employer employer = getEmployerByToken(token);
             DeleteVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteVacancyDtoRequest.class);
             int vacancyId = vacancyDtoRequest.getVacancyId();
-            int userId = vacancyDtoRequest.getUserId();
 
-            Employer employer = getEmployerById(userId);
             Vacancy vacancy = getVacancyById(vacancyId);
             vacancy.deleteAll();
             employer.delete(vacancy);
@@ -95,8 +95,9 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse deleteVacancyRequirement(String requestJson) {
+    public ServerResponse deleteVacancyRequirement(UUID token, String requestJson) {
         try {
+            Employer employer = getEmployerByToken(token);
             DeleteRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteRequirementDtoRequest.class);
             int vacancyId = requirementDtoRequest.getVacancyId();
             int requirementId = requirementDtoRequest.getRequirementId();
@@ -112,8 +113,9 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse getRequirementByIdExternal(int id) {
+    public ServerResponse getRequirementByIdExternal(UUID token, int id) {
         try {
+            Employer employer = getEmployerByToken(token);
             Requirement employeeRequirement = getRequirementById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployerMapper.INSTANCE.getEmployeeRequirement(employeeRequirement)));
@@ -122,8 +124,9 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse getVacancyByIdExternal(int id) {
+    public ServerResponse getVacancyByIdExternal(UUID token, int id) {
         try {
+            Employer employer = getEmployerByToken(token);
             Vacancy vacancy = getVacancyById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployerMapper.INSTANCE.getVacancy(vacancy)));
@@ -136,17 +139,6 @@ public class EmployerService extends UserService {
         User user = employerDao.getUserByToken(token);
         if (user == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
-        }
-        if (!(user instanceof Employer)) {
-            throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
-        }
-        return (Employer) user;
-    }
-
-    private Employer getEmployerById(int id) throws ServerException {
-        User user = employerDao.getUserById(id);
-        if (user == null) {
-            throw new ServerException(ServerErrorCode.INVALID_ID);
         }
         if (!(user instanceof Employer)) {
             throw new ServerException(ServerErrorCode.INVALID_USERTYPE);

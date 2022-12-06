@@ -45,11 +45,11 @@ public class EmployeeService extends UserService {
 
     public ServerResponse addSkill(UUID token, String requestJson) {
         try {
+            Employee employee = getEmployeeByToken(token);
             AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
             Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
 
-            Employee employee = getEmployeeByToken(token);
             employee.add(skill);
 
             int id = employeeDao.addSkill(skill);
@@ -60,13 +60,12 @@ public class EmployeeService extends UserService {
         }
     }
 
-    public ServerResponse deleteSkill(String requestJson) {
+    public ServerResponse deleteSkill(UUID token, String requestJson) {
         try {
+            Employee employee = getEmployeeByToken(token);
             DeleteSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteSkillDtoRequest.class);
             int skillId = skillDtoRequest.getSkillId();
-            int userId = skillDtoRequest.getUserId();
 
-            Employee employee = getEmployeeById(userId);
             Skill skill = getSkillById(skillId);
             employee.delete(skill);
 
@@ -77,8 +76,9 @@ public class EmployeeService extends UserService {
         }
     }
 
-    public ServerResponse getSkillByIdExternal(int id) {
+    public ServerResponse getSkillByIdExternal(UUID token, int id) {
         try {
+            Employee employee = getEmployeeByToken(token);
             Skill skill = getSkillById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployeeMapper.INSTANCE.getSkill(skill)));
@@ -91,17 +91,6 @@ public class EmployeeService extends UserService {
         User user = employeeDao.getUserByToken(token);
         if (user == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
-        }
-        if (!(user instanceof Employee)) {
-            throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
-        }
-        return (Employee) user;
-    }
-
-    private Employee getEmployeeById(int id) throws ServerException {
-        User user = employeeDao.getUserById(id);
-        if (user == null) {
-            throw new ServerException(ServerErrorCode.INVALID_ID);
         }
         if (!(user instanceof Employee)) {
             throw new ServerException(ServerErrorCode.INVALID_USERTYPE);

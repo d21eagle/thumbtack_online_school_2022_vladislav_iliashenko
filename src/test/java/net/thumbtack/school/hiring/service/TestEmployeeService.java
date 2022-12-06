@@ -57,8 +57,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        LogoutUserDtoRequest logoutJson = new LogoutUserDtoRequest(loginEmployeeDtoResponse.getToken());
-        ServerResponse logoutResponse = server.logoutUser(GSON.toJson(logoutJson));
+        ServerResponse logoutResponse = server.logoutUser(loginEmployeeDtoResponse.getToken());
 
         assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
 
@@ -82,8 +81,8 @@ public class TestEmployeeService extends TestBase {
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "rocket_ivan",
-                "754376579"
-        );
+                "754376579");
+
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
@@ -100,7 +99,8 @@ public class TestEmployeeService extends TestBase {
         AddSkillDtoResponse addSkillResponse = GSON.fromJson(idJson.getResponseData(), AddSkillDtoResponse.class);
 
         // получение скилла по id
-        ServerResponse getSkillByIdJson = server.getCurrentSkill(addSkillResponse.getSkillId());
+        ServerResponse getSkillByIdJson = server.getSkillByIdExternal(
+                loginEmployeeDtoResponse.getToken(), addSkillResponse.getSkillId());
         GetSkillDtoResponse getSkillDtoResponse = GSON.fromJson(getSkillByIdJson.getResponseData(), GetSkillDtoResponse.class);
 
         assertEquals(addSkillJson.getSkillName(), getSkillDtoResponse.getSkillName());
@@ -111,11 +111,125 @@ public class TestEmployeeService extends TestBase {
                 addSkillResponse.getSkillId()
         );
 
-        // удаление скилла по id
-        ServerResponse deleteSkillResponse = server.deleteSkill(GSON.toJson(deleteSkillJson));
+        // удаление скилла
+        ServerResponse deleteSkillResponse = server.deleteSkill(
+                loginEmployeeDtoResponse.getToken(), GSON.toJson(deleteSkillJson));
         assertEquals(deleteSkillResponse.getResponseCode(), SUCCESS_CODE);
 
-        ServerResponse getSkillByIdJson1 = server.getCurrentSkill(addSkillResponse.getSkillId());
+        ServerResponse getSkillByIdJson1 = server.getSkillByIdExternal(
+                loginEmployeeDtoResponse.getToken(), addSkillResponse.getSkillId());
         assertEquals(getSkillByIdJson1.getResponseCode(), ERROR_CODE);
+    }
+
+    @Test
+    public void testRegisterEmployeeWithEmptyLastName() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty last name!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithEmptyFirstName() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty first name!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithEmptyMiddleName() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty middle name!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithEmptyLogin() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty login!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithEmptyPassword() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                ""
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty password!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithShortLogin() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rock",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Short login!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithShortPassword() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "7543"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Short password!");
     }
 }

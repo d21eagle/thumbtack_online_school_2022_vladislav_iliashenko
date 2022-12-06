@@ -32,11 +32,9 @@ public class UserService {
         }
     }
 
-    public ServerResponse logoutUser(String requestJson) {
+    public ServerResponse logoutUser(UUID token) {
         try {
-            LogoutUserDtoRequest logoutEmployerDtoRequest = ServerUtils.getClassFromJson(requestJson, LogoutUserDtoRequest.class);
-            validateRequest(logoutEmployerDtoRequest);
-            userDao.logoutUser(logoutEmployerDtoRequest);
+            userDao.logoutUser(token);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         }
         catch (ServerException e) {
@@ -49,10 +47,5 @@ public class UserService {
             throw new ServerException(ServerErrorCode.EMPTY_LOGIN);
         if (Strings.isNullOrEmpty(request.getPassword()))
             throw new ServerException(ServerErrorCode.EMPTY_PASSWORD);
-    }
-
-    private void validateRequest(LogoutUserDtoRequest request) throws ServerException {
-        if (request.getToken() == null)
-            throw new ServerException(ServerErrorCode.INVALID_TOKEN);
     }
 }

@@ -1,7 +1,6 @@
 package net.thumbtack.school.hiring.daoimpl;
 import net.thumbtack.school.hiring.dao.UserDao;
 import net.thumbtack.school.hiring.database.Database;
-import net.thumbtack.school.hiring.dto.request.LogoutUserDtoRequest;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.User;
 import java.util.UUID;
@@ -13,8 +12,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void logoutUser(LogoutUserDtoRequest dtoRequest) throws ServerException {
-        Database.getInstance().logoutUser(dtoRequest.getToken());
+    public void logoutUser(UUID token) throws ServerException {
+        Database.getInstance().logoutUser(token);
     }
 
     @Override

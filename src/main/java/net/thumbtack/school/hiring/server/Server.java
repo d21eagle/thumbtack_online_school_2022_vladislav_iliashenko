@@ -21,32 +21,32 @@ public class Server {
         return userService.loginUser(requestJson);
     }
 
-    public ServerResponse logoutUser(String requestJson) {
-        return userService.logoutUser(requestJson);
+    public ServerResponse logoutUser(UUID token) {
+        return userService.logoutUser(token);
     }
 
     public ServerResponse addSkill(UUID token, String requestJson) {
         return employeeService.addSkill(token, requestJson);
     }
 
-    public ServerResponse deleteSkill(String requestJson) {
-        return employeeService.deleteSkill(requestJson);
+    public ServerResponse deleteSkill(UUID token, String requestJson) {
+        return employeeService.deleteSkill(token, requestJson);
     }
 
     public ServerResponse addVacancy(UUID token, String requestJson) {
         return employerService.addVacancy(token, requestJson);
     }
 
-    public ServerResponse addVacancyRequirement(String requestJson) {
-        return employerService.addVacancyRequirement(requestJson);
+    public ServerResponse addVacancyRequirement(UUID token, String requestJson) {
+        return employerService.addVacancyRequirement(token, requestJson);
     }
 
-    public ServerResponse deleteVacancy(String requestJson) {
-        return employerService.deleteVacancy(requestJson);
+    public ServerResponse deleteVacancy(UUID token, String requestJson) {
+        return employerService.deleteVacancy(token, requestJson);
     }
 
-    public ServerResponse deleteVacancyRequirement(String requestJson) {
-        return employerService.deleteVacancyRequirement(requestJson);
+    public ServerResponse deleteVacancyRequirement(UUID token, String requestJson) {
+        return employerService.deleteVacancyRequirement(token, requestJson);
     }
 
     public ServerResponse getCurrentEmployee(UUID token) {
@@ -57,16 +57,16 @@ public class Server {
         return employerService.getCurrentEmployer(token);
     }
 
-    public ServerResponse getCurrentSkill(int id) {
-        return employeeService.getSkillByIdExternal(id);
+    public ServerResponse getSkillByIdExternal(UUID token, int id) {
+        return employeeService.getSkillByIdExternal(token, id);
     }
 
-    public ServerResponse getCurrentEmployeeRequirement(int id) {
-        return employerService.getRequirementByIdExternal(id);
+    public ServerResponse getRequirementByIdExternal(UUID token, int id) {
+        return employerService.getRequirementByIdExternal(token, id);
     }
 
-    public ServerResponse getCurrentVacancy(int id) {
-        return employerService.getVacancyByIdExternal(id);
+    public ServerResponse getVacancyByIdExternal(UUID token, int id) {
+        return employerService.getVacancyByIdExternal(token, id);
     }
 
     public void clear() {

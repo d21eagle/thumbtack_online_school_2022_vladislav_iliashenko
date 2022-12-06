@@ -17,7 +17,6 @@ public enum ServerErrorCode {
     INVALID_TOKEN("Token is wrong!"),
     INVALID_USERTYPE("Usertype is wrong!"),
     EMPTY_SKILL_NAME("Empty skill name!"),
-    EMPTY_SKILLS("Empty skills!"),
     INVALID_PROF_LEVEL("Invalid prof level!"),
     INVALID_ID("Id is invalid!"),
     EMPTY_POSITION("Position is empty!"),
