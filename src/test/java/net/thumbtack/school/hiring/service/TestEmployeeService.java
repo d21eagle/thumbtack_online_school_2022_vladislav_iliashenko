@@ -28,9 +28,11 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
+        // получение Employee по токену
         ServerResponse getEmployeeByTokenJson = server.getCurrentEmployee(loginEmployeeDtoResponse.getToken());
         GetEmployeeDtoResponse getEmployeeResponse = GSON.fromJson(getEmployeeByTokenJson.getResponseData(), GetEmployeeDtoResponse.class);
 
+        // проверка данных, введенных при регистрации
         assertEquals(requestJson.getEmail(), getEmployeeResponse.getEmail());
         assertEquals(requestJson.getLastName(), getEmployeeResponse.getLastName());
         assertEquals(requestJson.getMiddleName(), getEmployeeResponse.getMiddleName());
@@ -58,11 +60,12 @@ public class TestEmployeeService extends TestBase {
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
         ServerResponse logoutResponse = server.logoutUser(loginEmployeeDtoResponse.getToken());
-
         assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
 
+        // попытка получить Employee по токену
         ServerResponse getEmployeeByTokenJson = server.getCurrentEmployee(loginEmployeeDtoResponse.getToken());
         assertEquals(getEmployeeByTokenJson.getResponseCode(), ERROR_CODE);
+        assertEquals(getEmployeeByTokenJson.getResponseData(), "Invalid token!");
     }
 
     @Test
@@ -86,6 +89,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
+        // запрос на добавление скилла
         AddSkillDtoRequest addSkillJson = new AddSkillDtoRequest(
                 "Язык Java",
                 5
@@ -103,9 +107,11 @@ public class TestEmployeeService extends TestBase {
                 loginEmployeeDtoResponse.getToken(), addSkillResponse.getSkillId());
         GetSkillDtoResponse getSkillDtoResponse = GSON.fromJson(getSkillByIdJson.getResponseData(), GetSkillDtoResponse.class);
 
+        // проверка данных скилла
         assertEquals(addSkillJson.getSkillName(), getSkillDtoResponse.getSkillName());
         assertEquals(addSkillJson.getProfLevel(), getSkillDtoResponse.getProfLevel());
 
+        // запрос на удаление скилла
         DeleteSkillDtoRequest deleteSkillJson = new DeleteSkillDtoRequest(
                 employeeDtoResponse.getUserId(),
                 addSkillResponse.getSkillId()
@@ -116,9 +122,11 @@ public class TestEmployeeService extends TestBase {
                 loginEmployeeDtoResponse.getToken(), GSON.toJson(deleteSkillJson));
         assertEquals(deleteSkillResponse.getResponseCode(), SUCCESS_CODE);
 
+        // попытка получения скилла по id
         ServerResponse getSkillByIdJson1 = server.getSkillByIdExternal(
                 loginEmployeeDtoResponse.getToken(), addSkillResponse.getSkillId());
         assertEquals(getSkillByIdJson1.getResponseCode(), ERROR_CODE);
+        assertEquals(getSkillByIdJson1.getResponseData(), "Id is invalid!");
     }
 
     @Test
@@ -280,6 +288,18 @@ public class TestEmployeeService extends TestBase {
     }
 
     @Test
+    public void testLoginEmployeeWithoutRegister() {
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse loginResponse = server.loginUser(GSON.toJson(loginJson));
+        assertEquals(loginResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(loginResponse.getResponseData(), "Wrong login or password!");
+    }
+
+    @Test
     public void testAttemptToAddVacancyByEmployee() {
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
                 "ivan.ivanov@mail.ru",
@@ -300,6 +320,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
+        // попытка Employee добавить вакансии
         AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
                 "middle",
                 80000
@@ -312,7 +333,7 @@ public class TestEmployeeService extends TestBase {
 
     @Test
     public void testAttemptToAddVacancyRequirementByEmployee() {
-        // Операции для Employer
+        // *Employer добавляет вакансию*
         RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
                 "HireTool",
                 "ул.Ленина д.19/2",
@@ -325,7 +346,6 @@ public class TestEmployeeService extends TestBase {
         );
 
         ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
-        RegisterEmployerDtoResponse employerDtoResponse = GSON.fromJson(actualResponse0.getResponseData(), RegisterEmployerDtoResponse.class);;
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "hiretool_HRdep",
@@ -334,7 +354,6 @@ public class TestEmployeeService extends TestBase {
 
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
-        GetEmployerDtoResponse employerResponse = GSON.fromJson(tokenJson.getResponseData(), GetEmployerDtoResponse.class);
 
         // запрос на добавление вакансии
         AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
@@ -349,8 +368,7 @@ public class TestEmployeeService extends TestBase {
         // получение id вакансии
         AddVacancyDtoResponse addVacancyResponse = GSON.fromJson(idJson.getResponseData(), AddVacancyDtoResponse.class);
 
-
-        // Операции для Employee
+        // *Employee пытается добавить требования к вакансии*
         RegisterEmployeeDtoRequest regEmployeeRequest = new RegisterEmployeeDtoRequest(
                 "ivan.ivanov@mail.ru",
                 "Иванов",
@@ -370,6 +388,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse loginEmployeeResponse = server.loginUser(GSON.toJson(loginEmployeeRequest));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(loginEmployeeResponse.getResponseData(), LoginUserDtoResponse.class);
 
+        // запрос на добавление требований
         AddRequirementDtoRequest addRequirementJson = new AddRequirementDtoRequest(
                 addVacancyResponse.getVacancyId(),
                 "Soft skills",
@@ -381,5 +400,34 @@ public class TestEmployeeService extends TestBase {
                 loginEmployeeDtoResponse.getToken(), GSON.toJson(addRequirementJson));
         assertEquals(addVacancyRequirement.getResponseCode(), ERROR_CODE);
         assertEquals(addVacancyRequirement.getResponseData(), "Usertype is wrong!");
+    }
+
+    @Test
+    public void testGetCurrentEmployeeByEmployerToken() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+
+        // попытка получить Employee по токену Employer
+        ServerResponse getEmployeeByEmployerTokenJson = server.getCurrentEmployee(loginEmployerDtoResponse.getToken());
+        assertEquals(getEmployeeByEmployerTokenJson.getResponseCode(), ERROR_CODE);
+        assertEquals(getEmployeeByEmployerTokenJson.getResponseData(), "Usertype is wrong!");
     }
 }

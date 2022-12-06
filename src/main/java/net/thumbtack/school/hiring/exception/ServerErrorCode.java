@@ -14,14 +14,13 @@ public enum ServerErrorCode {
     WRONG_JSON("JSON is wrong"),
     SESSION_NOT_FOUND("Session not found!"),
     LOGIN_ALREADY_USED("Login already exist!"),
-    INVALID_TOKEN("Token is wrong!"),
+    INVALID_TOKEN("Invalid token!"),
     INVALID_USERTYPE("Usertype is wrong!"),
     EMPTY_SKILL_NAME("Empty skill name!"),
     INVALID_PROF_LEVEL("Invalid prof level!"),
     INVALID_ID("Id is invalid!"),
     EMPTY_POSITION("Position is empty!"),
     INVALID_SALARY("Invalid salary!"),
-    EMPTY_REQUIREMENT("Empty requirement!"),
     EMPTY_REQUIREMENT_NAME("Empty requirement name!");
 
     private String errorString;
