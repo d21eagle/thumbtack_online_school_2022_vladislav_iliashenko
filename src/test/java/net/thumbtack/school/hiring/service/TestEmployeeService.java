@@ -232,4 +232,154 @@ public class TestEmployeeService extends TestBase {
         assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
         assertEquals(actualResponse0.getResponseData(), "Short password!");
     }
+
+    @Test
+    public void testLoginEmployeeWithEmptyLogin() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse regResponse = server.registerEmployee(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "",
+                "754376579"
+        );
+
+        ServerResponse loginResponse = server.loginUser(GSON.toJson(loginJson));
+        assertEquals(loginResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(loginResponse.getResponseData(), "Empty login!");
+    }
+
+    @Test
+    public void testLoginEmployeeWithEmptyPassword() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse regResponse = server.registerEmployee(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "rocket_ivan",
+                ""
+        );
+
+        ServerResponse loginResponse = server.loginUser(GSON.toJson(loginJson));
+        assertEquals(loginResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(loginResponse.getResponseData(), "Empty password!");
+    }
+
+    @Test
+    public void testAttemptToAddVacancyByEmployee() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+
+        AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
+                "middle",
+                80000
+        );
+
+        ServerResponse addVacancyResponse = server.addVacancy(loginEmployeeDtoResponse.getToken(), GSON.toJson(addVacancyJson));
+        assertEquals(addVacancyResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(addVacancyResponse.getResponseData(), "Usertype is wrong!");
+    }
+
+    @Test
+    public void testAttemptToAddVacancyRequirementByEmployee() {
+        // Операции для Employer
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        RegisterEmployerDtoResponse employerDtoResponse = GSON.fromJson(actualResponse0.getResponseData(), RegisterEmployerDtoResponse.class);;
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+        GetEmployerDtoResponse employerResponse = GSON.fromJson(tokenJson.getResponseData(), GetEmployerDtoResponse.class);
+
+        // запрос на добавление вакансии
+        AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
+                "middle",
+                80000
+        );
+
+        // добавление вакансии
+        ServerResponse idJson = server.addVacancy(loginEmployerDtoResponse.getToken(), GSON.toJson(addVacancyJson));
+        assertEquals(idJson.getResponseCode(), SUCCESS_CODE);
+
+        // получение id вакансии
+        AddVacancyDtoResponse addVacancyResponse = GSON.fromJson(idJson.getResponseData(), AddVacancyDtoResponse.class);
+
+
+        // Операции для Employee
+        RegisterEmployeeDtoRequest regEmployeeRequest = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse regEmployeeResponse = server.registerEmployee(GSON.toJson(regEmployeeRequest));
+
+        LoginUserDtoRequest loginEmployeeRequest = new LoginUserDtoRequest(
+                "rocket_ivan",
+                "754376579"
+        );
+
+        ServerResponse loginEmployeeResponse = server.loginUser(GSON.toJson(loginEmployeeRequest));
+        LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(loginEmployeeResponse.getResponseData(), LoginUserDtoResponse.class);
+
+        AddRequirementDtoRequest addRequirementJson = new AddRequirementDtoRequest(
+                addVacancyResponse.getVacancyId(),
+                "Soft skills",
+                5,
+                true
+        );
+
+        ServerResponse addVacancyRequirement = server.addVacancyRequirement(
+                loginEmployeeDtoResponse.getToken(), GSON.toJson(addRequirementJson));
+        assertEquals(addVacancyRequirement.getResponseCode(), ERROR_CODE);
+        assertEquals(addVacancyRequirement.getResponseData(), "Usertype is wrong!");
+    }
 }

@@ -7,7 +7,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetVacancyDtoResponse {
-    private Employer employer;
     private String position;
     private int salary;
     private List<RequirementInnerDtoResponse> requirementsList;

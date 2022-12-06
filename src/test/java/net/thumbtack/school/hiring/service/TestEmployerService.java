@@ -4,7 +4,6 @@ import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import net.thumbtack.school.hiring.mapper.EmployerMapper;
 
 public class TestEmployerService extends TestBase {
     @Test
@@ -97,7 +96,6 @@ public class TestEmployerService extends TestBase {
 
         // запрос на добавление вакансии
         AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
-                EmployerMapper.INSTANCE.getEmployer(employerResponse),
                 "middle",
                 80000
         );
@@ -114,7 +112,6 @@ public class TestEmployerService extends TestBase {
                 loginEmployerDtoResponse.getToken(), addVacancyResponse.getVacancyId());
         GetVacancyDtoResponse getVacancyDtoResponse = GSON.fromJson(getVacancyByIdJson.getResponseData(), GetVacancyDtoResponse.class);
 
-        assertEquals(addVacancyJson.getEmployer(), getVacancyDtoResponse.getEmployer());
         assertEquals(addVacancyJson.getPosition(), getVacancyDtoResponse.getPosition());
         assertEquals(addVacancyJson.getSalary(), getVacancyDtoResponse.getSalary());
 
@@ -174,5 +171,214 @@ public class TestEmployerService extends TestBase {
         ServerResponse getVacancyByIdJson1 = server.getVacancyByIdExternal(
                 loginEmployerDtoResponse.getToken(), addVacancyResponse.getVacancyId());
         assertEquals(getVacancyByIdJson1.getResponseCode(), ERROR_CODE);
+    }
+
+    @Test
+    public void testRegisterEmployerWithEmptyLastName() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty last name!");
+    }
+
+    @Test
+    public void testRegisterEmployerWithEmptyFirstName() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty first name!");
+    }
+
+    @Test
+    public void testRegisterEmployerWithEmptyMiddleName() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty middle name!");
+    }
+
+    @Test
+    public void testRegisterEmployerWithEmptyLogin() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty login!");
+    }
+
+    @Test
+    public void testRegisterEmployerWithEmptyPassword() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                ""
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Empty password!");
+    }
+
+    @Test
+    public void testRegisterEmployerWithShortLogin() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hire",
+                "423657801"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Short login!");
+    }
+
+    @Test
+    public void testRegisterEmployeeWithShortPassword() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "4236"
+        );
+
+        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        assertEquals(actualResponse0.getResponseCode(), ERROR_CODE);
+        assertEquals(actualResponse0.getResponseData(), "Short password!");
+    }
+
+    @Test
+    public void testLoginEmployerWithEmptyLogin() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse regResponse = server.registerEmployer(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "",
+                "423657801"
+        );
+
+        ServerResponse loginResponse = server.loginUser(GSON.toJson(loginJson));
+        assertEquals(loginResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(loginResponse.getResponseData(), "Empty login!");
+    }
+
+    @Test
+    public void testLoginEmployerWithEmptyPassword() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse regResponse = server.registerEmployer(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "hiretool_HRdep",
+                ""
+        );
+
+        ServerResponse loginResponse = server.loginUser(GSON.toJson(loginJson));
+        assertEquals(loginResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(loginResponse.getResponseData(), "Empty password!");
+    }
+
+    @Test
+    public void testAttemptToAddSkillByEmployer() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "HireTool",
+                "ул.Ленина д.19/2",
+                "hiretool.it@gmail.com",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse regResponse = server.registerEmployer(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "hiretool_HRdep",
+                "423657801"
+        );
+
+        ServerResponse loginResponse = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(loginResponse.getResponseData(), LoginUserDtoResponse.class);
+
+        AddSkillDtoRequest addSkillJson = new AddSkillDtoRequest(
+                "Язык Java",
+                5
+        );
+
+        ServerResponse addSkillResponse = server.addSkill(loginEmployerDtoResponse.getToken(), GSON.toJson(addSkillJson));
+        assertEquals(addSkillResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(addSkillResponse.getResponseData(), "Usertype is wrong!");
     }
 }

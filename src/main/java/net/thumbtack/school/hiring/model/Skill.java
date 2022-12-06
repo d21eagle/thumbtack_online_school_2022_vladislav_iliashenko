@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Skill {
     private int skillId;
+    private Employee employee;
     private String skillName;
     private int profLevel;
 }

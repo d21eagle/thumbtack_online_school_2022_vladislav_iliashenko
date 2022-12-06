@@ -188,8 +188,6 @@ public class EmployerService extends UserService {
             throw new ServerException(ServerErrorCode.EMPTY_POSITION);
         if (request.getSalary() <= 0)
             throw new ServerException(ServerErrorCode.INVALID_SALARY);
-        if (request.getEmployer() == null)
-            throw new ServerException(ServerErrorCode.INVALID_EMPLOYER);
     }
 
     private void validateRequest(AddRequirementDtoRequest request) throws ServerException {

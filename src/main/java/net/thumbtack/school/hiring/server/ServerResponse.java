@@ -3,7 +3,6 @@ import net.thumbtack.school.hiring.exception.ServerException;
 import lombok.*;
 
 @Data
-@AllArgsConstructor
 public class ServerResponse {
 
     private int responseCode;
@@ -13,5 +12,13 @@ public class ServerResponse {
     public ServerResponse(ServerException exception) {
         setResponseCode(ERROR_CODE);
         setResponseData(exception.getErrorCode().getErrorString());
+    }
+
+    public ServerResponse(int reCode, String reData) throws IllegalArgumentException {
+        if (reCode == 200 || reCode == 400 || (reData != null && !reData.equals("")))
+        {
+            responseCode = reCode;
+            responseData = reData;
+        }
     }
 }

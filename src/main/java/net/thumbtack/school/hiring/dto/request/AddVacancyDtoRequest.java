@@ -6,7 +6,6 @@ import net.thumbtack.school.hiring.model.Employer;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddVacancyDtoRequest {
-    private Employer employer;
     private String position;
     private int salary;
 }

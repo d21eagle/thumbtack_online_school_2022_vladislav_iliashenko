@@ -21,7 +21,6 @@ public enum ServerErrorCode {
     INVALID_ID("Id is invalid!"),
     EMPTY_POSITION("Position is empty!"),
     INVALID_SALARY("Invalid salary!"),
-    INVALID_EMPLOYER("Invalid employer"),
     EMPTY_REQUIREMENT("Empty requirement!"),
     EMPTY_REQUIREMENT_NAME("Empty requirement name!");
 
