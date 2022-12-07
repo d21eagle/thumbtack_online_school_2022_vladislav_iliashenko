@@ -98,13 +98,13 @@ public class TestEmployerService extends TestBase {
         GetEmployerDtoResponse employerResponse = GSON.fromJson(tokenJson.getResponseData(), GetEmployerDtoResponse.class);
 
         // запрос на добавление вакансии
-        AddVacancyDtoRequest addVacancyJson = new AddVacancyDtoRequest(
-                "middle",
+        AddVacancyDtoRequest addVacancyJson0 = new AddVacancyDtoRequest(
+                "Middle",
                 80000
         );
 
         // добавление вакансии
-        ServerResponse idJson = server.addVacancy(loginEmployerDtoResponse.getToken(), GSON.toJson(addVacancyJson));
+        ServerResponse idJson = server.addVacancy(loginEmployerDtoResponse.getToken(), GSON.toJson(addVacancyJson0));
         assertEquals(idJson.getResponseCode(), SUCCESS_CODE);
 
         // получение id вакансии
@@ -116,11 +116,32 @@ public class TestEmployerService extends TestBase {
         GetVacancyDtoResponse getVacancyDtoResponse = GSON.fromJson(getVacancyByIdJson.getResponseData(), GetVacancyDtoResponse.class);
 
         // проверка данных вакансии
-        assertEquals(addVacancyJson.getPosition(), getVacancyDtoResponse.getPosition());
-        assertEquals(addVacancyJson.getSalary(), getVacancyDtoResponse.getSalary());
+        assertEquals(addVacancyJson0.getPosition(), getVacancyDtoResponse.getPosition());
+        assertEquals(addVacancyJson0.getSalary(), getVacancyDtoResponse.getSalary());
+
+
+        // запрос 2 на добавление скилла
+        AddVacancyDtoRequest addVacancyJson1 = new AddVacancyDtoRequest(
+                "Senior",
+                5
+        );
+
+        ServerResponse addSkillResponse1 = server.addVacancy(loginEmployerDtoResponse.getToken(), GSON.toJson(addVacancyJson1));
+
+        // получение всех скиллов
+        ServerResponse getAllVacanciesResponse = server.getAllVacancies(loginEmployerDtoResponse.getToken());
+        assertEquals(getAllVacanciesResponse.getResponseCode(), SUCCESS_CODE);
+
+        GetAllVacanciesDtoResponse getAllVacancies = GSON.fromJson(
+                getAllVacanciesResponse.getResponseData(), GetAllVacanciesDtoResponse.class);
+        assertEquals(addVacancyJson0.getPosition(), getAllVacancies.getVacancies().get(0).getPosition());
+        assertEquals(addVacancyJson0.getSalary(), getAllVacancies.getVacancies().get(0).getSalary());
+        assertEquals(addVacancyJson1.getPosition(), getAllVacancies.getVacancies().get(1).getPosition());
+        assertEquals(addVacancyJson1.getSalary(), getAllVacancies.getVacancies().get(1).getSalary());
+
 
         // запрос на добавление требования
-        AddRequirementDtoRequest addRequirementJson = new AddRequirementDtoRequest(
+        AddRequirementDtoRequest addRequirementJson0 = new AddRequirementDtoRequest(
                 addVacancyResponse.getVacancyId(),
                 "Знание Python",
                 4,
@@ -129,7 +150,7 @@ public class TestEmployerService extends TestBase {
 
         // добавление требования
         ServerResponse idJson1 = server.addVacancyRequirement(
-                loginEmployerDtoResponse.getToken(), GSON.toJson(addRequirementJson));
+                loginEmployerDtoResponse.getToken(), GSON.toJson(addRequirementJson0));
         assertEquals(idJson1.getResponseCode(), SUCCESS_CODE);
 
         // получение id требования
@@ -143,13 +164,34 @@ public class TestEmployerService extends TestBase {
                 getRequirementByIdJson.getResponseData(), GetRequirementDtoResponse.class);
 
         // проверка данных требования
-        assertEquals(addRequirementJson.getRequirementName(), getRequirementDtoResponse.getRequirementName());
-        assertEquals(addRequirementJson.getProfLevel(), getRequirementDtoResponse.getProfLevel());
-        assertEquals(addRequirementJson.isNecessary(), getRequirementDtoResponse.isNecessary());
+        assertEquals(addRequirementJson0.getRequirementName(), getRequirementDtoResponse.getRequirementName());
+        assertEquals(addRequirementJson0.getProfLevel(), getRequirementDtoResponse.getProfLevel());
+        assertEquals(addRequirementJson0.isNecessary(), getRequirementDtoResponse.isNecessary());
+
+        // запрос 2 на добавление требования
+        AddRequirementDtoRequest addRequirementJson1 = new AddRequirementDtoRequest(
+                addVacancyResponse.getVacancyId(),
+                "Знание Swift",
+                3,
+                false
+        );
+
+        ServerResponse addRequirementResponse1 = server.addVacancyRequirement(loginEmployerDtoResponse.getToken(), GSON.toJson(addRequirementJson1));
+
+        // получение всех скиллов
+        ServerResponse getAllRequirementsResponse = server.getAllRequirements(loginEmployerDtoResponse.getToken());
+        assertEquals(getAllRequirementsResponse.getResponseCode(), SUCCESS_CODE);
+
+        GetAllRequirementsDtoResponse getAllRequirements = GSON.fromJson(
+                getAllRequirementsResponse.getResponseData(), GetAllRequirementsDtoResponse.class);
+        assertEquals(addRequirementJson0.getRequirementName(), getAllRequirements.getRequirementsList().get(0).getRequirementName());
+        assertEquals(addRequirementJson0.getProfLevel(), getAllRequirements.getRequirementsList().get(0).getProfLevel());
+        assertEquals(addRequirementJson1.getRequirementName(), getAllRequirements.getRequirementsList().get(1).getRequirementName());
+        assertEquals(addRequirementJson1.getProfLevel(), getAllRequirements.getRequirementsList().get(1).getProfLevel());
+
 
         // запрос на удаление требования
         DeleteRequirementDtoRequest deleteRequirementJson = new DeleteRequirementDtoRequest(
-                addVacancyResponse.getVacancyId(),
                 addRequirementDtoResponse.getRequirementId()
         );
 
@@ -166,7 +208,6 @@ public class TestEmployerService extends TestBase {
 
         // запрос на удаление вакансии
         DeleteVacancyDtoRequest deleteVacancyJson = new DeleteVacancyDtoRequest(
-                employerDtoResponse.getUserId(),
                 addVacancyResponse.getVacancyId()
         );
 
@@ -430,5 +471,37 @@ public class TestEmployerService extends TestBase {
         ServerResponse getEmployerByTokenJson = server.getCurrentEmployer(loginEmployeeDtoResponse.getToken());
         assertEquals(getEmployerByTokenJson.getResponseCode(), ERROR_CODE);
         assertEquals(getEmployerByTokenJson.getResponseData(), "Usertype is wrong!");
+    }
+
+    @Test
+    public void testGetAllVacanciesOrRequirementsWithoutAdding() {
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "InventInc",
+                "просп.Мира д.81/1",
+                "invent_inc.future@gmail.com",
+                "Андреев",
+                "Андреевич",
+                "Андрей",
+                "inventInc.hr",
+                "87686548440"
+        );
+        ServerResponse actualResponse1 = server.registerEmployer(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "inventInc.hr",
+                "87686548440"
+        );
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+
+        // попытка получения всех вакансий
+        ServerResponse getAllVacanciesResponse = server.getAllVacancies(loginEmployerDtoResponse.getToken());
+        assertEquals(getAllVacanciesResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(getAllVacanciesResponse.getResponseData(), "Error getting vacancies!");
+
+        // попытка получения всех требований
+        ServerResponse getAllRequirementsResponse = server.getAllRequirements(loginEmployerDtoResponse.getToken());
+        assertEquals(getAllRequirementsResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(getAllRequirementsResponse.getResponseData(), "Error getting requirements!");
     }
 }

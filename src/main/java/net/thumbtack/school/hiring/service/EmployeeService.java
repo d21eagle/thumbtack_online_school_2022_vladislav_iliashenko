@@ -81,7 +81,28 @@ public class EmployeeService extends UserService {
             Employee employee = getEmployeeByToken(token);
             Skill skill = getSkillById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployeeMapper.INSTANCE.getSkill(skill)));
+                    EmployeeMapper.INSTANCE.getSkillDto(skill)));
+        } catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+
+    public ServerResponse getAllSkills(UUID token) {
+        try {
+            Employee employee = getEmployeeByToken(token);
+            List<Skill> skills = employeeDao.getAllSkills();
+            if (skills.size() == 0) {
+                throw new ServerException(ServerErrorCode.GETTING_SKILLS_ERROR);
+            }
+
+            List<GetSkillDtoResponse> allSkillsResponse = new ArrayList<>();
+            for (Skill item: skills) {
+                allSkillsResponse.add(EmployeeMapper.INSTANCE.getSkillDto(item));
+            }
+
+            GetAllSkillsDtoResponse allSkillsDtoResponse = new GetAllSkillsDtoResponse();
+            allSkillsDtoResponse.setSkills(allSkillsResponse);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(allSkillsDtoResponse));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }

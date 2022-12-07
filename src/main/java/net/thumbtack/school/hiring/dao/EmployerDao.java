@@ -1,6 +1,8 @@
 package net.thumbtack.school.hiring.dao;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.*;
+
+import java.util.List;
 import java.util.UUID;
 
 public interface EmployerDao {
@@ -13,4 +15,6 @@ public interface EmployerDao {
     void deleteVacancyRequirement(int id);
     Requirement getRequirementById(int id);
     Vacancy getVacancyById(int id);
+    List<Vacancy> getAllVacancies();
+    List<Requirement> getAllRequirements();
 }

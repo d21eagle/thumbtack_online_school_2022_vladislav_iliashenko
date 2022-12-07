@@ -6,10 +6,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetEmployeeDtoResponse {
+    private int userId;
     private String email;
     private String login;
     private String lastName;
     private String middleName;
     private String firstName;
-    private List<SkillInnerDtoResponse> skills;
 }

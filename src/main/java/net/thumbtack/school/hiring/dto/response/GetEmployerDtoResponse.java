@@ -1,10 +1,13 @@
 package net.thumbtack.school.hiring.dto.response;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetEmployerDtoResponse {
+    private int userId;
     private String email;
     private String login;
     private String lastName;

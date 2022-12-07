@@ -5,6 +5,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteSkillDtoRequest {
-    private int userId;
     private int skillId;
 }

@@ -61,6 +61,18 @@ public class Server {
         return employeeService.getSkillByIdExternal(token, id);
     }
 
+    public ServerResponse getAllSkills(UUID token) {
+        return employeeService.getAllSkills(token);
+    }
+
+    public ServerResponse getAllVacancies(UUID token) {
+        return employerService.getAllVacancies(token);
+    }
+
+    public ServerResponse getAllRequirements(UUID token) {
+        return employerService.getAllRequirements(token);
+    }
+
     public ServerResponse getRequirementByIdExternal(UUID token, int id) {
         return employerService.getRequirementByIdExternal(token, id);
     }

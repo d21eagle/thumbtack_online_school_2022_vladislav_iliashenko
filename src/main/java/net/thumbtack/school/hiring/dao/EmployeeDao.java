@@ -10,4 +10,5 @@ public interface EmployeeDao {
     User getUserByToken(UUID token);
     User getUserById(int id);
     Skill getSkillById(int id);
+    List<Skill> getAllSkills();
 }

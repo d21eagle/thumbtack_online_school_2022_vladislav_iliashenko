@@ -1,9 +1,7 @@
 package net.thumbtack.school.hiring.mapper;
 import net.thumbtack.school.hiring.dto.request.AddRequirementDtoRequest;
 import net.thumbtack.school.hiring.dto.request.AddVacancyDtoRequest;
-import net.thumbtack.school.hiring.dto.response.GetRequirementDtoResponse;
-import net.thumbtack.school.hiring.dto.response.GetEmployerDtoResponse;
-import net.thumbtack.school.hiring.dto.response.GetVacancyDtoResponse;
+import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.dto.request.RegisterEmployerDtoRequest;
 
@@ -19,7 +17,7 @@ public interface EmployerMapper {
     Employer getEmployer(GetEmployerDtoResponse employerDto);
     Vacancy vacancyToVacancyDto(AddVacancyDtoRequest vacancyDto);
     Requirement requirementToRequirementDto(AddRequirementDtoRequest requirementDto);
-    Vacancy getVacancy(GetVacancyDtoResponse vacancyDto);
-    GetRequirementDtoResponse getEmployeeRequirement(Requirement requirement);
-    GetVacancyDtoResponse getVacancy(Vacancy vacancy);
+    Vacancy getVacancyDto(GetVacancyDtoResponse vacancyDto);
+    GetRequirementDtoResponse getVacancyRequirementDto(Requirement requirement);
+    GetVacancyDtoResponse getVacancyDto(Vacancy vacancy);
 }

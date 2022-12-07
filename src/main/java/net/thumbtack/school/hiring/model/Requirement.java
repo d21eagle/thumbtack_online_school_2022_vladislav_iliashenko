@@ -8,6 +8,7 @@ import lombok.*;
 
 public class Requirement {
     private int requirementId;
+    private Vacancy vacancy;
     private String requirementName;
     private int profLevel;
     private boolean isNecessary;

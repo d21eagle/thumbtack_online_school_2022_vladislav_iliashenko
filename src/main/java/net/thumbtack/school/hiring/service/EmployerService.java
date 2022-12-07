@@ -68,6 +68,7 @@ public class EmployerService extends UserService {
             Requirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
 
             Vacancy vacancy = getVacancyById(requirementDtoRequest.getVacancyId());
+            requirement.setVacancy(vacancy);
             vacancy.add(requirement);
 
             int id = employerDao.addVacancyRequirement(requirement);
@@ -99,11 +100,10 @@ public class EmployerService extends UserService {
         try {
             Employer employer = getEmployerByToken(token);
             DeleteRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteRequirementDtoRequest.class);
-            int vacancyId = requirementDtoRequest.getVacancyId();
             int requirementId = requirementDtoRequest.getRequirementId();
 
-            Vacancy vacancy = getVacancyById(vacancyId);
             Requirement requirement = getRequirementById(requirementId);
+            Vacancy vacancy = requirement.getVacancy();
             vacancy.delete(requirement);
 
             employerDao.deleteVacancyRequirement(requirementId);
@@ -118,7 +118,7 @@ public class EmployerService extends UserService {
             Employer employer = getEmployerByToken(token);
             Requirement employeeRequirement = getRequirementById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getEmployeeRequirement(employeeRequirement)));
+                    EmployerMapper.INSTANCE.getVacancyRequirementDto(employeeRequirement)));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
@@ -129,7 +129,50 @@ public class EmployerService extends UserService {
             Employer employer = getEmployerByToken(token);
             Vacancy vacancy = getVacancyById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getVacancy(vacancy)));
+                    EmployerMapper.INSTANCE.getVacancyDto(vacancy)));
+        } catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+
+    public ServerResponse getAllVacancies(UUID token) {
+        try {
+            Employer employer = getEmployerByToken(token);
+            List<Vacancy> vacancies = employerDao.getAllVacancies();
+            if (vacancies.size() == 0) {
+                throw new ServerException(ServerErrorCode.GETTING_VACANCIES_ERROR);
+            }
+
+            List<GetVacancyDtoResponse> allVacanciesResponse = new ArrayList<>();
+            for (Vacancy item: vacancies) {
+                allVacanciesResponse.add(EmployerMapper.INSTANCE.getVacancyDto(item));
+            }
+
+            GetAllVacanciesDtoResponse allVacanciesDtoResponse = new GetAllVacanciesDtoResponse();
+            allVacanciesDtoResponse.setVacancies(allVacanciesResponse);
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(allVacanciesDtoResponse));
+        } catch (ServerException e) {
+            return new ServerResponse(e);
+        }
+    }
+
+    public ServerResponse getAllRequirements(UUID token) {
+        try {
+            Employer employer = getEmployerByToken(token);
+            List<Requirement> requirements = employerDao.getAllRequirements();
+            if (requirements.size() == 0) {
+                throw new ServerException(ServerErrorCode.GETTING_REQUIREMENTS_ERROR);
+            }
+
+            List<GetRequirementDtoResponse> allRequirementsResponse = new ArrayList<>();
+            for (Requirement item: requirements) {
+                allRequirementsResponse.add(EmployerMapper.INSTANCE.getVacancyRequirementDto(item));
+            }
+
+            GetAllRequirementsDtoResponse allRequirementsDtoResponse = new GetAllRequirementsDtoResponse();
+            allRequirementsDtoResponse.setRequirementsList(allRequirementsResponse);
+
+            return new ServerResponse(SUCCESS_CODE, GSON.toJson(allRequirementsDtoResponse));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }

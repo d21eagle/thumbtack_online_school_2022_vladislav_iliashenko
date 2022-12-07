@@ -104,6 +104,18 @@ public class Database {
         return vacancyById.get(id);
     }
 
+    public List<Skill> getAllSkills() {
+        return new ArrayList<>(skillById.values());
+    }
+
+    public List<Vacancy> getAllVacancies() {
+        return new ArrayList<>(vacancyById.values());
+    }
+
+    public List<Requirement> getAllRequirements() {
+        return new ArrayList<>(requirementById.values());
+    }
+
     public void clear() {
         userByLogin.clear();
         userByToken.clear();

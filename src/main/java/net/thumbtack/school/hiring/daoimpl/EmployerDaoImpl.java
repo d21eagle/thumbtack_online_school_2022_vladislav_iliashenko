@@ -3,6 +3,8 @@ import net.thumbtack.school.hiring.dao.EmployerDao;
 import net.thumbtack.school.hiring.database.Database;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.*;
+
+import java.util.List;
 import java.util.UUID;
 
 public class EmployerDaoImpl implements EmployerDao {
@@ -47,5 +49,15 @@ public class EmployerDaoImpl implements EmployerDao {
     @Override
     public Vacancy getVacancyById(int id) {
         return Database.getInstance().getVacancyById(id);
+    }
+
+    @Override
+    public List<Vacancy> getAllVacancies() {
+        return Database.getInstance().getAllVacancies();
+    }
+
+    @Override
+    public List<Requirement> getAllRequirements() {
+        return Database.getInstance().getAllRequirements();
     }
 }

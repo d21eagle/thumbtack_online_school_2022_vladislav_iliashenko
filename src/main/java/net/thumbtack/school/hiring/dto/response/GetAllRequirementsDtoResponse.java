@@ -5,8 +5,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetVacancyDtoResponse {
-    private int vacancyId;
-    private String position;
-    private int salary;
+public class GetAllRequirementsDtoResponse {
+    private List<GetRequirementDtoResponse> requirementsList;
 }

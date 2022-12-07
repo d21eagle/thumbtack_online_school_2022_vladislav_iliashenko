@@ -89,18 +89,18 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        // запрос на добавление скилла
-        AddSkillDtoRequest addSkillJson = new AddSkillDtoRequest(
+        // запрос 1 на добавление скилла
+        AddSkillDtoRequest addSkillJson0 = new AddSkillDtoRequest(
                 "Язык Java",
                 5
         );
 
         // добавление скилла
-        ServerResponse idJson = server.addSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(addSkillJson));
-        assertEquals(idJson.getResponseCode(), SUCCESS_CODE);
+        ServerResponse addSkillResponse0 = server.addSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(addSkillJson0));
+        assertEquals(addSkillResponse0.getResponseCode(), SUCCESS_CODE);
 
         // получение id скилла
-        AddSkillDtoResponse addSkillResponse = GSON.fromJson(idJson.getResponseData(), AddSkillDtoResponse.class);
+        AddSkillDtoResponse addSkillResponse = GSON.fromJson(addSkillResponse0.getResponseData(), AddSkillDtoResponse.class);
 
         // получение скилла по id
         ServerResponse getSkillByIdJson = server.getSkillByIdExternal(
@@ -108,12 +108,32 @@ public class TestEmployeeService extends TestBase {
         GetSkillDtoResponse getSkillDtoResponse = GSON.fromJson(getSkillByIdJson.getResponseData(), GetSkillDtoResponse.class);
 
         // проверка данных скилла
-        assertEquals(addSkillJson.getSkillName(), getSkillDtoResponse.getSkillName());
-        assertEquals(addSkillJson.getProfLevel(), getSkillDtoResponse.getProfLevel());
+        assertEquals(addSkillJson0.getSkillName(), getSkillDtoResponse.getSkillName());
+        assertEquals(addSkillJson0.getProfLevel(), getSkillDtoResponse.getProfLevel());
+
+
+        // запрос 2 на добавление скилла
+        AddSkillDtoRequest addSkillJson1 = new AddSkillDtoRequest(
+                "Язык C#",
+                4
+        );
+
+        ServerResponse addSkillResponse1 = server.addSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(addSkillJson1));
+
+        // получение всех скиллов
+        ServerResponse getAllSkillsResponse = server.getAllSkills(loginEmployeeDtoResponse.getToken());
+        assertEquals(getAllSkillsResponse.getResponseCode(), SUCCESS_CODE);
+
+        GetAllSkillsDtoResponse getAllSkills = GSON.fromJson(
+                getAllSkillsResponse.getResponseData(), GetAllSkillsDtoResponse.class);
+        assertEquals(addSkillJson0.getSkillName(), getAllSkills.getSkills().get(0).getSkillName());
+        assertEquals(addSkillJson0.getProfLevel(), getAllSkills.getSkills().get(0).getProfLevel());
+        assertEquals(addSkillJson1.getSkillName(), getAllSkills.getSkills().get(1).getSkillName());
+        assertEquals(addSkillJson1.getProfLevel(), getAllSkills.getSkills().get(1).getProfLevel());
+
 
         // запрос на удаление скилла
         DeleteSkillDtoRequest deleteSkillJson = new DeleteSkillDtoRequest(
-                employeeDtoResponse.getUserId(),
                 addSkillResponse.getSkillId()
         );
 
@@ -429,5 +449,30 @@ public class TestEmployeeService extends TestBase {
         ServerResponse getEmployeeByEmployerTokenJson = server.getCurrentEmployee(loginEmployerDtoResponse.getToken());
         assertEquals(getEmployeeByEmployerTokenJson.getResponseCode(), ERROR_CODE);
         assertEquals(getEmployeeByEmployerTokenJson.getResponseData(), "Usertype is wrong!");
+    }
+
+    @Test
+    public void testGetAllSkillsWithoutAdding() {
+        RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
+                "petr.petrov@mail.ru",
+                "Петров",
+                "Петрович",
+                "Пётр",
+                "petr_one",
+                "982360301"
+        );
+        ServerResponse actualResponse1 = server.registerEmployee(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "petr_one",
+                "982360301"
+        );
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+
+        // попытка получения всех скиллов
+        ServerResponse getAllSkillsResponse = server.getAllSkills(loginEmployeeDtoResponse.getToken());
+        assertEquals(getAllSkillsResponse.getResponseCode(), ERROR_CODE);
+        assertEquals(getAllSkillsResponse.getResponseData(), "Error getting skills!");
     }
 }

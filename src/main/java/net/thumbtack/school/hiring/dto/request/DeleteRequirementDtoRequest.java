@@ -5,6 +5,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteRequirementDtoRequest {
-    private int vacancyId;
     private int requirementId;
 }

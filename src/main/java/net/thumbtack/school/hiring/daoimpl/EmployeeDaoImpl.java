@@ -35,4 +35,9 @@ public class EmployeeDaoImpl implements EmployeeDao {
     public Skill getSkillById(int id) {
         return Database.getInstance().getSkillById(id);
     }
+
+    @Override
+    public List<Skill> getAllSkills() {
+        return Database.getInstance().getAllSkills();
+    }
 }
