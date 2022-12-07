@@ -88,9 +88,12 @@ public class EmployeeService extends UserService {
     }
 
     private Employee getEmployeeByToken(UUID token) throws ServerException {
+        if (token == null) {
+            throw new ServerException(ServerErrorCode.INVALID_TOKEN);
+        }
         User user = employeeDao.getUserByToken(token);
         if (user == null) {
-            throw new ServerException(ServerErrorCode.INVALID_TOKEN);
+            throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }
         if (!(user instanceof Employee)) {
             throw new ServerException(ServerErrorCode.INVALID_USERTYPE);

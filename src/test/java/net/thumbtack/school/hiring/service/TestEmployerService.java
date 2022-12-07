@@ -69,7 +69,7 @@ public class TestEmployerService extends TestBase {
         // попытка получить Employer по токену
         ServerResponse getEmployerByTokenJson = server.getCurrentEmployer(loginEmployerDtoResponse.getToken());
         assertEquals(getEmployerByTokenJson.getResponseCode(), ERROR_CODE);
-        assertEquals(getEmployerByTokenJson.getResponseData(), "Invalid token!");
+        assertEquals(getEmployerByTokenJson.getResponseData(), "User not exist!");
     }
 
     @Test

@@ -136,9 +136,12 @@ public class EmployerService extends UserService {
     }
 
     private Employer getEmployerByToken(UUID token) throws ServerException {
+        if (token == null) {
+            throw new ServerException(ServerErrorCode.INVALID_TOKEN);
+        }
         User user = employerDao.getUserByToken(token);
         if (user == null) {
-            throw new ServerException(ServerErrorCode.INVALID_TOKEN);
+            throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }
         if (!(user instanceof Employer)) {
             throw new ServerException(ServerErrorCode.INVALID_USERTYPE);

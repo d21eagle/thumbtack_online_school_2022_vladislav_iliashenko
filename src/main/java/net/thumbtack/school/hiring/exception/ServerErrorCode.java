@@ -21,7 +21,8 @@ public enum ServerErrorCode {
     INVALID_ID("Id is invalid!"),
     EMPTY_POSITION("Position is empty!"),
     INVALID_SALARY("Invalid salary!"),
-    EMPTY_REQUIREMENT_NAME("Empty requirement name!");
+    EMPTY_REQUIREMENT_NAME("Empty requirement name!"),
+    USER_NOT_EXIST("User not exist!");
 
     private String errorString;
 
