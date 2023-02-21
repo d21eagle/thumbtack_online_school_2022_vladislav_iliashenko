@@ -10,10 +10,10 @@ public class Server {
     private final UserService userService = new UserService();
     private final DebugService debugService = new DebugService();
 
-    public ServerResponse registerEmployee (String requestJson) throws JsonSyntaxException {
+    public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         return employeeService.registerEmployee(requestJson);
     }
-    public ServerResponse registerEmployer (String requestJson) throws JsonSyntaxException {
+    public ServerResponse registerEmployer(String requestJson) throws JsonSyntaxException {
         return employerService.registerEmployee(requestJson);
     }
 
@@ -79,6 +79,10 @@ public class Server {
 
     public ServerResponse getVacancyByIdExternal(UUID token, int id) {
         return employerService.getVacancyByIdExternal(token, id);
+    }
+
+    public ServerResponse getEmployeesByRequirements(UUID token, String requestJson) {
+        return employerService.getEmployeesByRequirements(token, requestJson);
     }
 
     public void clear() {

@@ -25,7 +25,8 @@ public enum ServerErrorCode {
     USER_NOT_EXIST("User not exist!"),
     GETTING_SKILLS_ERROR("Error getting skills!"),
     GETTING_VACANCIES_ERROR("Error getting vacancies!"),
-    GETTING_REQUIREMENTS_ERROR("Error getting requirements!");
+    GETTING_REQUIREMENTS_ERROR("Error getting requirements!"),
+    ID_NOT_EXIST("Id not exist!");
 
     private String errorString;
 

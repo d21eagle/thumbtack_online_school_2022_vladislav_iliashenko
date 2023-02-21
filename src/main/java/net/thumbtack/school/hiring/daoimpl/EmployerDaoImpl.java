@@ -3,8 +3,8 @@ import net.thumbtack.school.hiring.dao.EmployerDao;
 import net.thumbtack.school.hiring.database.Database;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.*;
-
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class EmployerDaoImpl implements EmployerDao {
@@ -14,7 +14,7 @@ public class EmployerDaoImpl implements EmployerDao {
     }
 
     @Override
-    public User getUserByToken(UUID token) throws ServerException {
+    public User getUserByToken(UUID token) {
         return Database.getInstance().getUserByToken(token);
     }
 
@@ -33,11 +33,11 @@ public class EmployerDaoImpl implements EmployerDao {
         return Database.getInstance().addVacancyRequirement(requirement);
     }
     @Override
-    public void deleteVacancy(int id) {
+    public void deleteVacancy(int id) throws ServerException {
         Database.getInstance().deleteVacancy(id);
     }
     @Override
-    public void deleteVacancyRequirement(int id) {
+    public void deleteVacancyRequirement(int id) throws ServerException {
         Database.getInstance().deleteVacancyRequirement(id);
     }
 
@@ -59,5 +59,10 @@ public class EmployerDaoImpl implements EmployerDao {
     @Override
     public List<Requirement> getAllRequirements() {
         return Database.getInstance().getAllRequirements();
+    }
+
+    @Override
+    public Set<Employee> getEmployeesByRequirements(List<Requirement> requirements) {
+        return Database.getInstance().getEmployeesByRequirements(requirements);
     }
 }

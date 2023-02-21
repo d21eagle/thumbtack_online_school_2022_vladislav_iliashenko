@@ -1,4 +1,6 @@
 package net.thumbtack.school.hiring.database;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.TreeMultimap;
 import net.thumbtack.school.hiring.exception.*;
 import net.thumbtack.school.hiring.model.*;
 import java.util.*;
@@ -13,6 +15,9 @@ public class Database {
     private final Map<Integer, Skill> skillById = new HashMap<>();
     private final Map<Integer, Requirement> requirementById = new HashMap<>();
     private final Map<Integer, Vacancy> vacancyById = new HashMap<>();
+    private final Multimap<Skill, Employee> employeeBySkills = TreeMultimap.create(
+            Comparator.comparing(Skill::getSkillName).thenComparingInt(Skill::getProfLevel),
+            Comparator.comparing(User::getLastName));
     private int nextUserId = 1;
     private int nextSkillId = 1;
     private int nextVacancyId = 1;
@@ -62,8 +67,10 @@ public class Database {
         return userById.get(id);
     }
 
-    public int addSkill(Skill skill) {
+    public int addSkill(Skill skill, Employee employee) {
+        employee.getSkills().forEach(skill1 -> employeeBySkills.remove(skill1, employee));
         skill.setSkillId(nextSkillId);
+        employee.getSkills().forEach(skill1 -> employeeBySkills.put(skill1, employee));
         skillById.put(nextSkillId, skill);
         return nextSkillId++;
     }
@@ -80,16 +87,22 @@ public class Database {
         return nextRequirementId++;
     }
 
-    public void deleteSkill(int id) {
-        skillById.remove(id);
+    public void deleteSkill(int id) throws ServerException {
+        if (skillById.remove(id) == null) {
+            throw new ServerException(ServerErrorCode.ID_NOT_EXIST);
+        }
     }
 
-    public void deleteVacancy(int id) {
-        vacancyById.remove(id);
+    public void deleteVacancy(int id) throws ServerException {
+        if (vacancyById.remove(id) == null) {
+            throw new ServerException(ServerErrorCode.ID_NOT_EXIST);
+        }
     }
 
-    public void deleteVacancyRequirement(int id) {
-        requirementById.remove(id);
+    public void deleteVacancyRequirement(int id) throws ServerException {
+        if (requirementById.remove(id) == null) {
+            throw new ServerException(ServerErrorCode.ID_NOT_EXIST);
+        }
     }
 
     public Skill getSkillById(int id) {
@@ -116,6 +129,27 @@ public class Database {
         return new ArrayList<>(requirementById.values());
     }
 
+    public Set<Employee> getEmployeesByRequirements(List<Requirement> requirements) {
+        Set<Employee> shortlist = new HashSet<>();
+        boolean flag = true;
+        for (Skill skill : employeeBySkills.keySet()) {
+            Collection<Employee> employees = employeeBySkills.get(skill);
+            if (flag) {
+                shortlist.addAll(employees);
+            }
+            else {
+                for (Requirement requirement : requirements) {
+                    List<Collection<Employee>> collection = new ArrayList<>(((TreeMultimap) employeeBySkills).asMap().subMap(
+                            new Skill(requirement.getRequirementName(), requirement.getProfLevel()),
+                            new Skill(requirement.getRequirementName(), 6)).values());
+                    shortlist.retainAll(collection.get(0));
+                }
+            }
+            flag = false;
+        }
+        return shortlist;
+    }
+
     public void clear() {
         userByLogin.clear();
         userByToken.clear();
@@ -123,5 +157,10 @@ public class Database {
         skillById.clear();
         requirementById.clear();
         vacancyById.clear();
+        employeeBySkills.clear();
+        nextUserId = 1;
+        nextSkillId = 1;
+        nextVacancyId = 1;
+        nextRequirementId = 1;
     }
 }

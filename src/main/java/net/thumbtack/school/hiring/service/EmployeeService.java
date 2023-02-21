@@ -52,7 +52,7 @@ public class EmployeeService extends UserService {
 
             employee.add(skill);
 
-            int id = employeeDao.addSkill(skill);
+            int id = employeeDao.addSkill(skill, employee);
             AddSkillDtoResponse addSkillDtoResponse = new AddSkillDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addSkillDtoResponse));
         } catch (ServerException e) {
@@ -78,7 +78,7 @@ public class EmployeeService extends UserService {
 
     public ServerResponse getSkillByIdExternal(UUID token, int id) {
         try {
-            Employee employee = getEmployeeByToken(token);
+            getEmployeeByToken(token);
             Skill skill = getSkillById(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(
                     EmployeeMapper.INSTANCE.getSkillDto(skill)));
@@ -89,7 +89,7 @@ public class EmployeeService extends UserService {
 
     public ServerResponse getAllSkills(UUID token) {
         try {
-            Employee employee = getEmployeeByToken(token);
+            getEmployeeByToken(token);
             List<Skill> skills = employeeDao.getAllSkills();
             if (skills.size() == 0) {
                 throw new ServerException(ServerErrorCode.GETTING_SKILLS_ERROR);

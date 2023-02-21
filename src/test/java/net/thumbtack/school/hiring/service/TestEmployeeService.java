@@ -50,7 +50,7 @@ public class TestEmployeeService extends TestBase {
                 "petr_one",
                 "982360301"
         );
-        ServerResponse actualResponse1 = server.registerEmployee(GSON.toJson(requestJson));
+        server.registerEmployee(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "petr_one",
@@ -79,8 +79,7 @@ public class TestEmployeeService extends TestBase {
                 "754376579"
         );
 
-        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
-        RegisterEmployeeDtoResponse employeeDtoResponse = GSON.fromJson(actualResponse0.getResponseData(), RegisterEmployeeDtoResponse.class);
+        server.registerEmployee(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "rocket_ivan",
@@ -118,7 +117,7 @@ public class TestEmployeeService extends TestBase {
                 4
         );
 
-        ServerResponse addSkillResponse1 = server.addSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(addSkillJson1));
+        server.addSkill(loginEmployeeDtoResponse.getToken(), GSON.toJson(addSkillJson1));
 
         // получение всех скиллов
         ServerResponse getAllSkillsResponse = server.getAllSkills(loginEmployeeDtoResponse.getToken());
@@ -272,7 +271,7 @@ public class TestEmployeeService extends TestBase {
                 "754376579"
         );
 
-        ServerResponse regResponse = server.registerEmployee(GSON.toJson(requestJson));
+        server.registerEmployee(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "",
@@ -295,7 +294,7 @@ public class TestEmployeeService extends TestBase {
                 "754376579"
         );
 
-        ServerResponse regResponse = server.registerEmployee(GSON.toJson(requestJson));
+        server.registerEmployee(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "rocket_ivan",
@@ -330,7 +329,7 @@ public class TestEmployeeService extends TestBase {
                 "754376579"
         );
 
-        ServerResponse actualResponse0 = server.registerEmployee(GSON.toJson(requestJson));
+        server.registerEmployee(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "rocket_ivan",
@@ -365,7 +364,7 @@ public class TestEmployeeService extends TestBase {
                 "423657801"
         );
 
-        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        server.registerEmployer(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "hiretool_HRdep",
@@ -398,7 +397,7 @@ public class TestEmployeeService extends TestBase {
                 "754376579"
         );
 
-        ServerResponse regEmployeeResponse = server.registerEmployee(GSON.toJson(regEmployeeRequest));
+        server.registerEmployee(GSON.toJson(regEmployeeRequest));
 
         LoginUserDtoRequest loginEmployeeRequest = new LoginUserDtoRequest(
                 "rocket_ivan",
@@ -435,7 +434,7 @@ public class TestEmployeeService extends TestBase {
                 "423657801"
         );
 
-        ServerResponse actualResponse0 = server.registerEmployer(GSON.toJson(requestJson));
+        server.registerEmployer(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "hiretool_HRdep",
@@ -461,7 +460,7 @@ public class TestEmployeeService extends TestBase {
                 "petr_one",
                 "982360301"
         );
-        ServerResponse actualResponse1 = server.registerEmployee(GSON.toJson(requestJson));
+        server.registerEmployee(GSON.toJson(requestJson));
 
         LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
                 "petr_one",
