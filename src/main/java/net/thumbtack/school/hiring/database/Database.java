@@ -129,21 +129,39 @@ public class Database {
         return new ArrayList<>(requirementById.values());
     }
 
+//    public Set<Employee> getEmployeesByRequirements(List<Requirement> requirements) {
+//        Set<Employee> shortlist = new HashSet<>();
+//        boolean flag = true;
+//        for (Skill skill : employeeBySkills.keySet()) {
+//            Collection<Employee> employees = employeeBySkills.get(skill);
+//            if (flag) {
+//                shortlist.addAll(employees);
+//            }
+//            else {
+//                for (Requirement requirement : requirements) {
+//                    List<Collection<Employee>> collection = new ArrayList<>(((TreeMultimap) employeeBySkills).asMap().subMap(
+//                            new Skill(requirement.getRequirementName(), requirement.getProfLevel()),
+//                            new Skill(requirement.getRequirementName(), 6)).values());
+//                    shortlist.retainAll(collection.get(0));
+//                }
+//            }
+//            flag = false;
+//        }
+//        return shortlist;
+//    }
+
     public Set<Employee> getEmployeesByRequirements(List<Requirement> requirements) {
         Set<Employee> shortlist = new HashSet<>();
         boolean flag = true;
-        for (Skill skill : employeeBySkills.keySet()) {
-            Collection<Employee> employees = employeeBySkills.get(skill);
-            if (flag) {
-                shortlist.addAll(employees);
-            }
+
+        for (Requirement requirement : requirements) {
+            Collection<Employee> employees = employeeBySkills.values();
+            if (flag) { shortlist.addAll(employees); }
             else {
-                for (Requirement requirement : requirements) {
-                    List<Collection<Employee>> collection = new ArrayList<>(((TreeMultimap) employeeBySkills).asMap().subMap(
-                            new Skill(requirement.getRequirementName(), requirement.getProfLevel()),
-                            new Skill(requirement.getRequirementName(), 6)).values());
-                    shortlist.retainAll(collection.get(0));
-                }
+                Collection<Employee> collection = new ArrayList<>(((TreeMultimap) employeeBySkills).asMap().subMap(
+                        new Skill(requirement.getRequirementName(), requirement.getProfLevel()),
+                        new Skill(requirement.getRequirementName(), 6)).values());
+                shortlist.retainAll(collection);
             }
             flag = false;
         }
