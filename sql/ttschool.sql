@@ -38,7 +38,7 @@ CREATE TABLE subject
 (
     id   INT primary key auto_increment,
     name varchar(50) not null,
-    CONSTRAINT subject UNIQUE (name)
+    CONSTRAINT subject
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8;
 

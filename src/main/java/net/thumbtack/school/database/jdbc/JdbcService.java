@@ -20,8 +20,6 @@ public class JdbcService {
                 int id = result.getInt(1);
                 trainee.setId(id);
             }
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -37,8 +35,6 @@ public class JdbcService {
             statement.setInt(4, trainee.getRating());
             statement.setInt(5, trainee.getId());
             statement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -60,8 +56,6 @@ public class JdbcService {
                 );
             }
             return trainee;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -83,8 +77,6 @@ public class JdbcService {
                 );
             }
             return trainee;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -106,8 +98,6 @@ public class JdbcService {
                 );
             }
             return trainees;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -128,8 +118,6 @@ public class JdbcService {
                 );
             }
             return trainees;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -150,8 +138,6 @@ public class JdbcService {
         String deleteTrainees = "DELETE FROM trainee";
         try (PreparedStatement statement = connection.prepareStatement(deleteTrainees)) {
             statement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -168,8 +154,6 @@ public class JdbcService {
                 int id = result.getInt(1);
                 subject.setId(id);
             }
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -186,8 +170,6 @@ public class JdbcService {
                 subject = new Subject(result.getInt("id"), result.getString("name"));
             }
             return subject;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -204,8 +186,6 @@ public class JdbcService {
                 subject = new Subject(result.getInt(1), result.getString(2));
             }
             return subject;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -216,8 +196,6 @@ public class JdbcService {
 
         try (PreparedStatement statement = connection.prepareStatement(deleteSubjects)) {
             statement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -235,8 +213,6 @@ public class JdbcService {
                 int id = result.getInt(1);
                 school.setId(id);
             }
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -253,8 +229,6 @@ public class JdbcService {
                 school = new School(result.getInt("id"), result.getString("name"), result.getInt("year"));
             }
             return school;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -271,8 +245,6 @@ public class JdbcService {
                 school = new School(result.getInt(1), result.getString(2), result.getInt(3));
             }
             return school;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -283,8 +255,6 @@ public class JdbcService {
 
         try (PreparedStatement statement = connection.prepareStatement(deleteSchools)) {
             statement.executeUpdate();
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -304,8 +274,6 @@ public class JdbcService {
                 int id = result.getInt(1);
                 group.setId(id);
             }
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 
@@ -341,10 +309,7 @@ public class JdbcService {
                 }
             }
             return school;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
-
     }
 
     //Получает список всех School вместе со всеми их Group из базы данных.
@@ -391,8 +356,6 @@ public class JdbcService {
             }
             schools.add(school);
             return schools;
-        } catch (SQLException ex) {
-            throw new SQLException();
         }
     }
 }
