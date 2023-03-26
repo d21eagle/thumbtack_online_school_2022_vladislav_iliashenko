@@ -37,8 +37,7 @@ CREATE TABLE trainee
 CREATE TABLE subject
 (
     id   INT primary key auto_increment,
-    name varchar(50) not null,
-    CONSTRAINT subject
+    name varchar(50) not null
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8;
 
