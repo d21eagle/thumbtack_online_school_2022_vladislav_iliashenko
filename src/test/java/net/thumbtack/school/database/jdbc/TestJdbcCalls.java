@@ -21,8 +21,8 @@ import static org.mockito.Mockito.*;
 public class TestJdbcCalls {
 
     private static Connection spyConnection;
-    private static final String USER = "root";
-    private static final String PASSWORD = "1234";
+    private static final String USER = "test";
+    private static final String PASSWORD = "test";
     private static final String URL = "jdbc:mysql://localhost:3306/ttschool?useUnicode=yes&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia/Omsk";
 
     @BeforeClass()
