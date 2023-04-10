@@ -7,7 +7,6 @@ import java.util.*;
 @AllArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 public class Group {
     private int id;
     private String name;
@@ -45,5 +44,18 @@ public class Group {
 
     public void removeSubject(Subject subject) {
         subjects.remove(subject);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Group)) return false;
+        Group group = (Group) o;
+        return getId() == group.getId() && Objects.equals(getName(), group.getName()) && Objects.equals(getRoom(), group.getRoom()) && Objects.equals(getTrainees(), group.getTrainees()) && Objects.equals(getSubjects(), group.getSubjects());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getRoom(), getTrainees(), getSubjects());
     }
 }
