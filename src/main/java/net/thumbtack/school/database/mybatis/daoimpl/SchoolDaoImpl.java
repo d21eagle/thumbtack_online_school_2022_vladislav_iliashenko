@@ -135,7 +135,6 @@ public class SchoolDaoImpl extends DaoImplBase implements SchoolDao {
                         traineeMapper.insert(group, trainee);
                     });
                     for (Subject subject : group.getSubjects()) {
-                        subjectMapper.insert(subject);
                         groupMapper.addSubjectToGroup(group, subject);
                     }
                 }
