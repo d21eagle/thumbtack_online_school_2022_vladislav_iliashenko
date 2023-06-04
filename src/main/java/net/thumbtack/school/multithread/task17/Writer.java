@@ -1,41 +1,32 @@
 package net.thumbtack.school.multithread.task17;
+
 import net.thumbtack.school.multithread.task16.Executable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
+import java.util.LinkedList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.*;
+import net.thumbtack.school.multithread.task16.Task;
+
 
 @AllArgsConstructor
-public class Writer implements Runnable {
-    private String name;
-    private Queue<MultiStageTask> taskQueue;
-    private int tasksPerDeveloper;
-    private CountDownLatch writerLatch;
+public class Writer extends Thread {
+    private BlockingQueue<MultiStageTask> taskQueue;
+    private BlockingQueue<Event> eventQueue;
+    private static final int MULTISTAGETASKS = ThreadLocalRandom.current().nextInt(1, 5);
+    private static final int TASKS = ThreadLocalRandom.current().nextInt(1, 5);
 
     @Override
     public void run() {
-        for (int i = 0; i < tasksPerDeveloper; i++) {
-            MultiStageTask task = createTask();
-            taskQueue.add(task);
-            System.out.println(name + " добавляет задачу в очередь");
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        eventQueue.add(Event.WRITER_STARTED);
+        for (int i = 0; i < MULTISTAGETASKS; i++) {
+            LinkedList<Executable> list = new LinkedList<>();
+            for (int j = 1; j < TASKS; j++) {
+                eventQueue.add(Event.TASK_CREATED);
+                String taskData = String.format("Task%s by %s", j, Thread.currentThread().getName());
+                list.add(new Task(taskData));
             }
+            taskQueue.add(new MultiStageTask("MultiTask", list));
         }
-
-        writerLatch.countDown();
-    }
-
-    private MultiStageTask createTask() {
-        List<Executable> stages = new ArrayList<>();
-        stages.add(() -> System.out.println(name + " выполняет стадию 1"));
-        stages.add(() -> System.out.println(name + " выполняет стадию 2"));
-        stages.add(() -> System.out.println(name + " выполняет стадию 3"));
-
-        return new MultiStageTask("name", stages);
+        eventQueue.add(Event.WRITER_FINISHED);
     }
 }

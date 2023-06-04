@@ -1,75 +1,75 @@
 package net.thumbtack.school.multithread.task18;
-import net.thumbtack.school.multithread.task17.MultiStageTask;
-import java.util.Random;
+
+import net.thumbtack.school.multithread.task17.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Task18 {
-    public static void main(String[] args) throws InterruptedException{
-        int consumerCount = 5;
-        int producerCount = 5;
-        int tasksProducing = 2;
+    public static void main(String[] args) throws InterruptedException {
+        BlockingQueue<MultiStageTask> taskQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
 
-        Random random = new Random();
-        BlockingQueue<MultiStageTask> tasksQueue = new LinkedBlockingQueue<>();
-        BlockingQueue<Action> eventsQueue = new LinkedBlockingQueue<>();
-
+        int writerCount = 5;
+        int readerCount = 5;
         int tasksCreated = 0;
         int tasksFinished = 0;
-        int producersCreated = 0;
-        int producersFinished = 0;
+        int writersCreated = 0;
+        int writersFinished = 0;
 
-        Thread[] consumers = new Thread[consumerCount];
-        for (int i = 0; i < consumerCount; i++) {
-            consumers[i] = new Reader(tasksQueue, eventsQueue, random);
+        Thread[] writers = new Thread[writerCount];
+        for (int i = 0; i < writerCount; i++) {
+            writers[i] = new Writer(taskQueue, eventQueue);
         }
 
-        Thread[] producers = new Thread[producerCount];
-        for (int i = 0; i < producerCount; i++) {
-            producers[i] = new Writer(tasksQueue, eventsQueue, tasksProducing, random);
+        Thread[] readers = new Thread[readerCount];
+        for (int i = 0; i < readerCount; i++) {
+            readers[i] = new Reader(taskQueue, eventQueue);
         }
 
-        startThreads(producers);
-        startThreads(consumers);
-        joinThreads(producers);
-
-        while (!(tasksCreated == tasksFinished && producersCreated == producersFinished)
-                || tasksCreated == 0) {
-            Action action = eventsQueue.take();
-            if (action.getType().equals(ActionCondition.TASK_CREATED)) {
-                tasksCreated++;
-            }
-            if (action.getType().equals(ActionCondition.TASK_FINISHED)) {
-                tasksFinished++;
-            }
-            if (action.getType().equals(ActionCondition.WRITER_START_WORK)) {
-                producersCreated++;
-            }
-            if (action.getType().equals(ActionCondition.WRITER_FINISH_WORK)) {
-                producersFinished++;
-            }
+        for (Thread writer : writers) {
+            writer.start();
         }
 
-        for (int i = 0; i < consumerCount; i++) {
-            tasksQueue.add(new MultiStageTask("name", null));
+        for (Thread reader : readers) {
+            reader.start();
         }
-        joinThreads(consumers);
-        System.out.println("Queue size: " + tasksQueue.size());
-    }
 
-    public static void startThreads(Thread[] threads) {
-        for (Thread thread : threads) {
-            thread.start();
-        }
-    }
-
-    public static void joinThreads(Thread[] threads) {
-        for (Thread thread : threads) {
+        for (Thread writer : writers) {
             try {
-                thread.join();
+                writer.join();
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         }
+
+        while (!(tasksCreated == tasksFinished && writersCreated == writersFinished) || tasksCreated == 0) {
+            Event event = eventQueue.take();
+            if (event.equals(Event.TASK_CREATED)) {
+                tasksCreated++;
+            }
+            if (event.equals(Event.TASK_FINISHED)) {
+                tasksFinished++;
+            }
+            if (event.equals(Event.WRITER_STARTED)) {
+                writersCreated++;
+            }
+            if (event.equals(Event.WRITER_FINISHED)) {
+                writersFinished++;
+            }
+        }
+
+        for (int i = 0; i < readerCount; i++) {
+            taskQueue.add(new MultiStageTask("name", null));
+        }
+
+        for (Thread reader : readers) {
+            try {
+                reader.join();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        System.out.println("Queue size: " + taskQueue.size());
     }
 }

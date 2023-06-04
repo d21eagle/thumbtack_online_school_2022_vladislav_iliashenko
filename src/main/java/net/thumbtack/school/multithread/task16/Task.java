@@ -9,12 +9,12 @@ public class Task implements Executable {
     private String name;
 
     public void execute() {
-        System.out.printf("Поток %s делает %s\n", Thread.currentThread().getId(), getName());
+        System.out.printf("Thread-%s is doing %s\n", Thread.currentThread().getId(), getName());
         try {
             Thread.sleep(100);
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        System.out.printf("%s сделана потоком %s\n", getName(), Thread.currentThread().getId());
+        System.out.printf("%s done by %s\n", getName(), Thread.currentThread().getId());
     }
 }

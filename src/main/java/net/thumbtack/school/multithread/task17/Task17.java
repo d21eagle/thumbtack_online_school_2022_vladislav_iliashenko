@@ -1,34 +1,74 @@
 package net.thumbtack.school.multithread.task17;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Task17 {
     public static void main(String[] args) throws Exception {
-        Queue<MultiStageTask> taskQueue = new ConcurrentLinkedQueue<>();
-        int numWriters = 2;
-        int tasksPerWriter = 5;
+        BlockingQueue<MultiStageTask> taskQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>();
 
-        CountDownLatch writerLatch = new CountDownLatch(numWriters);
-        CountDownLatch readerLatch = new CountDownLatch(numWriters * tasksPerWriter);
-        CountDownLatch stageLatch = new CountDownLatch(numWriters * tasksPerWriter);
+        int writerCount = 5;
+        int readerCount = 5;
+        int tasksCreated = 0;
+        int tasksFinished = 0;
+        int writersCreated = 0;
+        int writersFinished = 0;
 
-        for (int i = 0; i < numWriters; i++) {
-            Thread developerThread = new Thread(new Writer("Разработчик " + (i + 1), taskQueue, tasksPerWriter, writerLatch));
-            developerThread.start();
+        Thread[] writers = new Thread[writerCount];
+        for (int i = 0; i < writerCount; i++) {
+            writers[i] = new Writer(taskQueue, eventQueue);
         }
 
-        for (int i = 0; i < numWriters * tasksPerWriter; i++) {
-            Thread executorThread = new Thread(new Reader(taskQueue, writerLatch, readerLatch, stageLatch));
-            executorThread.start();
+        Thread[] readers = new Thread[readerCount];
+        for (int i = 0; i < readerCount; i++) {
+            readers[i] = new Reader(taskQueue, eventQueue);
         }
 
-        stageLatch.await();
-        System.out.println("Все стадийные задачи выполнены");
+        for (Thread writer : writers) {
+            writer.start();
+        }
 
-        readerLatch.await();
-        System.out.println("Все задачи выполнены исполнителями");
+        for (Thread reader : readers) {
+            reader.start();
+        }
 
-        System.out.println("Размер очереди: " + taskQueue.size());
+        for (Thread writer : writers) {
+            try {
+                writer.join();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        while (!(tasksCreated == tasksFinished && writersCreated == writersFinished) || tasksCreated == 0) {
+            Event event = eventQueue.take();
+            if (event.equals(Event.TASK_CREATED)) {
+                tasksCreated++;
+            }
+            if (event.equals(Event.TASK_FINISHED)) {
+                tasksFinished++;
+            }
+            if (event.equals(Event.WRITER_STARTED)) {
+                writersCreated++;
+            }
+            if (event.equals(Event.WRITER_FINISHED)) {
+                writersFinished++;
+            }
+        }
+
+        for (int i = 0; i < writerCount; i++) {
+            taskQueue.add(new MultiStageTask("name", null));
+        }
+
+        for (Thread reader : readers) {
+            try {
+                reader.join();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        System.out.println("Queue size: " + taskQueue.size());
     }
 }
