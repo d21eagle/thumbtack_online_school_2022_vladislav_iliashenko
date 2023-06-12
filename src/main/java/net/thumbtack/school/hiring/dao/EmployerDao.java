@@ -8,15 +8,17 @@ import java.util.UUID;
 
 public interface EmployerDao {
     int insert(Employer employer) throws ServerException;
-    User getUserByToken(UUID token) throws ServerException;
-    User getUserById(int id);
-    int addVacancy(Vacancy vacancy);
-    int addVacancyRequirement(Requirement requirement);
+    User getUserByToken(String token) throws ServerException;
+    int addVacancy(Vacancy vacancy, Employer employer);
+    int addVacancyRequirement(Requirement requirement, Vacancy vacancy);
     void deleteVacancy(int id) throws ServerException;
     void deleteVacancyRequirement(int id) throws ServerException;
     Requirement getRequirementById(int id);
     Vacancy getVacancyById(int id);
     List<Vacancy> getAllVacancies();
     List<Requirement> getAllRequirements();
-    Set<Employee> getEmployeesByRequirements(List<Requirement> requirements);
+    List<Employee> getEmployeesByVacancyRequirement(Requirement requirement);
+
+    int getIdByEmployer(String token);
+    int getIdVacancyByRequirement(Requirement requirement);
 }

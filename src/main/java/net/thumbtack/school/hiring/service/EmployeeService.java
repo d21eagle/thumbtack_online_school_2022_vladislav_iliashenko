@@ -10,7 +10,7 @@ import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.server.ServerUtils;
+import net.thumbtack.school.hiring.utils.ServerUtils;
 import java.util.*;
 
 public class EmployeeService extends UserService {
@@ -43,12 +43,16 @@ public class EmployeeService extends UserService {
         }
     }
 
+
     public ServerResponse addSkill(UUID token, String requestJson) {
         try {
             Employee employee = getEmployeeByToken(token);
-            AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
+            employee.setUserId(employeeDao.getIdByEmployee(String.valueOf(token)));
+            AddSkillDtoRequest skillDtoRequest = ServerUtils
+                    .getClassFromJson(requestJson, AddSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
-            Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
+            Skill skill = EmployeeMapper
+                    .INSTANCE.skillToSkillDto(skillDtoRequest);
 
             employee.add(skill);
 
@@ -112,11 +116,11 @@ public class EmployeeService extends UserService {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
-        User user = employeeDao.getUserByToken(token);
+        User user = employeeDao.getUserByToken(String.valueOf(token));
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }
-        if (!(user instanceof Employee)) {
+        if (! (user instanceof  Employee)){
             throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
         }
         return (Employee) user;

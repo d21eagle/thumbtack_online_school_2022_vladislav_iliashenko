@@ -1,4 +1,4 @@
-package net.thumbtack.school.hiring.server;
+package net.thumbtack.school.hiring.utils;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import net.thumbtack.school.hiring.exception.*;

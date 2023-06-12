@@ -1,12 +1,13 @@
 package net.thumbtack.school.hiring.model;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Skill {
-    private int skillId;
+    private int id;
     private Employee employee;
     private String skillName;
     private int profLevel;

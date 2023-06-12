@@ -14,14 +14,14 @@ public class Server {
         return employeeService.registerEmployee(requestJson);
     }
     public ServerResponse registerEmployer(String requestJson) throws JsonSyntaxException {
-        return employerService.registerEmployee(requestJson);
+        return employerService.registerEmployer(requestJson);
     }
 
     public ServerResponse loginUser(String requestJson) {
         return userService.loginUser(requestJson);
     }
 
-    public ServerResponse logoutUser(UUID token) {
+    public ServerResponse logoutUser(String token) {
         return userService.logoutUser(token);
     }
 
@@ -79,10 +79,6 @@ public class Server {
 
     public ServerResponse getVacancyByIdExternal(UUID token, int id) {
         return employerService.getVacancyByIdExternal(token, id);
-    }
-
-    public ServerResponse getEmployeesByRequirements(UUID token, String requestJson) {
-        return employerService.getEmployeesByRequirements(token, requestJson);
     }
 
     public void clear() {

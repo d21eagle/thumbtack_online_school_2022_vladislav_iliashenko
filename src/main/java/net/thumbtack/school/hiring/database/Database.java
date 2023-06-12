@@ -63,13 +63,9 @@ public class Database {
         return userByToken.get(token);
     }
 
-    public User getUserById(int id) {
-        return userById.get(id);
-    }
-
     public int addSkill(Skill skill, Employee employee) {
         employee.getSkills().forEach(skill1 -> employeeBySkills.remove(skill1, employee));
-        skill.setSkillId(nextSkillId);
+        skill.setId(nextSkillId);
         employee.getSkills().forEach(skill1 -> employeeBySkills.put(skill1, employee));
         skillById.put(nextSkillId, skill);
         return nextSkillId++;

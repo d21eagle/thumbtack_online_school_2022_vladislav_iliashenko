@@ -1,28 +1,70 @@
 package net.thumbtack.school.hiring.daoimpl;
 import net.thumbtack.school.hiring.dao.UserDao;
-import net.thumbtack.school.hiring.database.Database;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.User;
-import java.util.UUID;
+import net.thumbtack.school.hiring.utils.MyBatisUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl extends DaoImplBase implements UserDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisUtils.class);
     @Override
-    public UUID loginUser(User request) {
-        return Database.getInstance().loginUser(request);
+    public void loginUser(User request, String uuid) {
+        LOGGER.debug("DAO insert session user {} ", request);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                int id = getUserMapper(sqlSession).getIdByUser(request);
+                request.setUserId(id);
+                getUserMapper(sqlSession).loginUser(request, uuid);
+            } catch (RuntimeException ex) {
+                LOGGER.info("DAO can't insert user by id {}, {}", ex, request);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
     }
 
     @Override
-    public void logoutUser(UUID token) throws ServerException {
-        Database.getInstance().logoutUser(token);
+    public void logoutUser(String token) throws ServerException {
+        LOGGER.debug("DAO delete session by token {} ", token);
+        try (SqlSession sqlSession = getSession()) {
+            try {
+                getUserMapper(sqlSession).logoutUser(token);
+            } catch (RuntimeException ex) {
+                LOGGER.info("DAO can't delete session by token {}, {}", ex, token);
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
     }
 
     @Override
     public User getUserByLogin(String login) {
-        return Database.getInstance().getUserByLogin(login);
+        LOGGER.debug("DAO get user by login {}", login);
+        try (SqlSession sqlSession = getSession()){
+            try {
+                return getUserMapper(sqlSession).getUserByLogin(login);
+            } catch (RuntimeException ex) {
+                LOGGER.info("DAO can't get User by login {}, {}", login, ex);
+                throw ex;
+            }
+        }
     }
 
     @Override
     public void clear() {
-        Database.getInstance().clear();
+        try(SqlSession sqlSession = getSession()){
+            try{
+                getUserMapper(sqlSession).clear();
+            } catch (RuntimeException ex){
+                LOGGER.info("Can't clear database");
+                sqlSession.rollback();
+                throw ex;
+            }
+            sqlSession.commit();
+        }
     }
 }

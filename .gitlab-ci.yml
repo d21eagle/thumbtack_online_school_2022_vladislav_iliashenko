@@ -17,7 +17,7 @@ compile_test:
     script:
     #- apt-get update && apt-get -y upgrade
     - service mysql start 
-    - mysql -h localhost -u test -ptest < sql/ttschool.sql
+    - mysql -h localhost -u test -ptest < sql/hiring.sql
     - mvn $MAVEN_CLI_OPTS clean compile test
 
   

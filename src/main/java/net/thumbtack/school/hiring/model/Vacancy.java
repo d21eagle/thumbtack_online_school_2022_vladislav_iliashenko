@@ -2,7 +2,8 @@ package net.thumbtack.school.hiring.model;
 import lombok.*;
 import java.util.*;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Vacancy {
@@ -11,6 +12,10 @@ public class Vacancy {
     private String position;
     private int salary;
     private List<Requirement> requirementsList = new ArrayList<>();
+
+    public Vacancy(int vacancyId) {
+        this.vacancyId = vacancyId;
+    }
 
     public void add(Requirement requirement) {
         getRequirementsList().add(requirement);

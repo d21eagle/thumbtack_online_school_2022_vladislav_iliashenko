@@ -1,9 +1,10 @@
 package net.thumbtack.school.hiring.model;
 import lombok.*;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 public class User {
     private int userId;
     private String email;

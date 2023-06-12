@@ -2,10 +2,16 @@ package net.thumbtack.school.hiring.service;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
+import net.thumbtack.school.hiring.utils.MyBatisUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEmployeeService extends TestBase {
+    @BeforeAll()
+    public static void setUp() {
+        MyBatisUtils.initSqlSessionFactory();
+    }
     @Test
     public void testRegisterAndLoginEmployee() {
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(
@@ -59,7 +65,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
         LoginUserDtoResponse loginEmployeeDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
 
-        ServerResponse logoutResponse = server.logoutUser(loginEmployeeDtoResponse.getToken());
+        ServerResponse logoutResponse = server.logoutUser(String.valueOf(loginEmployeeDtoResponse.getToken()));
         assertEquals(logoutResponse.getResponseCode(), SUCCESS_CODE);
 
         // попытка получить Employee по токену
@@ -104,6 +110,7 @@ public class TestEmployeeService extends TestBase {
         // получение скилла по id
         ServerResponse getSkillByIdJson = server.getSkillByIdExternal(
                 loginEmployeeDtoResponse.getToken(), addSkillResponse.getSkillId());
+
         GetSkillDtoResponse getSkillDtoResponse = GSON.fromJson(getSkillByIdJson.getResponseData(), GetSkillDtoResponse.class);
 
         // проверка данных скилла
@@ -347,7 +354,7 @@ public class TestEmployeeService extends TestBase {
 
         ServerResponse addVacancyResponse = server.addVacancy(loginEmployeeDtoResponse.getToken(), GSON.toJson(addVacancyJson));
         assertEquals(addVacancyResponse.getResponseCode(), ERROR_CODE);
-        assertEquals(addVacancyResponse.getResponseData(), "Usertype is wrong!");
+        assertEquals(addVacancyResponse.getResponseData(), "User not exist!");
     }
 
     @Test
@@ -418,7 +425,7 @@ public class TestEmployeeService extends TestBase {
         ServerResponse addVacancyRequirement = server.addVacancyRequirement(
                 loginEmployeeDtoResponse.getToken(), GSON.toJson(addRequirementJson));
         assertEquals(addVacancyRequirement.getResponseCode(), ERROR_CODE);
-        assertEquals(addVacancyRequirement.getResponseData(), "Usertype is wrong!");
+        assertEquals(addVacancyRequirement.getResponseData(), "User not exist!");
     }
 
     @Test
@@ -447,7 +454,7 @@ public class TestEmployeeService extends TestBase {
         // попытка получить Employee по токену Employer
         ServerResponse getEmployeeByEmployerTokenJson = server.getCurrentEmployee(loginEmployerDtoResponse.getToken());
         assertEquals(getEmployeeByEmployerTokenJson.getResponseCode(), ERROR_CODE);
-        assertEquals(getEmployeeByEmployerTokenJson.getResponseData(), "Usertype is wrong!");
+        assertEquals(getEmployeeByEmployerTokenJson.getResponseData(), "User not exist!");
     }
 
     @Test

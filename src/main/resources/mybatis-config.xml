@@ -25,11 +25,15 @@
     </environments>
 
     <mappers>
-        <mapper class="net.thumbtack.school.database.mybatis.mappers.TraineeMapper"/>
-        <mapper class="net.thumbtack.school.database.mybatis.mappers.GroupMapper"/>
-        <mapper class="net.thumbtack.school.database.mybatis.mappers.SchoolMapper"/>
-        <mapper class="net.thumbtack.school.database.mybatis.mappers.SubjectMapper"/>
-        <mapper resource="net/thumbtack/school/database/mybatis/mappers/SchoolMapper.xml"/>
+<!--        <mapper class="net.thumbtack.school.database.mybatis.mappers.TraineeMapper"/>-->
+<!--        <mapper class="net.thumbtack.school.database.mybatis.mappers.GroupMapper"/>-->
+<!--        <mapper class="net.thumbtack.school.database.mybatis.mappers.SchoolMapper"/>-->
+<!--        <mapper class="net.thumbtack.school.database.mybatis.mappers.SubjectMapper"/>-->
+<!--        <mapper resource="net/thumbtack/school/database/mybatis/mappers/SchoolMapper.xml"/>-->
+
+        <mapper class="net.thumbtack.school.hiring.mappers.EmployeeMapper"/>
+        <mapper class="net.thumbtack.school.hiring.mappers.EmployerMapper"/>
+        <mapper class="net.thumbtack.school.hiring.mappers.UserMapper"/>
     </mappers>
 
 </configuration>

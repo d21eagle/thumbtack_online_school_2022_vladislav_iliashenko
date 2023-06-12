@@ -10,7 +10,7 @@ import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.server.ServerUtils;
+import net.thumbtack.school.hiring.utils.ServerUtils;
 import java.util.*;
 
 public class EmployerService extends UserService {
@@ -20,7 +20,7 @@ public class EmployerService extends UserService {
     private static final int MIN_PASSWORD_LENGTH = 8;
     private final EmployerDao employerDao = new EmployerDaoImpl();
 
-    public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
+    public ServerResponse registerEmployer(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployerDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
             validateRequest(registerDtoRequest);
@@ -46,13 +46,14 @@ public class EmployerService extends UserService {
     public ServerResponse addVacancy(UUID token, String requestJson) {
         try {
             Employer employer = getEmployerByToken(token);
+            employer.setUserId(employerDao.getIdByEmployer(String.valueOf(token)));
             AddVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, AddVacancyDtoRequest.class);
             validateRequest(vacancyDtoRequest);
             Vacancy vacancy = EmployerMapper.INSTANCE.vacancyToVacancyDto(vacancyDtoRequest);
 
             employer.add(vacancy);
 
-            int id = employerDao.addVacancy(vacancy);
+            int id = employerDao.addVacancy(vacancy, employer);
             AddVacancyDtoResponse addVacancyDtoResponse = new AddVacancyDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addVacancyDtoResponse));
         } catch (ServerException e) {
@@ -62,16 +63,18 @@ public class EmployerService extends UserService {
 
     public ServerResponse addVacancyRequirement(UUID token, String requestJson) {
         try {
-            getEmployerByToken(token);
+            Employer employer = getEmployerByToken(token);
+            employer.setUserId(employerDao.getIdByEmployer(String.valueOf(token)));
+
             AddRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddRequirementDtoRequest.class);
             validateRequest(requirementDtoRequest);
             Requirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
 
-            Vacancy vacancy = getVacancyById(requirementDtoRequest.getVacancyId());
+            Vacancy vacancy = new Vacancy(requirementDtoRequest.getVacancyId());
             requirement.setVacancy(vacancy);
             vacancy.add(requirement);
 
-            int id = employerDao.addVacancyRequirement(requirement);
+            int id = employerDao.addVacancyRequirement(requirement, vacancy);
             AddRequirementDtoResponse addRequirementDtoResponse = new AddRequirementDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addRequirementDtoResponse));
         } catch (ServerException e) {
@@ -103,8 +106,8 @@ public class EmployerService extends UserService {
             int requirementId = requirementDtoRequest.getRequirementId();
 
             Requirement requirement = getRequirementById(requirementId);
-            Vacancy vacancy = requirement.getVacancy();
-            vacancy.delete(requirement);
+            Vacancy vacancy = new Vacancy(employerDao.getIdVacancyByRequirement(requirement));
+            //vacancy.delete(requirement);
 
             employerDao.deleteVacancyRequirement(requirementId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
@@ -178,38 +181,11 @@ public class EmployerService extends UserService {
         }
     }
 
-    public ServerResponse getEmployeesByRequirements(UUID token, String requestJson) {
-        try {
-            getEmployerByToken(token);
-            RequirementListDtoRequest requirementRequest = ServerUtils.getClassFromJson(requestJson, RequirementListDtoRequest.class);
-            List<RequirementDtoRequest> requirements = requirementRequest.getRequirementList();
-            List<Requirement> requirementList = new ArrayList<>();
-            for (RequirementDtoRequest requirement : requirements) {
-                requirementList.add(new Requirement(requirement.getRequirementName(), requirement.getProfLevel(), requirement.isNecessary()));
-            }
-            Set<Employee> employeeSet = employerDao.getEmployeesByRequirements(requirementList);
-            Set<EmployeeDtoResponse> shortlist = new HashSet<>();
-            for (Employee employee : employeeSet) {
-                shortlist.add(new EmployeeDtoResponse(
-                        employee.getEmail(),
-                        employee.getLogin(),
-                        employee.getLastName(),
-                        employee.getMiddleName(),
-                        employee.getFirstName()
-                ));
-            }
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmployeeSetDtoResponse(shortlist)));
-        } catch (ServerException e) {
-            return new ServerResponse(e);
-        }
-
-    }
-
     private Employer getEmployerByToken(UUID token) throws ServerException {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
-        User user = employerDao.getUserByToken(token);
+        User user = employerDao.getUserByToken(String.valueOf(token));
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }

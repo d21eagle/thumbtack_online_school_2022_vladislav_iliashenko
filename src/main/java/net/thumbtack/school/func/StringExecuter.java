@@ -1,4 +1,4 @@
-package net.thumbtack.school.database.func;
+package net.thumbtack.school.func;
 import java.util.List;
 
 public class StringExecuter {

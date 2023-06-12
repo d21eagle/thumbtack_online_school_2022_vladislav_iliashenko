@@ -5,10 +5,12 @@ import java.util.*;
 
 public interface EmployeeDao {
     int insert(Employee employee) throws ServerException;
+
+    Integer getIdByEmployee(String token);
+
     int addSkill(Skill skill, Employee employee);
     void deleteSkill(int id) throws ServerException;
-    User getUserByToken(UUID token);
-    User getUserById(int id);
+    User getUserByToken(String token);
     Skill getSkillById(int id);
     List<Skill> getAllSkills();
 }

@@ -2,7 +2,8 @@ package net.thumbtack.school.hiring.model;
 import lombok.*;
 import java.util.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee extends User {

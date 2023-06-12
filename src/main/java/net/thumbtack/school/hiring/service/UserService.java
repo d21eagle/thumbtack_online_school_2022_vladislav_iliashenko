@@ -8,7 +8,7 @@ import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.exception.*;
-import net.thumbtack.school.hiring.server.ServerUtils;
+import net.thumbtack.school.hiring.utils.ServerUtils;
 import java.util.UUID;
 
 public class UserService {
@@ -24,15 +24,16 @@ public class UserService {
             if (user == null || !user.getPassword().equals(loginUserDtoRequest.getPassword())) {
                 throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
             }
-            UUID uuid = userDao.loginUser(user);
-            LoginUserDtoResponse loginUserDtoResponse = new LoginUserDtoResponse(uuid);
+            String uuid = UUID.randomUUID().toString();
+            userDao.loginUser(user, uuid);
+            LoginUserDtoResponse loginUserDtoResponse = new LoginUserDtoResponse(UUID.fromString(uuid));
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(loginUserDtoResponse));
         } catch (ServerException e) {
             return new ServerResponse(e);
         }
     }
 
-    public ServerResponse logoutUser(UUID token) {
+    public ServerResponse logoutUser(String token) {
         try {
             userDao.logoutUser(token);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
