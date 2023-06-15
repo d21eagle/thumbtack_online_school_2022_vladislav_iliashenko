@@ -1,4 +1,5 @@
 package net.thumbtack.school.hiring.daoimpl;
+
 import net.thumbtack.school.hiring.dao.UserDao;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.User;
@@ -14,8 +15,6 @@ public class UserDaoImpl extends DaoImplBase implements UserDao {
         LOGGER.debug("DAO insert session user {} ", request);
         try (SqlSession sqlSession = getSession()) {
             try {
-                int id = getUserMapper(sqlSession).getIdByUser(request);
-                request.setUserId(id);
                 getUserMapper(sqlSession).loginUser(request, uuid);
             } catch (RuntimeException ex) {
                 LOGGER.info("DAO can't insert user by id {}, {}", ex, request);

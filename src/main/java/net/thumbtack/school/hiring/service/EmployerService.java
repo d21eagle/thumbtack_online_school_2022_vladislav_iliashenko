@@ -185,7 +185,7 @@ public class EmployerService extends UserService {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
-        User user = employerDao.getUserByToken(String.valueOf(token));
+        User user = employerDao.getEmployerByToken(String.valueOf(token));
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }

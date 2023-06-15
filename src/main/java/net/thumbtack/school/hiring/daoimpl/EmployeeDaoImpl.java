@@ -31,11 +31,13 @@ public class EmployeeDaoImpl extends DaoImplBase implements EmployeeDao {
     }
 
     @Override
-    public User getUserByToken(String token) {
+    public Employee getEmployeeByToken(String token) {
         LOGGER.debug("DAO get employee by token {}", token);
         try (SqlSession sqlSession = getSession()) {
             try {
-                return getEmployeeMapper(sqlSession).getUserByToken(token);
+                User user = getUserMapper(sqlSession).getUserByToken(token);
+                if (user == null) return null;
+                return getEmployeeMapper(sqlSession).getEmployeeById(user.getUserId());
             } catch (RuntimeException ex) {
                 LOGGER.info("DAO can't get employee by token {}, {}", ex, token);
                 throw ex;

@@ -116,11 +116,11 @@ public class EmployeeService extends UserService {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
-        User user = employeeDao.getUserByToken(String.valueOf(token));
+        User user = employeeDao.getEmployeeByToken(String.valueOf(token));
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }
-        if (! (user instanceof  Employee)){
+        if (!(user instanceof Employee)) {
             throw new ServerException(ServerErrorCode.INVALID_USERTYPE);
         }
         return (Employee) user;

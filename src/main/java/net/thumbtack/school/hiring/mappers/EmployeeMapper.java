@@ -11,8 +11,9 @@ public interface EmployeeMapper {
     @Insert("INSERT INTO employee(id) VALUES(#{employee.userId})")
     int insert(@Param("employee") User employee);
 
-    @Select("SELECT * FROM user WHERE id = (SELECT id FROM employee WHERE id = (SELECT id FROM session WHERE uuid = #{uuid}))")
-    Employee getUserByToken(@Param("uuid") String token);
+    @Select("SELECT * FROM employee JOIN user ON employee.id = user.id WHERE employee.id = #{employeeId}")
+    @Results({ @Result(property = "userId", column = "id") })
+    Employee getEmployeeById(@Param("employeeId") int employeeId);
 
     @Insert("INSERT INTO skill(skillName, profLevel, employee_id) VALUES(#{skill.skillName}, #{skill.profLevel}, #{employee.userId})")
     @Options(useGeneratedKeys=true, keyProperty="skill.id", keyColumn="id")

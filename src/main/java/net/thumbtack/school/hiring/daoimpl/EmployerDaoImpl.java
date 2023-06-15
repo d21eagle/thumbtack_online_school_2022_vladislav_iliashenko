@@ -32,11 +32,13 @@ public class EmployerDaoImpl extends DaoImplBase implements EmployerDao {
     }
 
     @Override
-    public User getUserByToken(String token) {
+    public Employer getEmployerByToken(String token) {
         LOGGER.debug("DAO get employer by token {}", token);
         try (SqlSession sqlSession = getSession()) {
             try {
-                return getEmployerMapper(sqlSession).getUserByToken(token);
+                User user = getUserMapper(sqlSession).getUserByToken(token);
+                if (user == null) return null;
+                return getEmployerMapper(sqlSession).getEmployerById(user.getUserId());
             } catch (RuntimeException ex) {
                 LOGGER.info("DAO can't get employer by token {}", token, ex);
                 throw ex;

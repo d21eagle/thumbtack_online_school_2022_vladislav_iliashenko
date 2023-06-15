@@ -11,8 +11,9 @@ public interface EmployerMapper {
     @Insert("INSERT INTO employer(id, companyName, companyAddress) VALUES(#{employer.userId}, #{employer.companyName}, #{employer.companyAddress})")
     int insert(@Param("employer") User employer);
 
-    @Select("SELECT * FROM user WHERE id = (SELECT id FROM employer WHERE id = (SELECT id FROM session WHERE uuid = #{uuid}))")
-    Employer getUserByToken(@Param("uuid") String token);
+    @Select("SELECT * FROM employer JOIN user ON employer.id = user.id WHERE employer.id = #{employerId}")
+    @Results({ @Result(property = "userId", column = "id") })
+    Employer getEmployerById(@Param("employerId") int employerId);
 
     @Insert("INSERT INTO vacancy(position, salary, employer_id) " +
             "VALUES(#{vacancy.position}, #{vacancy.salary}, #{employer.userId})")
