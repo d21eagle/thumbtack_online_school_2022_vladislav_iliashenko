@@ -1,4 +1,4 @@
-package net.thumbtack.school.hiring.service;
+package net.thumbtack.school.hiring.service.sql;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEmployeeService extends TestBase {
-    @BeforeAll()
-    public static void setUp() {
-        MyBatisUtils.initSqlSessionFactory();
-    }
+
     @Test
     public void testRegisterAndLoginEmployee() {
         RegisterEmployeeDtoRequest requestJson = new RegisterEmployeeDtoRequest(

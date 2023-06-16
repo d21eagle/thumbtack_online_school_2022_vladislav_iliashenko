@@ -81,6 +81,10 @@ public class Server {
         return employerService.getVacancyByIdExternal(token, id);
     }
 
+    public ServerResponse getEmployeesByRequirements(UUID token, String requestJson) {
+        return employerService.getEmployeesByRequirements(token, requestJson);
+    }
+
     public void clear() {
         debugService.clear();
     }

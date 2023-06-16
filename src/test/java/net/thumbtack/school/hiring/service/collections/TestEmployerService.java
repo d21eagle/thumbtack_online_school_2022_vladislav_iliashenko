@@ -1,11 +1,9 @@
-package net.thumbtack.school.hiring.service;
+package net.thumbtack.school.hiring.service.collections;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.mapper.EmployerMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
-import net.thumbtack.school.hiring.utils.MyBatisUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,10 +12,6 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestEmployerService extends TestBase {
-    @BeforeAll()
-    public static void setUp() {
-        MyBatisUtils.initSqlSessionFactory();
-    }
     @Test
     public void testRegisterAndLoginEmployer() {
         RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
@@ -452,7 +446,7 @@ public class TestEmployerService extends TestBase {
         // попытка добавления скилла от Employer
         ServerResponse addSkillResponse = server.addSkill(loginEmployerDtoResponse.getToken(), GSON.toJson(addSkillJson));
         assertEquals(addSkillResponse.getResponseCode(), ERROR_CODE);
-        assertEquals(addSkillResponse.getResponseData(), "User not exist!");
+        assertEquals(addSkillResponse.getResponseData(), "Usertype is wrong!");
     }
 
     @Test
@@ -480,7 +474,7 @@ public class TestEmployerService extends TestBase {
         // попытка получить Employer по токену Employee
         ServerResponse getEmployerByTokenJson = server.getCurrentEmployer(loginEmployeeDtoResponse.getToken());
         assertEquals(getEmployerByTokenJson.getResponseCode(), ERROR_CODE);
-        assertEquals(getEmployerByTokenJson.getResponseData(), "User not exist!");
+        assertEquals(getEmployerByTokenJson.getResponseData(), "Usertype is wrong!");
     }
 
     @Test
@@ -513,5 +507,139 @@ public class TestEmployerService extends TestBase {
         ServerResponse getAllRequirementsResponse = server.getAllRequirements(loginEmployerDtoResponse.getToken());
         assertEquals(getAllRequirementsResponse.getResponseCode(), ERROR_CODE);
         assertEquals(getAllRequirementsResponse.getResponseData(), "Error getting requirements!");
+    }
+
+    @Test
+    public void getEmployeesByRequirements() {
+        // регистрируем и логиним работников
+        RegisterEmployeeDtoRequest requestJson0 = new RegisterEmployeeDtoRequest(
+                "ivan.ivanov@mail.ru",
+                "Иванов",
+                "Иванович",
+                "Иван",
+                "rocket_ivan",
+                "12345678"
+        );
+        RegisterEmployeeDtoRequest requestJson1 = new RegisterEmployeeDtoRequest(
+                "petr.petrov@mail.ru",
+                "Петров",
+                "Пётр",
+                "Петрович",
+                "space_petr",
+                "24681012"
+        );
+        RegisterEmployeeDtoRequest requestJson2 = new RegisterEmployeeDtoRequest(
+                "anton.antonov@mail.ru",
+                "Антонов",
+                "Антонович",
+                "Антон",
+                "moon_anton",
+                "369121518"
+        );
+
+        server.registerEmployee(GSON.toJson(requestJson0));
+        server.registerEmployee(GSON.toJson(requestJson1));
+        server.registerEmployee(GSON.toJson(requestJson2));
+
+        LoginUserDtoRequest loginJson0 = new LoginUserDtoRequest(
+                "rocket_ivan",
+                "12345678"
+        );
+        ServerResponse tokenJson0 = server.loginUser(GSON.toJson(loginJson0));
+        LoginUserDtoResponse loginEmployeeDtoResponse0 = GSON.fromJson(tokenJson0.getResponseData(), LoginUserDtoResponse.class);
+
+        LoginUserDtoRequest loginJson1 = new LoginUserDtoRequest(
+                "space_petr",
+                "24681012"
+        );
+        ServerResponse tokenJson1 = server.loginUser(GSON.toJson(loginJson1));
+        LoginUserDtoResponse loginEmployeeDtoResponse1 = GSON.fromJson(tokenJson1.getResponseData(), LoginUserDtoResponse.class);
+
+        LoginUserDtoRequest loginJson2 = new LoginUserDtoRequest(
+                "moon_anton",
+                "369121518"
+        );
+        ServerResponse tokenJson2 = server.loginUser(GSON.toJson(loginJson2));
+        LoginUserDtoResponse loginEmployeeDtoResponse2 = GSON.fromJson(tokenJson2.getResponseData(), LoginUserDtoResponse.class);
+
+        // запросы на добавление скиллов
+        AddSkillDtoRequest addSkillDtoRequest0 = new AddSkillDtoRequest("C#", 5);
+        AddSkillDtoRequest addSkillDtoRequest1 = new AddSkillDtoRequest("C#", 4);
+        AddSkillDtoRequest addSkillDtoRequest2 = new AddSkillDtoRequest("Go", 3);
+        AddSkillDtoRequest addSkillDtoRequest3 = new AddSkillDtoRequest("Go", 4);
+        AddSkillDtoRequest addSkillDtoRequest4 = new AddSkillDtoRequest("Kotlin", 5);
+        AddSkillDtoRequest addSkillDtoRequest5 = new AddSkillDtoRequest("Python", 4);
+
+        // регистрируем и логиним работодателя
+        RegisterEmployerDtoRequest requestJson = new RegisterEmployerDtoRequest(
+                "InventInc",
+                "просп.Мира д.81/1",
+                "invent_inc.future@gmail.com",
+                "Андреев",
+                "Андреевич",
+                "Андрей",
+                "inventInc.hr",
+                "87686548440"
+        );
+        server.registerEmployer(GSON.toJson(requestJson));
+
+        LoginUserDtoRequest loginJson = new LoginUserDtoRequest(
+                "inventInc.hr",
+                "87686548440"
+        );
+        ServerResponse tokenJson = server.loginUser(GSON.toJson(loginJson));
+        LoginUserDtoResponse loginEmployerDtoResponse = GSON.fromJson(tokenJson.getResponseData(), LoginUserDtoResponse.class);
+
+        // запрос на добавление вакансии
+        AddVacancyDtoRequest addVacancyJson0 = new AddVacancyDtoRequest("Middle", 120000);
+
+        // добавление вакансии
+        ServerResponse idJson = server.addVacancy(loginEmployerDtoResponse.getToken(), GSON.toJson(addVacancyJson0));
+        AddVacancyDtoResponse addVacancyResponse = GSON.fromJson(idJson.getResponseData(), AddVacancyDtoResponse.class);
+
+        List<RequirementDtoRequest> requirementDto = new ArrayList<>();
+        ServerResponse serverResponse0 = server.getEmployeesByRequirements(loginEmployerDtoResponse.getToken(),
+                GSON.toJson(new RequirementListDtoRequest(requirementDto)));
+        EmployeeSetDtoResponse res0 = GSON.fromJson(serverResponse0.getResponseData(), EmployeeSetDtoResponse.class);
+        assertEquals(0, res0.getEmployeeDtoResponseSet().size());
+
+        // запрос на добавление требования
+        AddRequirementDtoRequest addRequirementJson0 =
+                new AddRequirementDtoRequest(addVacancyResponse.getVacancyId(),
+                        "Kotlin", 5, true);
+
+        // добавление требования
+        server.addVacancyRequirement(loginEmployerDtoResponse.getToken(), GSON.toJson(addRequirementJson0));
+
+        // получаем список всех требований
+        ServerResponse getAllRequirementsResponse = server.getAllRequirements(loginEmployerDtoResponse.getToken());
+        GetAllRequirementsDtoResponse requirementsList = GSON.fromJson(getAllRequirementsResponse.getResponseData(),
+                GetAllRequirementsDtoResponse.class);
+        requirementDto = EmployerMapper.INSTANCE.getRequirementRequest(requirementsList.getRequirementsList());
+
+        ServerResponse serverResponse1 = server.getEmployeesByRequirements(loginEmployerDtoResponse.getToken(),
+                GSON.toJson(new RequirementListDtoRequest(requirementDto)));
+        EmployeeSetDtoResponse res1 = GSON.fromJson(serverResponse1.getResponseData(), EmployeeSetDtoResponse.class);
+        assertEquals(0, res1.getEmployeeDtoResponseSet().size());
+
+        // добавляем скиллы одному из работников
+        server.addSkill(loginEmployeeDtoResponse0.getToken(), GSON.toJson(addSkillDtoRequest2));
+        server.addSkill(loginEmployeeDtoResponse0.getToken(), GSON.toJson(addSkillDtoRequest4));
+        server.addSkill(loginEmployeeDtoResponse0.getToken(), GSON.toJson(addSkillDtoRequest5));
+
+        ServerResponse serverResponse2 = server.getEmployeesByRequirements(loginEmployerDtoResponse.getToken(),
+                GSON.toJson(new RequirementListDtoRequest(requirementDto)));
+        EmployeeSetDtoResponse res2 = GSON.fromJson(serverResponse2.getResponseData(), EmployeeSetDtoResponse.class);
+        assertEquals(1, res2.getEmployeeDtoResponseSet().size());
+
+        Set<EmployeeDtoResponse> shortlist = new HashSet<>();
+        shortlist.add(new EmployeeDtoResponse(
+                requestJson0.getEmail(),
+                requestJson0.getLogin(),
+                requestJson0.getLastName(),
+                requestJson0.getMiddleName(),
+                requestJson0.getFirstName()
+        ));
+        assertTrue(CollectionUtils.isEqualCollection(shortlist, res2.getEmployeeDtoResponseSet()));
     }
 }

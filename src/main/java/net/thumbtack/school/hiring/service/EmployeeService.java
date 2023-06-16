@@ -11,6 +11,8 @@ import net.thumbtack.school.hiring.dao.EmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.utils.ServerUtils;
+import net.thumbtack.school.hiring.utils.Settings;
+
 import java.util.*;
 
 public class EmployeeService extends UserService {
@@ -19,6 +21,7 @@ public class EmployeeService extends UserService {
     private static final int MIN_LOGIN_LENGTH = 8;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private final EmployeeDao employeeDao = new EmployeeDaoImpl();
+    private final Settings settings = Settings.getInstance();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
@@ -47,12 +50,12 @@ public class EmployeeService extends UserService {
     public ServerResponse addSkill(UUID token, String requestJson) {
         try {
             Employee employee = getEmployeeByToken(token);
-            employee.setUserId(employeeDao.getIdByEmployee(String.valueOf(token)));
-            AddSkillDtoRequest skillDtoRequest = ServerUtils
-                    .getClassFromJson(requestJson, AddSkillDtoRequest.class);
+            if(settings.getDatabaseType().equals("SQL")) {
+                employee.setUserId(employeeDao.getIdByEmployee(String.valueOf(token)));
+            }
+            AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
-            Skill skill = EmployeeMapper
-                    .INSTANCE.skillToSkillDto(skillDtoRequest);
+            Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
 
             employee.add(skill);
 
@@ -116,7 +119,13 @@ public class EmployeeService extends UserService {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
-        User user = employeeDao.getEmployeeByToken(String.valueOf(token));
+        User user;
+        if(settings.getDatabaseType().equals("SQL")) {
+            user = employeeDao.getEmployeeByToken(String.valueOf(token));
+        }
+        else {
+            user = employeeDao.getUserByToken(token);
+        }
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }

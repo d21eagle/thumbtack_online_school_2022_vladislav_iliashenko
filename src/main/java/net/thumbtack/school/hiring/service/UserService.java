@@ -9,12 +9,15 @@ import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.exception.*;
 import net.thumbtack.school.hiring.utils.ServerUtils;
+import net.thumbtack.school.hiring.utils.Settings;
+
 import java.util.UUID;
 
 public class UserService {
     private static final Gson GSON = new Gson();
     private static final int SUCCESS_CODE = 200;
     private final UserDao userDao = new UserDaoImpl();
+    private final Settings settings = Settings.getInstance();
 
     public ServerResponse loginUser(String requestJson) {
         try {
@@ -24,8 +27,14 @@ public class UserService {
             if (user == null || !user.getPassword().equals(loginUserDtoRequest.getPassword())) {
                 throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
             }
-            String uuid = UUID.randomUUID().toString();
-            userDao.loginUser(user, uuid);
+            String uuid;
+            if(settings.getDatabaseType().equals("SQL")) {
+                uuid = UUID.randomUUID().toString();
+                userDao.loginUser(user, uuid);
+            }
+            else {
+                uuid = String.valueOf(userDao.loginUser(user));
+            }
             LoginUserDtoResponse loginUserDtoResponse = new LoginUserDtoResponse(UUID.fromString(uuid));
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(loginUserDtoResponse));
         } catch (ServerException e) {
