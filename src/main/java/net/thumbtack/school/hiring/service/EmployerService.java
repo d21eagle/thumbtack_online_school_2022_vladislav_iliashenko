@@ -1,6 +1,5 @@
 package net.thumbtack.school.hiring.service;
 
-import com.google.gson.Gson;
 import com.google.common.base.Strings;
 import net.thumbtack.school.hiring.dao.collection.RamEmployerDao;
 import net.thumbtack.school.hiring.dao.sql.SqlEmployerDao;
@@ -8,25 +7,23 @@ import net.thumbtack.school.hiring.daoimpl.collections.RamEmployerDaoImpl;
 import net.thumbtack.school.hiring.daoimpl.sql.SqlEmployerDaoImpl;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.mapper.EmployerMapper;
-import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.utils.ServerUtils;
-import net.thumbtack.school.hiring.utils.Settings;
+import net.thumbtack.school.hiring.utils.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 public class EmployerService extends UserService {
-    private static final Gson GSON = new Gson();
-    private static final int SUCCESS_CODE = 200;
     private static final int MIN_LOGIN_LENGTH = 8;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private final SqlEmployerDao sqlEmployerDao = new SqlEmployerDaoImpl();
     private final RamEmployerDao ramEmployerDao = new RamEmployerDaoImpl();
     private final Settings settings = Settings.getInstance();
 
-    public ServerResponse registerEmployer(String requestJson) throws JsonSyntaxException {
+    public Response registerEmployer(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployerDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
             validateRequest(registerDtoRequest);
@@ -41,23 +38,22 @@ public class EmployerService extends UserService {
             }
 
             RegisterEmployerDtoResponse registerEmployerDtoResponse = new RegisterEmployerDtoResponse(userId);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(registerEmployerDtoResponse));
+            return Response.ok(registerEmployerDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getCurrentEmployer(UUID token) {
+    public Response getCurrentEmployer(UUID token) {
         try {
             Employer employer = getEmployerByToken(token);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getEmployerDto(employer)));
+            return Response.ok(EmployerMapper.INSTANCE.getEmployerDto(employer), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse addVacancy(UUID token, String requestJson) {
+    public Response addVacancy(UUID token, String requestJson) {
         try {
             Employer employer = getEmployerByToken(token);
             AddVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, AddVacancyDtoRequest.class);
@@ -75,13 +71,13 @@ public class EmployerService extends UserService {
             }
 
             AddVacancyDtoResponse addVacancyDtoResponse = new AddVacancyDtoResponse(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(addVacancyDtoResponse));
+            return Response.ok(addVacancyDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse addVacancyRequirement(UUID token, String requestJson) {
+    public Response addVacancyRequirement(UUID token, String requestJson) {
         try {
             Employer employer = getEmployerByToken(token);
             AddRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddRequirementDtoRequest.class);
@@ -101,17 +97,15 @@ public class EmployerService extends UserService {
             }
 
             AddRequirementDtoResponse addRequirementDtoResponse = new AddRequirementDtoResponse(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(addRequirementDtoResponse));
+            return Response.ok(addRequirementDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse deleteVacancy(UUID token, String requestJson) {
+    public Response deleteVacancy(UUID token, int vacancyId) {
         try {
             Employer employer = getEmployerByToken(token);
-            DeleteVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteVacancyDtoRequest.class);
-            int vacancyId = vacancyDtoRequest.getVacancyId();
 
             Vacancy vacancy = getVacancyById(vacancyId);
             vacancy.deleteAll();
@@ -124,18 +118,15 @@ public class EmployerService extends UserService {
                 ramEmployerDao.deleteVacancy(vacancyId);
             }
 
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+            return Response.ok(new EmptyResponse(), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse deleteVacancyRequirement(UUID token, String requestJson) {
+    public Response deleteVacancyRequirement(UUID token, int requirementId) {
         try {
             getEmployerByToken(token);
-            DeleteRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteRequirementDtoRequest.class);
-            int requirementId = requirementDtoRequest.getRequirementId();
-
             Requirement requirement = getRequirementById(requirementId);
             Vacancy vacancy;
             if (settings.getDatabaseType().equals("SQL")) {
@@ -149,35 +140,33 @@ public class EmployerService extends UserService {
                 ramEmployerDao.deleteVacancyRequirement(requirementId);
             }
 
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+            return Response.ok(new EmptyResponse(), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getRequirementByIdExternal(UUID token, int id) {
+    public Response getRequirementByIdExternal(UUID token, int id) {
         try {
             getEmployerByToken(token);
             Requirement employeeRequirement = getRequirementById(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getVacancyRequirementDto(employeeRequirement)));
+            return Response.ok(EmployerMapper.INSTANCE.getVacancyRequirementDto(employeeRequirement), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getVacancyByIdExternal(UUID token, int id) {
+    public Response getVacancyByIdExternal(UUID token, int id) {
         try {
             getEmployerByToken(token);
             Vacancy vacancy = getVacancyById(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployerMapper.INSTANCE.getVacancyDto(vacancy)));
+            return Response.ok(EmployerMapper.INSTANCE.getVacancyDto(vacancy), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getAllVacancies(UUID token) {
+    public Response getAllVacancies(UUID token) {
         try {
             getEmployerByToken(token);
 
@@ -200,13 +189,13 @@ public class EmployerService extends UserService {
 
             GetAllVacanciesDtoResponse allVacanciesDtoResponse = new GetAllVacanciesDtoResponse();
             allVacanciesDtoResponse.setVacancies(allVacanciesResponse);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(allVacanciesDtoResponse));
+            return Response.ok(allVacanciesDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getAllRequirements(UUID token) {
+    public Response getAllRequirements(UUID token) {
         try {
             getEmployerByToken(token);
             List<Requirement> requirements;
@@ -228,14 +217,13 @@ public class EmployerService extends UserService {
 
             GetAllRequirementsDtoResponse allRequirementsDtoResponse = new GetAllRequirementsDtoResponse();
             allRequirementsDtoResponse.setRequirementsList(allRequirementsResponse);
-
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(allRequirementsDtoResponse));
+            return Response.ok(allRequirementsDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getEmployeesByRequirements(UUID token, String requestJson) {
+    public Response getEmployeesByRequirements(UUID token, String requestJson) {
         try {
             getEmployerByToken(token);
             RequirementListDtoRequest requirementRequest = ServerUtils.getClassFromJson(requestJson, RequirementListDtoRequest.class);
@@ -255,9 +243,9 @@ public class EmployerService extends UserService {
                         employee.getFirstName()
                 ));
             }
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmployeeSetDtoResponse(shortlist)));
+            return Response.ok(new EmployeeSetDtoResponse(shortlist), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 

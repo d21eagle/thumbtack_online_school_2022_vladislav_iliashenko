@@ -12,13 +12,11 @@ public class MyBatisUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisUtils.class);
     private static SqlSessionFactory sqlSessionFactory;
 
-    public static boolean initSqlSessionFactory() {
+    public static void initSqlSessionFactory() {
         try (Reader reader = Resources.getResourceAsReader("mybatis-config.xml")) {
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-            return true;
         } catch (IOException ex) {
             LOGGER.error("Error loading mybatis-config.xml", ex);
-            return false;
         }
     }
     public static SqlSessionFactory getSqlSessionFactory() {

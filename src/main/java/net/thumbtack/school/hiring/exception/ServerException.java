@@ -2,17 +2,17 @@ package net.thumbtack.school.hiring.exception;
 
 public class ServerException extends Exception {
 
-    private ServerErrorCode errorCode;
-
-    public ServerException(ServerErrorCode errorCode) {
-        setErrorCode(errorCode);
+    private final ServerErrorCode serverErrorCode;
+    private String string;
+    public ServerException(ServerErrorCode serverErrorCode, String string) {
+        this.serverErrorCode = serverErrorCode;
+        this.string = string;
     }
 
-    public void setErrorCode(ServerErrorCode errorCode) {
-        this.errorCode = errorCode;
+    public ServerErrorCode getUserErrorCode() {
+        return serverErrorCode;
     }
-
-    public ServerErrorCode getErrorCode() {
-        return errorCode;
+    public ServerException(ServerErrorCode serverErrorCode) {
+        this.serverErrorCode = serverErrorCode;
     }
 }

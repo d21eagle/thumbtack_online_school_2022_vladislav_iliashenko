@@ -1,32 +1,29 @@
 package net.thumbtack.school.hiring.service;
 
-import com.google.gson.Gson;
 import com.google.common.base.Strings;
 import net.thumbtack.school.hiring.dao.collection.RamEmployeeDao;
 import net.thumbtack.school.hiring.daoimpl.collections.RamEmployeeDaoImpl;
 import net.thumbtack.school.hiring.daoimpl.sql.SqlEmployeeDaoImpl;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.mapper.EmployeeMapper;
-import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
 import net.thumbtack.school.hiring.dao.sql.SqlEmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
-import net.thumbtack.school.hiring.utils.ServerUtils;
-import net.thumbtack.school.hiring.utils.Settings;
+import net.thumbtack.school.hiring.utils.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.*;
 
 public class EmployeeService extends UserService {
-    private static final Gson GSON = new Gson();
-    private static final int SUCCESS_CODE = 200;
     private static final int MIN_LOGIN_LENGTH = 8;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private final SqlEmployeeDao sqlEmployeeDao = new SqlEmployeeDaoImpl();
     private final RamEmployeeDao ramEmployeeDao = new RamEmployeeDaoImpl();
     private static final Settings settings = Settings.getInstance();
 
-    public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
+    public Response registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployeeDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
             validateRequest(registerDtoRequest);
@@ -41,23 +38,22 @@ public class EmployeeService extends UserService {
             }
 
             RegisterEmployeeDtoResponse registerEmployeeDtoResponse = new RegisterEmployeeDtoResponse(userId);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(registerEmployeeDtoResponse));
+            return Response.ok(registerEmployeeDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getCurrentEmployee(UUID token) {
+    public Response getCurrentEmployee(UUID token) {
         try {
             Employee employee = getEmployeeByToken(token);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployeeMapper.INSTANCE.getEmployeeDto(employee)));
+            return Response.ok(EmployeeMapper.INSTANCE.getEmployeeDto(employee), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse addSkill(UUID token, String requestJson) {
+    public Response addSkill(UUID token, String requestJson) {
         try {
             Employee employee = getEmployeeByToken(token);
             AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
@@ -75,18 +71,15 @@ public class EmployeeService extends UserService {
             }
 
             AddSkillDtoResponse addSkillDtoResponse = new AddSkillDtoResponse(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(addSkillDtoResponse));
+            return Response.ok(addSkillDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse deleteSkill(UUID token, String requestJson) {
+    public Response deleteSkill(UUID token, int skillId) {
         try {
             Employee employee = getEmployeeByToken(token);
-            DeleteSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, DeleteSkillDtoRequest.class);
-            int skillId = skillDtoRequest.getSkillId();
-
             Skill skill = getSkillById(skillId);
             employee.delete(skill);
 
@@ -97,24 +90,23 @@ public class EmployeeService extends UserService {
                 ramEmployeeDao.deleteSkill(skillId);
             }
 
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
+            return Response.ok(new EmptyResponse(), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getSkillByIdExternal(UUID token, int id) {
+    public Response getSkillByIdExternal(UUID token, int skillId) {
         try {
             getEmployeeByToken(token);
-            Skill skill = getSkillById(id);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(
-                    EmployeeMapper.INSTANCE.getSkillDto(skill)));
+            Skill skill = getSkillById(skillId);
+            return Response.ok(EmployeeMapper.INSTANCE.getSkillDto(skill), MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 
-    public ServerResponse getAllSkills(UUID token) {
+    public Response getAllSkills(UUID token) {
         try {
             getEmployeeByToken(token);
 
@@ -136,9 +128,9 @@ public class EmployeeService extends UserService {
             }
             GetAllSkillsDtoResponse allSkillsDtoResponse = new GetAllSkillsDtoResponse();
             allSkillsDtoResponse.setSkills(allSkillsResponse);
-            return new ServerResponse(SUCCESS_CODE, GSON.toJson(allSkillsDtoResponse));
+            return Response.ok(allSkillsDtoResponse, MediaType.APPLICATION_JSON).build();
         } catch (ServerException e) {
-            return new ServerResponse(e);
+            return HiringUtils.failureResponse(e);
         }
     }
 

@@ -26,9 +26,13 @@ public enum ServerErrorCode {
     GETTING_SKILLS_ERROR("Error getting skills!"),
     GETTING_VACANCIES_ERROR("Error getting vacancies!"),
     GETTING_REQUIREMENTS_ERROR("Error getting requirements!"),
-    ID_NOT_EXIST("Id not exist!");
+    ID_NOT_EXIST("Id not exist!"),
+    WRONG_URL("This URL is wrong!"),
+    METHOD_NOT_ALLOWED("This method not allowed!"),
+    VALIDATION_ERROR("Validation error!"),
+    SUCCESS("OK");
 
-    private String errorString;
+    private final String errorString;
 
     ServerErrorCode(String errorString) {
         this.errorString = errorString;
