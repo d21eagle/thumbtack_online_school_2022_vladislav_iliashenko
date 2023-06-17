@@ -1,4 +1,4 @@
-package net.thumbtack.school.hiring.daoimpl;
+package net.thumbtack.school.hiring.daoimpl.sql;
 
 import net.thumbtack.school.hiring.mappers.EmployeeMapper;
 import net.thumbtack.school.hiring.mappers.EmployerMapper;

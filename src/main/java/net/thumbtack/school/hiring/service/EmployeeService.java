@@ -1,18 +1,20 @@
 package net.thumbtack.school.hiring.service;
+
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
-import net.thumbtack.school.hiring.daoimpl.EmployeeDaoImpl;
+import net.thumbtack.school.hiring.dao.collection.RamEmployeeDao;
+import net.thumbtack.school.hiring.daoimpl.collections.RamEmployeeDaoImpl;
+import net.thumbtack.school.hiring.daoimpl.sql.SqlEmployeeDaoImpl;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.mapper.EmployeeMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
 import net.thumbtack.school.hiring.model.*;
-import net.thumbtack.school.hiring.dao.EmployeeDao;
+import net.thumbtack.school.hiring.dao.sql.SqlEmployeeDao;
 import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.utils.ServerUtils;
 import net.thumbtack.school.hiring.utils.Settings;
-
 import java.util.*;
 
 public class EmployeeService extends UserService {
@@ -20,15 +22,24 @@ public class EmployeeService extends UserService {
     private static final int SUCCESS_CODE = 200;
     private static final int MIN_LOGIN_LENGTH = 8;
     private static final int MIN_PASSWORD_LENGTH = 8;
-    private final EmployeeDao employeeDao = new EmployeeDaoImpl();
-    private final Settings settings = Settings.getInstance();
+    private final SqlEmployeeDao sqlEmployeeDao = new SqlEmployeeDaoImpl();
+    private final RamEmployeeDao ramEmployeeDao = new RamEmployeeDaoImpl();
+    private static final Settings settings = Settings.getInstance();
 
     public ServerResponse registerEmployee(String requestJson) throws JsonSyntaxException {
         try {
             RegisterEmployeeDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployeeDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employee employee = EmployeeMapper.INSTANCE.employeeToEmployeeDto(registerDtoRequest);
-            int userId = employeeDao.insert(employee);
+
+            int userId;
+            if (settings.getDatabaseType().equals("SQL")) {
+                userId = sqlEmployeeDao.insert(employee);
+            }
+            else {
+                userId = ramEmployeeDao.insert(employee);
+            }
+
             RegisterEmployeeDtoResponse registerEmployeeDtoResponse = new RegisterEmployeeDtoResponse(userId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(registerEmployeeDtoResponse));
         } catch (ServerException e) {
@@ -46,20 +57,23 @@ public class EmployeeService extends UserService {
         }
     }
 
-
     public ServerResponse addSkill(UUID token, String requestJson) {
         try {
             Employee employee = getEmployeeByToken(token);
-            if(settings.getDatabaseType().equals("SQL")) {
-                employee.setUserId(employeeDao.getIdByEmployee(String.valueOf(token)));
-            }
             AddSkillDtoRequest skillDtoRequest = ServerUtils.getClassFromJson(requestJson, AddSkillDtoRequest.class);
             validateRequest(skillDtoRequest);
             Skill skill = EmployeeMapper.INSTANCE.skillToSkillDto(skillDtoRequest);
 
             employee.add(skill);
 
-            int id = employeeDao.addSkill(skill, employee);
+            int id;
+            if (settings.getDatabaseType().equals("SQL")) {
+                id = sqlEmployeeDao.addSkill(skill, employee);
+            }
+            else {
+                id = ramEmployeeDao.addSkill(skill, employee);
+            }
+
             AddSkillDtoResponse addSkillDtoResponse = new AddSkillDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addSkillDtoResponse));
         } catch (ServerException e) {
@@ -76,7 +90,13 @@ public class EmployeeService extends UserService {
             Skill skill = getSkillById(skillId);
             employee.delete(skill);
 
-            employeeDao.deleteSkill(skillId);
+            if (settings.getDatabaseType().equals("SQL")) {
+                sqlEmployeeDao.deleteSkill(skillId);
+            }
+            else {
+                ramEmployeeDao.deleteSkill(skillId);
+            }
+
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
@@ -97,7 +117,15 @@ public class EmployeeService extends UserService {
     public ServerResponse getAllSkills(UUID token) {
         try {
             getEmployeeByToken(token);
-            List<Skill> skills = employeeDao.getAllSkills();
+
+            List<Skill> skills;
+            if (settings.getDatabaseType().equals("SQL")) {
+                skills = sqlEmployeeDao.getAllSkills();
+            }
+            else {
+                skills = ramEmployeeDao.getAllSkills();
+            }
+
             if (skills.size() == 0) {
                 throw new ServerException(ServerErrorCode.GETTING_SKILLS_ERROR);
             }
@@ -106,7 +134,6 @@ public class EmployeeService extends UserService {
             for (Skill item: skills) {
                 allSkillsResponse.add(EmployeeMapper.INSTANCE.getSkillDto(item));
             }
-
             GetAllSkillsDtoResponse allSkillsDtoResponse = new GetAllSkillsDtoResponse();
             allSkillsDtoResponse.setSkills(allSkillsResponse);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(allSkillsDtoResponse));
@@ -119,13 +146,15 @@ public class EmployeeService extends UserService {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
+
         User user;
-        if(settings.getDatabaseType().equals("SQL")) {
-            user = employeeDao.getEmployeeByToken(String.valueOf(token));
+        if (settings.getDatabaseType().equals("SQL")) {
+            user = sqlEmployeeDao.getEmployeeByToken(String.valueOf(token));
         }
         else {
-            user = employeeDao.getUserByToken(token);
+            user = ramEmployeeDao.getUserByToken(token);
         }
+
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }
@@ -136,7 +165,14 @@ public class EmployeeService extends UserService {
     }
 
     private Skill getSkillById(int id) throws ServerException {
-        Skill skill = employeeDao.getSkillById(id);
+        Skill skill;
+        if (settings.getDatabaseType().equals("SQL")) {
+            skill = sqlEmployeeDao.getSkillById(id);
+        }
+        else {
+            skill = ramEmployeeDao.getSkillById(id);
+        }
+
         if (skill == null) {
             throw new ServerException(ServerErrorCode.INVALID_ID);
         }

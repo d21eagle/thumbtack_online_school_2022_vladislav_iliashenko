@@ -1,12 +1,9 @@
-package net.thumbtack.school.hiring.dao;
+package net.thumbtack.school.hiring.dao.sql;
 import net.thumbtack.school.hiring.exception.ServerException;
 import net.thumbtack.school.hiring.model.User;
 
-import java.util.UUID;
-
-public interface UserDao {
+public interface SqlUserDao {
     void loginUser (User user, String uuid) throws ServerException;
-    UUID loginUser(User request);
     void logoutUser(String token) throws ServerException;
     User getUserByLogin(String login) throws ServerException;
     void clear();

@@ -1,8 +1,11 @@
 package net.thumbtack.school.hiring.service;
+
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
-import net.thumbtack.school.hiring.dao.EmployerDao;
-import net.thumbtack.school.hiring.daoimpl.EmployerDaoImpl;
+import net.thumbtack.school.hiring.dao.collection.RamEmployerDao;
+import net.thumbtack.school.hiring.dao.sql.SqlEmployerDao;
+import net.thumbtack.school.hiring.daoimpl.collections.RamEmployerDaoImpl;
+import net.thumbtack.school.hiring.daoimpl.sql.SqlEmployerDaoImpl;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.mapper.EmployerMapper;
 import net.thumbtack.school.hiring.server.ServerResponse;
@@ -12,7 +15,6 @@ import net.thumbtack.school.hiring.exception.*;
 import com.google.gson.JsonSyntaxException;
 import net.thumbtack.school.hiring.utils.ServerUtils;
 import net.thumbtack.school.hiring.utils.Settings;
-
 import java.util.*;
 
 public class EmployerService extends UserService {
@@ -20,7 +22,8 @@ public class EmployerService extends UserService {
     private static final int SUCCESS_CODE = 200;
     private static final int MIN_LOGIN_LENGTH = 8;
     private static final int MIN_PASSWORD_LENGTH = 8;
-    private final EmployerDao employerDao = new EmployerDaoImpl();
+    private final SqlEmployerDao sqlEmployerDao = new SqlEmployerDaoImpl();
+    private final RamEmployerDao ramEmployerDao = new RamEmployerDaoImpl();
     private final Settings settings = Settings.getInstance();
 
     public ServerResponse registerEmployer(String requestJson) throws JsonSyntaxException {
@@ -28,7 +31,15 @@ public class EmployerService extends UserService {
             RegisterEmployerDtoRequest registerDtoRequest = ServerUtils.getClassFromJson(requestJson, RegisterEmployerDtoRequest.class);
             validateRequest(registerDtoRequest);
             Employer employer = EmployerMapper.INSTANCE.employerToEmployerDto(registerDtoRequest);
-            int userId = employerDao.insert(employer);
+
+            int userId;
+            if (settings.getDatabaseType().equals("SQL")) {
+                userId = sqlEmployerDao.insert(employer);
+            }
+            else {
+                userId = ramEmployerDao.insert(employer);
+            }
+
             RegisterEmployerDtoResponse registerEmployerDtoResponse = new RegisterEmployerDtoResponse(userId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(registerEmployerDtoResponse));
         } catch (ServerException e) {
@@ -49,16 +60,20 @@ public class EmployerService extends UserService {
     public ServerResponse addVacancy(UUID token, String requestJson) {
         try {
             Employer employer = getEmployerByToken(token);
-            if(settings.getDatabaseType().equals("SQL")) {
-                employer.setUserId(employerDao.getIdByEmployer(String.valueOf(token)));
-            }
             AddVacancyDtoRequest vacancyDtoRequest = ServerUtils.getClassFromJson(requestJson, AddVacancyDtoRequest.class);
             validateRequest(vacancyDtoRequest);
             Vacancy vacancy = EmployerMapper.INSTANCE.vacancyToVacancyDto(vacancyDtoRequest);
 
             employer.add(vacancy);
 
-            int id = employerDao.addVacancy(vacancy, employer);
+            int id;
+            if (settings.getDatabaseType().equals("SQL")) {
+                id = sqlEmployerDao.addVacancy(vacancy, employer);
+            }
+            else {
+                id = ramEmployerDao.addVacancy(vacancy);
+            }
+
             AddVacancyDtoResponse addVacancyDtoResponse = new AddVacancyDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addVacancyDtoResponse));
         } catch (ServerException e) {
@@ -69,10 +84,6 @@ public class EmployerService extends UserService {
     public ServerResponse addVacancyRequirement(UUID token, String requestJson) {
         try {
             Employer employer = getEmployerByToken(token);
-            if(settings.getDatabaseType().equals("SQL")) {
-                employer.setUserId(employerDao.getIdByEmployer(String.valueOf(token)));
-            }
-
             AddRequirementDtoRequest requirementDtoRequest = ServerUtils.getClassFromJson(requestJson, AddRequirementDtoRequest.class);
             validateRequest(requirementDtoRequest);
             Requirement requirement = EmployerMapper.INSTANCE.requirementToRequirementDto(requirementDtoRequest);
@@ -81,7 +92,14 @@ public class EmployerService extends UserService {
             requirement.setVacancy(vacancy);
             vacancy.add(requirement);
 
-            int id = employerDao.addVacancyRequirement(requirement, vacancy);
+            int id;
+            if (settings.getDatabaseType().equals("SQL")) {
+                id = sqlEmployerDao.addVacancyRequirement(requirement, vacancy);
+            }
+            else {
+                id = ramEmployerDao.addVacancyRequirement(requirement);
+            }
+
             AddRequirementDtoResponse addRequirementDtoResponse = new AddRequirementDtoResponse(id);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(addRequirementDtoResponse));
         } catch (ServerException e) {
@@ -99,7 +117,13 @@ public class EmployerService extends UserService {
             vacancy.deleteAll();
             employer.delete(vacancy);
 
-            employerDao.deleteVacancy(vacancyId);
+            if (settings.getDatabaseType().equals("SQL")) {
+                sqlEmployerDao.deleteVacancy(vacancyId);
+            }
+            else {
+                ramEmployerDao.deleteVacancy(vacancyId);
+            }
+
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
@@ -114,15 +138,17 @@ public class EmployerService extends UserService {
 
             Requirement requirement = getRequirementById(requirementId);
             Vacancy vacancy;
-            if(settings.getDatabaseType().equals("SQL")) {
-                vacancy = new Vacancy(employerDao.getIdVacancyByRequirement(requirement));
+            if (settings.getDatabaseType().equals("SQL")) {
+                vacancy = new Vacancy(sqlEmployerDao.getIdVacancyByRequirement(requirement));
+                vacancy.delete(requirement);
+                sqlEmployerDao.deleteVacancyRequirement(requirementId);
             }
             else {
                 vacancy = requirement.getVacancy();
+                vacancy.delete(requirement);
+                ramEmployerDao.deleteVacancyRequirement(requirementId);
             }
-            vacancy.delete(requirement);
 
-            employerDao.deleteVacancyRequirement(requirementId);
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         } catch (ServerException e) {
             return new ServerResponse(e);
@@ -154,7 +180,15 @@ public class EmployerService extends UserService {
     public ServerResponse getAllVacancies(UUID token) {
         try {
             getEmployerByToken(token);
-            List<Vacancy> vacancies = employerDao.getAllVacancies();
+
+            List<Vacancy> vacancies;
+            if (settings.getDatabaseType().equals("SQL")) {
+                vacancies = sqlEmployerDao.getAllVacancies();
+            }
+            else {
+                vacancies = ramEmployerDao.getAllVacancies();
+            }
+
             if (vacancies.size() == 0) {
                 throw new ServerException(ServerErrorCode.GETTING_VACANCIES_ERROR);
             }
@@ -175,7 +209,14 @@ public class EmployerService extends UserService {
     public ServerResponse getAllRequirements(UUID token) {
         try {
             getEmployerByToken(token);
-            List<Requirement> requirements = employerDao.getAllRequirements();
+            List<Requirement> requirements;
+            if (settings.getDatabaseType().equals("SQL")) {
+                requirements = sqlEmployerDao.getAllRequirements();
+            }
+            else {
+                requirements = ramEmployerDao.getAllRequirements();
+            }
+
             if (requirements.size() == 0) {
                 throw new ServerException(ServerErrorCode.GETTING_REQUIREMENTS_ERROR);
             }
@@ -203,7 +244,7 @@ public class EmployerService extends UserService {
             for (RequirementDtoRequest requirement : requirements) {
                 requirementList.add(new Requirement(requirement.getRequirementName(), requirement.getProfLevel(), requirement.isNecessary()));
             }
-            Set<Employee> employeeSet = employerDao.getEmployeesByRequirements(requirementList);
+            Set<Employee> employeeSet = ramEmployerDao.getEmployeesByRequirements(requirementList);
             Set<EmployeeDtoResponse> shortlist = new HashSet<>();
             for (Employee employee : employeeSet) {
                 shortlist.add(new EmployeeDtoResponse(
@@ -224,13 +265,15 @@ public class EmployerService extends UserService {
         if (token == null) {
             throw new ServerException(ServerErrorCode.INVALID_TOKEN);
         }
+
         User user;
-        if(settings.getDatabaseType().equals("SQL")) {
-            user = employerDao.getEmployerByToken(String.valueOf(token));
+        if (settings.getDatabaseType().equals("SQL")) {
+            user = sqlEmployerDao.getEmployerByToken(String.valueOf(token));
         }
         else {
-            user = employerDao.getUserByToken(token);
+            user = ramEmployerDao.getUserByToken(token);
         }
+
         if (user == null) {
             throw new ServerException(ServerErrorCode.USER_NOT_EXIST);
         }
@@ -241,7 +284,14 @@ public class EmployerService extends UserService {
     }
 
     private Vacancy getVacancyById(int id) throws ServerException {
-        Vacancy vacancy = employerDao.getVacancyById(id);
+        Vacancy vacancy;
+        if (settings.getDatabaseType().equals("SQL")) {
+            vacancy = sqlEmployerDao.getVacancyById(id);
+        }
+        else {
+            vacancy = ramEmployerDao.getVacancyById(id);
+        }
+
         if (vacancy == null) {
             throw new ServerException(ServerErrorCode.INVALID_ID);
         }
@@ -249,7 +299,14 @@ public class EmployerService extends UserService {
     }
 
     private Requirement getRequirementById(int id) throws ServerException {
-        Requirement requirement = employerDao.getRequirementById(id);
+        Requirement requirement;
+        if (settings.getDatabaseType().equals("SQL")) {
+            requirement = sqlEmployerDao.getRequirementById(id);
+        }
+        else {
+            requirement = ramEmployerDao.getRequirementById(id);
+        }
+
         if (requirement == null) {
             throw new ServerException(ServerErrorCode.INVALID_ID);
         }

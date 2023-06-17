@@ -14,20 +14,17 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 public class Database {
     private static Database instance;
     private final Map<String, User> userByLogin = new ConcurrentHashMap<>();
-    private final BidiMap<UUID, User> userByToken = new DualHashBidiMap<>();
     private final Map<Integer, User> userById = new ConcurrentHashMap<>();
     private final Map<Integer, Skill> skillById = new ConcurrentHashMap<>();
     private final Map<Integer, Requirement> requirementById = new ConcurrentHashMap<>();
     private final Map<Integer, Vacancy> vacancyById = new ConcurrentHashMap<>();
-    private final Multimap<Skill, Employee> employeeBySkills = TreeMultimap.create(
-            Comparator.comparing(Skill::getSkillName).thenComparingInt(Skill::getProfLevel),
-            Comparator.comparing(User::getLastName));
-
-    private final ReentrantLock mutex = new ReentrantLock();
     private final AtomicInteger nextUserId = new AtomicInteger(1);
     private final AtomicInteger nextSkillId = new AtomicInteger(1);
     private final AtomicInteger nextVacancyId = new AtomicInteger(1);
     private final AtomicInteger nextRequirementId = new AtomicInteger(1);
+    private final ConcurrentMultiAndBidiMap concurrentMultiAndBidiMap = new ConcurrentMultiAndBidiMap();
+
+
 
     public static synchronized Database getInstance() {
         if (instance == null) {
@@ -46,23 +43,19 @@ public class Database {
     }
 
     public UUID loginUser(User user) {
-        mutex.lock();
-        UUID uuid = userByToken.getKey(user);
+        UUID uuid = concurrentMultiAndBidiMap.getKey(user);
         if (uuid != null) {
             return uuid;
         }
         UUID token = UUID.randomUUID();
-        userByToken.put(token, user);
-        mutex.unlock();
+        concurrentMultiAndBidiMap.put(token, user);
         return token;
     }
 
     public void logoutUser(UUID token) throws ServerException {
-            mutex.lock();
-            if (userByToken.remove(token) == null) {
-                throw new ServerException(ServerErrorCode.SESSION_NOT_FOUND);
-            }
-            mutex.unlock();
+        if (concurrentMultiAndBidiMap.remove(token) == null) {
+            throw new ServerException(ServerErrorCode.SESSION_NOT_FOUND);
+        }
     }
 
     public User getUserByLogin(String login) {
@@ -70,13 +63,13 @@ public class Database {
     }
 
     public User getUserByToken(UUID token) {
-            return userByToken.get(token);
+            return concurrentMultiAndBidiMap.get(token);
     }
 
     public int addSkill(Skill skill, Employee employee) {
-        employee.getSkills().forEach(skill1 -> employeeBySkills.remove(skill1, employee));
+        employee.getSkills().forEach(skill1 -> concurrentMultiAndBidiMap.remove(skill1, employee));
         skill.setId(nextSkillId.get());
-        employee.getSkills().forEach(skill1 -> employeeBySkills.put(skill1, employee));
+        employee.getSkills().forEach(skill1 -> concurrentMultiAndBidiMap.put(skill1, employee));
         skillById.put(nextSkillId.get(), skill);
         return nextSkillId.getAndIncrement();
     }
@@ -139,21 +132,20 @@ public class Database {
         Set<Employee> shortlist = new HashSet<>();
         boolean flag = true;
 
-        synchronized (requirements) {
-            for (Requirement requirement : requirements) {
-                Collection<Employee> employees = employeeBySkills.values();
-                if (flag) {
-                    shortlist.addAll(employees);
-                } else {
-                    Collection<Employee> collection = new ArrayList<>(((TreeMultimap) employeeBySkills).asMap().subMap(
-                            new Skill(requirement.getRequirementName(), requirement.getProfLevel()),
-                            new Skill(requirement.getRequirementName(), 6)).values());
-                    shortlist.retainAll(collection);
-                }
-                flag = false;
+        for (Requirement requirement : requirements) {
+            Collection<Employee> employees = concurrentMultiAndBidiMap.values();
+            if (flag) {
+                shortlist.addAll(employees);
+            } else {
+                Collection<Employee> collection = new ArrayList<>
+                        (((TreeMultimap) concurrentMultiAndBidiMap.getEmployeeBySkills()).asMap().subMap(
+                        new Skill(requirement.getRequirementName(), requirement.getProfLevel()),
+                        new Skill(requirement.getRequirementName(), 6)).values());
+                shortlist.retainAll(collection);
             }
-            return shortlist;
+            flag = false;
         }
+        return shortlist;
     }
 
     public void clear() {
@@ -166,15 +158,7 @@ public class Database {
         nextSkillId.set(1);
         nextVacancyId.set(1);
         nextRequirementId.set(1);
-
-        try{
-            mutex.lock();
-            userByToken.clear();
-            employeeBySkills.clear();
-        }
-        finally {
-            mutex.unlock();
-        }
-
+        concurrentMultiAndBidiMap.getUserByToken().clear();
+        concurrentMultiAndBidiMap.getEmployeeBySkills().clear();
     }
 }

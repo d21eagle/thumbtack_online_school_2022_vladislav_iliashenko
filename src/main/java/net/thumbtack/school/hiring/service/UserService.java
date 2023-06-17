@@ -1,8 +1,12 @@
 package net.thumbtack.school.hiring.service;
 import com.google.gson.Gson;
 import com.google.common.base.Strings;
-import net.thumbtack.school.hiring.dao.*;
-import net.thumbtack.school.hiring.daoimpl.*;
+import net.thumbtack.school.hiring.dao.collection.RamEmployerDao;
+import net.thumbtack.school.hiring.dao.collection.RamUserDao;
+import net.thumbtack.school.hiring.dao.sql.SqlUserDao;
+import net.thumbtack.school.hiring.daoimpl.collections.RamEmployerDaoImpl;
+import net.thumbtack.school.hiring.daoimpl.collections.RamUserDaoImpl;
+import net.thumbtack.school.hiring.daoimpl.sql.SqlUserDaoImpl;
 import net.thumbtack.school.hiring.dto.request.*;
 import net.thumbtack.school.hiring.server.ServerResponse;
 import net.thumbtack.school.hiring.dto.response.*;
@@ -16,24 +20,31 @@ import java.util.UUID;
 public class UserService {
     private static final Gson GSON = new Gson();
     private static final int SUCCESS_CODE = 200;
-    private final UserDao userDao = new UserDaoImpl();
+    private final SqlUserDao sqlUserDao = new SqlUserDaoImpl();
+    private final RamUserDao ramUserDao = new RamUserDaoImpl();
     private final Settings settings = Settings.getInstance();
 
     public ServerResponse loginUser(String requestJson) {
         try {
             LoginUserDtoRequest loginUserDtoRequest = ServerUtils.getClassFromJson(requestJson, LoginUserDtoRequest.class);
             validateRequest(loginUserDtoRequest);
-            User user = userDao.getUserByLogin(loginUserDtoRequest.getLogin());
-            if (user == null || !user.getPassword().equals(loginUserDtoRequest.getPassword())) {
-                throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
-            }
+
+            User user;
             String uuid;
-            if(settings.getDatabaseType().equals("SQL")) {
+            if (settings.getDatabaseType().equals("SQL")) {
+                user = sqlUserDao.getUserByLogin(loginUserDtoRequest.getLogin());
+                if (user == null || !user.getPassword().equals(loginUserDtoRequest.getPassword())) {
+                    throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
+                }
                 uuid = UUID.randomUUID().toString();
-                userDao.loginUser(user, uuid);
+                sqlUserDao.loginUser(user, uuid);
             }
             else {
-                uuid = String.valueOf(userDao.loginUser(user));
+                user = ramUserDao.getUserByLogin(loginUserDtoRequest.getLogin());
+                if (user == null || !user.getPassword().equals(loginUserDtoRequest.getPassword())) {
+                    throw new ServerException(ServerErrorCode.WRONG_LOGIN_OR_PASSWORD);
+                }
+                uuid = String.valueOf(ramUserDao.loginUser(user));
             }
             LoginUserDtoResponse loginUserDtoResponse = new LoginUserDtoResponse(UUID.fromString(uuid));
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(loginUserDtoResponse));
@@ -44,7 +55,12 @@ public class UserService {
 
     public ServerResponse logoutUser(String token) {
         try {
-            userDao.logoutUser(token);
+            if (settings.getDatabaseType().equals("SQL")) {
+                sqlUserDao.logoutUser(token);
+            }
+            else {
+                ramUserDao.logoutUser(UUID.fromString(token));
+            }
             return new ServerResponse(SUCCESS_CODE, GSON.toJson(new EmptyResponse()));
         }
         catch (ServerException e) {
